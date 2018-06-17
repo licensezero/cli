@@ -12,6 +12,17 @@ var Identify = Subcommand{
 			name := args[0]
 			jurisdiction := args[1]
 			email := args[2]
+			newIdentity := Identity{
+				Name:         name,
+				Jurisdiction: jurisdiction,
+				EMail:        email,
+			}
+			existingIdentity, _ := readIdentity(home)
+			if existingIdentity != nil && *existingIdentity != newIdentity {
+				if !Confirm("Overwrite existing identity?") {
+					os.Exit(0)
+				}
+			}
 			if !ValidName(name) {
 				os.Stderr.WriteString("Invalid Name.\n")
 				os.Exit(1)
@@ -24,12 +35,7 @@ var Identify = Subcommand{
 				os.Stderr.WriteString("Invalid E-Mail.\n")
 				os.Exit(1)
 			}
-			identity := Identity{
-				Name:         name,
-				Jurisdiction: jurisdiction,
-				EMail:        email,
-			}
-			err := writeIdentity(home, &identity)
+			err := writeIdentity(home, &newIdentity)
 			if err != nil {
 				os.Stderr.WriteString("Could not write identity file.\n")
 				os.Exit(1)
