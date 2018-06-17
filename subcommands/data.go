@@ -2,6 +2,7 @@ package subcommands
 
 import "encoding/json"
 import "io/ioutil"
+import "os"
 import "path"
 
 type Identity struct {
@@ -10,8 +11,12 @@ type Identity struct {
 	EMail        string `json:"email"`
 }
 
+func configPath(home string) string {
+	return path.Join(home, ".config", "licensezero")
+}
+
 func identityPath(home string) string {
-	return path.Join(home, ".config", "licensezero", "identity.json")
+	return path.Join(configPath(home), "identity.json")
 }
 
 func readIdentity(home string) (*Identity, error) {
@@ -26,10 +31,18 @@ func readIdentity(home string) (*Identity, error) {
 }
 
 func writeIdentity(home string, identity *Identity) error {
-	data, err := json.Marshal(identity)
-	if err != nil {
-		return err
+	data, jsonError := json.Marshal(identity)
+	if jsonError != nil {
+		return jsonError
 	}
-	path := identityPath(home)
-	return ioutil.WriteFile(path, data, 0644)
+	directoryError := makeConfigDirectory(home)
+	if directoryError != nil {
+		return directoryError
+	}
+	return ioutil.WriteFile(identityPath(home), data, 0744)
+}
+
+func makeConfigDirectory(home string) error {
+	path := configPath(home)
+	return os.MkdirAll(path, 0744)
 }
