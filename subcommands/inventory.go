@@ -78,7 +78,7 @@ func Inventory(paths Paths, ignoreNC bool, ignoreR bool) (*Projects, error) {
 			returned.Waived = append(returned.Waived, result)
 			continue
 		}
-		if OwnProject(&result, identity) {
+		if identity != nil && OwnProject(&result, identity) {
 			continue
 		}
 		if result.Manifest.Terms == "noncommercial" && ignoreNC {
