@@ -2,6 +2,9 @@ package subcommands
 
 import "os"
 
-func Reset(args []string) {
-	os.Exit(0)
+var Reset = Subcommand{
+	Description: "Reset your access token.",
+	Handler: func(args []string) {
+		os.Exit(0)
+	},
 }

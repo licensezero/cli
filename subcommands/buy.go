@@ -4,12 +4,15 @@ import "flag"
 import "fmt"
 import "os"
 
-func Buy(args []string) {
-	flagSet := flag.NewFlagSet("buy", flag.ExitOnError)
-	doNotOpen := flagSet.Bool("do-not-open", false, "Do not open checkout page.")
-	flagSet.Parse(args)
-	if *doNotOpen {
-		fmt.Println("not opening")
-	}
-	os.Exit(0)
+var Buy = Subcommand{
+	Description: "Buy missing private licenses.",
+	Handler: func(args []string) {
+		flagSet := flag.NewFlagSet("buy", flag.ExitOnError)
+		doNotOpen := DoNotOpen(flagSet)
+		flagSet.Parse(args)
+		if *doNotOpen {
+			fmt.Println("not opening")
+		}
+		os.Exit(0)
+	},
 }

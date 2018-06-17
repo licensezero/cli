@@ -2,6 +2,9 @@ package subcommands
 
 import "os"
 
-func README(args []string) {
-	os.Exit(0)
+var README = Subcommand{
+	Description: "Append licensing information to README.",
+	Handler: func(args []string) {
+		os.Exit(0)
+	},
 }

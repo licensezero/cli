@@ -2,6 +2,9 @@ package subcommands
 
 import "os"
 
-func WhoAmI(args []string) {
-	os.Exit(0)
+var WhoAmI = Subcommand{
+	Description: "Show your licensor ID.",
+	Handler: func(args []string) {
+		os.Exit(0)
+	},
 }
