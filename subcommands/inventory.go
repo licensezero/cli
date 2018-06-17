@@ -128,53 +128,6 @@ func ReadProjects(cwd string) ([]Project, error) {
 	return ReadNPMProjects(cwd)
 }
 
-/*
-import "errors"
-import "os/exec"
-
-type npmOutput struct {
-	Version      string
-	Dependencies map[string]npmOutput
-}
-
-func ListNPMTree(cwd string) ([]Project, error) {
-	npmPath, pathError := exec.LookPath("npm")
-	if pathError != nil {
-		return nil, errors.New("Could not find npm.")
-	}
-	fmt.Println(npmPath)
-	command := exec.Command(npmPath, "ls", "--json")
-	command.Dir = cwd
-	output, err := command.Output()
-	if err != nil {
-		panic(err)
-		return nil, err
-	}
-	var parsed npmOutput
-	jsonError := json.Unmarshal(output, &parsed)
-	if jsonError != nil {
-		return nil, errors.New("Could not parse npm ls --json output.")
-	}
-	flattened := FlattenNPMTree(parsed, []string{})
-	return flattened, nil
-}
-
-func FlattenNPMTree(output npmOutput, above []string) []Project {
-	var returned []Project
-	for name, manifest := range output.Dependencies {
-		returned = append(returned, Project{
-			Type:    "npm",
-			Name:    name,
-			Version: manifest.Version,
-			Path:    append(above, name),
-		})
-		below := FlattenNPMTree(manifest, append(above, name))
-		returned = append(returned, below...)
-	}
-	return returned
-}
-*/
-
 func ReadNPMProjects(cwd string) ([]Project, error) {
 	var returned []Project
 	node_modules := path.Join(cwd, "node_modules")
