@@ -5,25 +5,27 @@ import "io/ioutil"
 import "os"
 import "path"
 
-type Result struct {
+type Project struct {
 	Type     string
 	Path     string
-	Metadata Metadata
+	Name     string
+	Version  string
+	Manifest ProjectManifest
 }
 
-type Metadata struct {
-	Name             string            `json:"name"`
-	Version          string            `json:"version"`
-	ProjectManifests []ProjectManifest `json:"licensezero"`
+type PackageJSONFile struct {
+	Name      string                   `json:"name"`
+	Version   string                   `json:"version"`
+	Envelopes []ProjectManifestEnvlope `json:"licensezero"`
+}
+
+type ProjectManifestEnvlope struct {
+	LicensorSignature string          `json:"agentSignature"`
+	AgentSignature    string          `json:"licensorSignature"`
+	Manifest          ProjectManifest `json:"license"`
 }
 
 type ProjectManifest struct {
-	LicensorSignature string            `json:"agentSignature"`
-	AgentSignature    string            `json:"licensorSignature"`
-	LicenseManifests  []LicenseManifest `json:"license"`
-}
-
-type LicenseManifest struct {
 	Jurisdiction string `json:"jurisdiction"`
 	Name         string `json:"name"`
 	ProjectID    string `json:"projectID"`
@@ -33,34 +35,97 @@ type LicenseManifest struct {
 	Homepage     string `json:"homepage"`
 }
 
-type Results struct {
-	Licensable []Result
-	Licensed   []Result
-	Waived     []Result
-	Unlicensed []Result
-	Ignored    []Result
-	Invalid    []string
+type Projects struct {
+	Licensable []Project
+	Licensed   []Project
+	Waived     []Project
+	Unlicensed []Project
+	Ignored    []Project
+	Invalid    []Project
 }
 
-func Inventory(paths Paths, ignoreNC bool, ignoreR bool) (*Results, error) {
-	// identity, _ := readIdentity(paths.Home)
-	/*
-		if identity {
-			licenses, _ := readLicenses(paths.Home, identity)
-			waivers, _ := ReadWaivers(paths.Home, identity)
+func Inventory(paths Paths, ignoreNC bool, ignoreR bool) (*Projects, error) {
+	identity, _ := readIdentity(paths.Home)
+	var licenses []LicenseManifest
+	var waivers []WaiverManifest
+	if identity != nil {
+		readLicenses, err := ReadLicenses(paths.Home)
+		if err != nil {
+			licenses = readLicenses
 		}
-	*/
-	tree, err := ReadTrees(paths.CWD)
+		readWaivers, err := ReadWaivers(paths.Home)
+		if err != nil {
+			waivers = readWaivers
+		}
+	}
+	projects, err := ReadProjects(paths.CWD)
 	if err != nil {
 		return nil, err
 	}
-	return &Results{
-		Ignored: tree,
-	}, nil
+	var returned Projects
+	for _, result := range projects {
+		if !ValidMetadata(&result) {
+			returned.Invalid = append(returned.Invalid, result)
+			continue
+		} else {
+			returned.Licensable = append(returned.Licensable, result)
+		}
+		if HaveLicense(&result, licenses) {
+			returned.Licensed = append(returned.Licensed, result)
+			continue
+		}
+		if HaveWaiver(&result, waivers) {
+			returned.Waived = append(returned.Waived, result)
+			continue
+		}
+		if OwnProject(&result, identity) {
+			continue
+		}
+		if result.Manifest.Terms == "noncommercial" && ignoreNC {
+			returned.Ignored = append(returned.Ignored, result)
+			continue
+		}
+		if result.Manifest.Terms == "reciprocal" && ignoreR {
+			returned.Ignored = append(returned.Ignored, result)
+			continue
+		}
+		returned.Unlicensed = append(returned.Unlicensed, result)
+	}
+	return &returned, nil
 }
 
-func ReadTrees(cwd string) ([]Result, error) {
-	return ReadNPMTree(cwd)
+func HaveLicense(project *Project, licenses []LicenseManifest) bool {
+	// TODO: Check license identity.
+	for _, license := range licenses {
+		if license.ProjectID == project.Manifest.ProjectID {
+			return true
+		}
+	}
+	return false
+}
+
+func HaveWaiver(project *Project, waivers []WaiverManifest) bool {
+	// TODO: Check waiver identity.
+	for _, waiver := range waivers {
+		if waiver.ProjectID == project.Manifest.ProjectID {
+			return true
+		}
+	}
+	return false
+}
+
+func OwnProject(project *Project, identity *Identity) bool {
+	return project.Manifest.Name == identity.Name &&
+		project.Manifest.Jurisdiction == identity.Jurisdiction
+}
+
+func ValidMetadata(result *Project) bool {
+	// TODO
+	return true
+}
+
+func ReadProjects(cwd string) ([]Project, error) {
+	return ReadNPMProjects(cwd)
 }
 
 /*
@@ -72,7 +137,7 @@ type npmOutput struct {
 	Dependencies map[string]npmOutput
 }
 
-func ListNPMTree(cwd string) ([]Result, error) {
+func ListNPMTree(cwd string) ([]Project, error) {
 	npmPath, pathError := exec.LookPath("npm")
 	if pathError != nil {
 		return nil, errors.New("Could not find npm.")
@@ -94,10 +159,10 @@ func ListNPMTree(cwd string) ([]Result, error) {
 	return flattened, nil
 }
 
-func FlattenNPMTree(output npmOutput, above []string) []Result {
-	var returned []Result
+func FlattenNPMTree(output npmOutput, above []string) []Project {
+	var returned []Project
 	for name, manifest := range output.Dependencies {
-		returned = append(returned, Result{
+		returned = append(returned, Project{
 			Type:    "npm",
 			Name:    name,
 			Version: manifest.Version,
@@ -110,13 +175,13 @@ func FlattenNPMTree(output npmOutput, above []string) []Result {
 }
 */
 
-func ReadNPMTree(cwd string) ([]Result, error) {
-	var returned []Result
+func ReadNPMProjects(cwd string) ([]Project, error) {
+	var returned []Project
 	node_modules := path.Join(cwd, "node_modules")
 	files, directoryReadError := ioutil.ReadDir(node_modules)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {
-			return []Result{}, nil
+			return []Project{}, nil
 		} else {
 			return nil, directoryReadError
 		}
@@ -127,16 +192,20 @@ func ReadNPMTree(cwd string) ([]Result, error) {
 		package_json := path.Join(directory, "package.json")
 		data, fileReadError := ioutil.ReadFile(package_json)
 		if fileReadError == nil {
-			var parsed Metadata
+			var parsed PackageJSONFile
 			json.Unmarshal(data, &parsed)
-			result := Result{
-				Type:     "npm",
-				Path:     directory,
-				Metadata: parsed,
+			for _, envelope := range parsed.Envelopes {
+				project := Project{
+					Type:     "npm",
+					Path:     directory,
+					Name:     parsed.Name,
+					Version:  parsed.Version,
+					Manifest: envelope.Manifest,
+				}
+				returned = append(returned, project)
 			}
-			returned = append(returned, result)
 		}
-		below, recursionError := ReadNPMTree(directory)
+		below, recursionError := ReadNPMProjects(directory)
 		if recursionError != nil {
 			return nil, recursionError
 		}
