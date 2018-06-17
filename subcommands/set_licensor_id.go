@@ -12,7 +12,24 @@ var SetLicensorID = Subcommand{
 		} else {
 			licensorID := args[0]
 			fmt.Println(licensorID)
-			os.Exit(0)
+			token := SecretPrompt("Token: ")
+			newLicensor := Licensor{
+				LicensorID: licensorID,
+				Token:      token,
+			}
+			existingLicensor, _ := readLicensor(home)
+			if existingLicensor != nil && *existingLicensor != newLicensor {
+				if !Confirm("Overwrite existing licensor info?") {
+					os.Exit(0)
+				}
+			}
+			err := writeLicensor(home, &newLicensor)
+			if err != nil {
+				os.Stderr.WriteString("Could not write licensor file.\n")
+				os.Exit(1)
+			} else {
+				os.Exit(0)
+			}
 		}
 	},
 }

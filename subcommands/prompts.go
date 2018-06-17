@@ -1,7 +1,9 @@
 package subcommands
 
 import "fmt"
+import "golang.org/x/crypto/ssh/terminal"
 import "strings"
+import "syscall"
 
 func Confirm(prompt string) bool {
 	var response string
@@ -18,4 +20,16 @@ func Confirm(prompt string) bool {
 	} else {
 		return Confirm(prompt)
 	}
+}
+
+func SecretPrompt(prompt string) string {
+	fmt.Printf(prompt)
+	data, err := terminal.ReadPassword(int(syscall.Stderr))
+	if err != nil {
+		panic(err)
+	}
+	var response string
+	response = string(data)
+	fmt.Println()
+	return response
 }
