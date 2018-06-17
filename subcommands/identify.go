@@ -4,7 +4,7 @@ import "os"
 
 var Identify = Subcommand{
 	Description: "Identify yourself.",
-	Handler: func(args []string, home string) {
+	Handler: func(args []string, paths Paths) {
 		if len(args) != 3 {
 			os.Stderr.WriteString("<name> <jurisdiction> <email>\n")
 			os.Exit(1)
@@ -17,7 +17,7 @@ var Identify = Subcommand{
 				Jurisdiction: jurisdiction,
 				EMail:        email,
 			}
-			existingIdentity, _ := readIdentity(home)
+			existingIdentity, _ := readIdentity(paths.Home)
 			if existingIdentity != nil && *existingIdentity != newIdentity {
 				if !Confirm("Overwrite existing identity?") {
 					os.Exit(0)
@@ -35,7 +35,7 @@ var Identify = Subcommand{
 				os.Stderr.WriteString("Invalid E-Mail.\n")
 				os.Exit(1)
 			}
-			err := writeIdentity(home, &newIdentity)
+			err := writeIdentity(paths.Home, &newIdentity)
 			if err != nil {
 				os.Stderr.WriteString("Could not write identity file.\n")
 				os.Exit(1)

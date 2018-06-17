@@ -5,7 +5,7 @@ import "fmt"
 
 var Lock = Subcommand{
 	Description: "Lock project pricing",
-	Handler: func(args []string, home string) {
+	Handler: func(args []string, paths Paths) {
 		if len(args) != 2 {
 			os.Stderr.WriteString("<project id> <date>\n")
 			os.Exit(1)

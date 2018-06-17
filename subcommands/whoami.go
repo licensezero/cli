@@ -5,8 +5,8 @@ import "fmt"
 
 var WhoAmI = Subcommand{
 	Description: "Show your licensee identity.",
-	Handler: func(args []string, home string) {
-		data, err := readIdentity(home)
+	Handler: func(args []string, paths Paths) {
+		data, err := readIdentity(paths.Home)
 		if err != nil {
 			os.Stderr.WriteString("Could not read identity file.\n")
 			os.Exit(1)

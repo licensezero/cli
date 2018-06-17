@@ -26,16 +26,22 @@ var commands = map[string]subcommands.Subcommand{
 }
 
 func main() {
-	home, err := homedir.Dir()
-	if err != nil {
+	home, homeError := homedir.Dir()
+	if homeError != nil {
 		os.Stderr.WriteString("Could not find home directory.\n")
 		os.Exit(1)
 	}
+	cwd, cwdError := os.Getwd()
+	if cwdError != nil {
+		os.Stderr.WriteString("Could not find working directory.\n")
+		os.Exit(1)
+	}
+	paths := subcommands.Paths{Home: home, CWD: cwd}
 	arguments := os.Args
 	if len(arguments) > 1 {
 		subcommand := os.Args[1]
 		if value, ok := commands[subcommand]; ok {
-			value.Handler(os.Args[2:], home)
+			value.Handler(os.Args[2:], paths)
 		} else {
 			showUsage()
 			os.Exit(1)

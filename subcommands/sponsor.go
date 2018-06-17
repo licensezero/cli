@@ -6,7 +6,7 @@ import "os"
 
 var Sponsor = Subcommand{
 	Description: "Sponsor relicensing of a project onto permissive terms.",
-	Handler: func(args []string, home string) {
+	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("sponsor", flag.ExitOnError)
 		doNotOpen := DoNotOpen(flagSet)
 		flagSet.Parse(args)

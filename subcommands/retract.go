@@ -5,7 +5,7 @@ import "fmt"
 
 var Retract = Subcommand{
 	Description: "Retract a package from sale.",
-	Handler: func(args []string, home string) {
+	Handler: func(args []string, paths Paths) {
 		if len(args) != 1 {
 			os.Stderr.WriteString("<project id>")
 			os.Exit(1)

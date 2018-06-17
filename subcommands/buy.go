@@ -6,7 +6,7 @@ import "os"
 
 var Buy = Subcommand{
 	Description: "Buy missing private licenses.",
-	Handler: func(args []string, home string) {
+	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("buy", flag.ExitOnError)
 		doNotOpen := DoNotOpen(flagSet)
 		flagSet.Parse(args)
