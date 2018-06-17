@@ -13,7 +13,7 @@ var WhoAmI = Subcommand{
 		} else {
 			fmt.Println("Name: " + data.Name)
 			fmt.Println("Jurisdiction: " + data.Jurisdiction)
-			fmt.Println("E-Mail: " + data.Email)
+			fmt.Println("E-Mail: " + data.EMail)
 			os.Exit(0)
 		}
 	},

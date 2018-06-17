@@ -7,15 +7,15 @@ import "path"
 type Identity struct {
 	Name         string `json:"name"`
 	Jurisdiction string `json:"jurisdiction"`
-	Email        string `json:"email"`
+	EMail        string `json:"email"`
 }
 
-func IdentityPath(home string) string {
+func identityPath(home string) string {
 	return path.Join(home, ".config", "licensezero", "identity.json")
 }
 
 func readIdentity(home string) (*Identity, error) {
-	path := IdentityPath(home)
+	path := identityPath(home)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -23,4 +23,13 @@ func readIdentity(home string) (*Identity, error) {
 	var identity Identity
 	json.Unmarshal(data, &identity)
 	return &identity, nil
+}
+
+func writeIdentity(home string, identity *Identity) error {
+	data, err := json.Marshal(identity)
+	if err != nil {
+		return err
+	}
+	path := identityPath(home)
+	return ioutil.WriteFile(path, data, 0644)
 }
