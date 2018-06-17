@@ -6,7 +6,7 @@ import "os"
 
 var Reprice = Subcommand{
 	Description: "Change project pricing.",
-	Handler: func(args []string) {
+	Handler: func(args []string, home string) {
 		flagSet := flag.NewFlagSet("reprice", flag.ExitOnError)
 		relicense := flagSet.Int("relicense", 0, "Relicense price, in cents.")
 		flagSet.Parse(args)

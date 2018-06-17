@@ -6,7 +6,7 @@ import "os"
 
 var Quote = Subcommand{
 	Description: "Quote missing private licenses.",
-	Handler: func(args []string) {
+	Handler: func(args []string, home string) {
 		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
 		noNoncommercial := flagSet.Bool("no-noncommercial", false, "Ignore L0-NC dependencies.")
 		noReciprocal := flagSet.Bool("no-reciprocal", false, "Ignore L0-R dependencies.")

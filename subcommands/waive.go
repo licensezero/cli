@@ -6,7 +6,7 @@ import "os"
 
 var Waive = Subcommand{
 	Description: "Generate a signed waiver.",
-	Handler: func(args []string) {
+	Handler: func(args []string, home string) {
 		flagSet := flag.NewFlagSet("waive", flag.ExitOnError)
 		jurisdiction := flagSet.Bool("jurisdiction", false, "Jurisdiction.")
 		days := flagSet.Int("days", 0, "Days.")

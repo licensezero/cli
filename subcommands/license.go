@@ -6,7 +6,7 @@ import "os"
 
 var License = Subcommand{
 	Description: "Write a public license file and metadata.",
-	Handler: func(args []string) {
+	Handler: func(args []string, home string) {
 		flagSet := flag.NewFlagSet("license", flag.ExitOnError)
 		noncommercial := flagSet.Bool("noncommercial", false, "Use noncommercial public license.")
 		reciprocal := flagSet.Bool("reciprocal", false, "Use reciprocal public license.")

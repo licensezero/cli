@@ -5,7 +5,7 @@ import "fmt"
 
 var Identify = Subcommand{
 	Description: "Identify yourself.",
-	Handler: func(args []string) {
+	Handler: func(args []string, home string) {
 		if len(args) != 3 {
 			os.Stderr.WriteString("<name> <jurisdiction> <email>\n")
 			os.Exit(1)

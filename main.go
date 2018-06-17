@@ -1,8 +1,9 @@
 package main
 
-import "fmt"
-import "os"
 import "./subcommands"
+import "fmt"
+import "github.com/mitchellh/go-homedir"
+import "os"
 
 var commands = map[string]subcommands.Subcommand{
 	"buy":             subcommands.Buy,
@@ -25,11 +26,16 @@ var commands = map[string]subcommands.Subcommand{
 }
 
 func main() {
+	home, err := homedir.Dir()
+	if err != nil {
+		os.Stderr.WriteString("Could not find home directory.\n")
+		os.Exit(1)
+	}
 	arguments := os.Args
 	if len(arguments) > 1 {
 		subcommand := os.Args[1]
 		if value, ok := commands[subcommand]; ok {
-			value.Handler(os.Args[2:])
+			value.Handler(os.Args[2:], home)
 		} else {
 			showUsage()
 			os.Exit(1)
