@@ -91,7 +91,6 @@ var Quote = Subcommand{
 				fmt.Println("\n- Project: " + project.ProjectID)
 				fmt.Println("  Description: " + project.Description)
 				fmt.Println("  Repository: " + project.Repository)
-				// TODO: Terms
 				for _, prior := range unlicensed {
 					if prior.Manifest.ProjectID == project.ProjectID {
 						if prior.Manifest.Terms == "noncommercial" {
