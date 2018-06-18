@@ -80,7 +80,7 @@ var Quote = Subcommand{
 			defer response.Body.Close()
 			responseBody, err := ioutil.ReadAll(response.Body)
 			if err != nil {
-				os.Stderr.WriteString("Invalid server response.")
+				os.Stderr.WriteString("Invalid server response.\n")
 				os.Exit(1)
 			}
 			var parsed QuoteResponse
