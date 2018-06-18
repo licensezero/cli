@@ -128,6 +128,8 @@ func ReadProjects(cwd string) ([]Project, error) {
 	return ReadNPMProjects(cwd)
 }
 
+// TODO: Detect node_modules cycles.
+
 func ReadNPMProjects(cwd string) ([]Project, error) {
 	var returned []Project
 	node_modules := path.Join(cwd, "node_modules")
