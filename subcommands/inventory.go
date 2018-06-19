@@ -4,10 +4,13 @@ import "encoding/json"
 import "io/ioutil"
 import "os"
 import "path"
+import "strings"
+import realpath "github.com/yookoala/realpath"
 
 type Project struct {
 	Type     string
 	Path     string
+	Scope    string
 	Name     string
 	Version  string
 	Manifest ProjectManifest
@@ -125,46 +128,90 @@ func ValidMetadata(result *Project) bool {
 }
 
 func ReadProjects(cwd string) ([]Project, error) {
-	return ReadNPMProjects(cwd)
+	return ReadNPMProjects(cwd, map[string]Project{})
 }
 
-// TODO: Detect node_modules cycles.
-
-func ReadNPMProjects(cwd string) ([]Project, error) {
+func ReadNPMProjects(packagePath string, cache map[string]Project) ([]Project, error) {
 	var returned []Project
-	node_modules := path.Join(cwd, "node_modules")
-	files, directoryReadError := ioutil.ReadDir(node_modules)
-	if directoryReadError != nil {
-		if os.IsNotExist(directoryReadError) {
+	node_modules := path.Join(packagePath, "node_modules")
+	entries, err := ioutil.ReadDir(node_modules)
+	if err != nil {
+		if os.IsNotExist(err) {
 			return []Project{}, nil
 		} else {
-			return nil, directoryReadError
+			return nil, err
 		}
 	}
-	for _, entry := range files {
-		name := entry.Name()
-		directory := path.Join(node_modules, name)
-		package_json := path.Join(directory, "package.json")
-		data, fileReadError := ioutil.ReadFile(package_json)
-		if fileReadError == nil {
-			var parsed PackageJSONFile
-			json.Unmarshal(data, &parsed)
-			for _, envelope := range parsed.Envelopes {
-				project := Project{
-					Type:     "npm",
-					Path:     directory,
-					Name:     parsed.Name,
-					Version:  parsed.Version,
-					Manifest: envelope.Manifest,
-				}
-				returned = append(returned, project)
+	processProject := func(directory string, scope *string) error {
+		realDirectory, realPathError := realpath.Realpath(directory)
+		if realPathError == nil {
+			if _, ok := cache[realDirectory]; ok {
+				return nil
 			}
 		}
-		below, recursionError := ReadNPMProjects(directory)
+		package_json := path.Join(directory, "package.json")
+		data, err := ioutil.ReadFile(package_json)
+		if err != nil {
+			return err
+		}
+		var parsed PackageJSONFile
+		json.Unmarshal(data, &parsed)
+		for _, envelope := range parsed.Envelopes {
+			project := Project{
+				Type:     "npm",
+				Path:     directory,
+				Name:     parsed.Name,
+				Version:  parsed.Version,
+				Manifest: envelope.Manifest,
+			}
+			if scope != nil {
+				project.Scope = *scope
+			}
+			if realPathError == nil {
+				cache[realDirectory] = project
+			}
+			returned = append(returned, project)
+		}
+		below, recursionError := ReadNPMProjects(directory, cache)
 		if recursionError != nil {
-			return nil, recursionError
+			return recursionError
 		}
 		returned = append(returned, below...)
+		return nil
+	}
+	for _, entry := range entries {
+		// Skip non-directories.
+		if !entry.IsDir() {
+			continue
+		}
+		name := entry.Name()
+		if strings.HasPrefix(name, "@") { // ./node_modules/@scope/package
+			scope := name[1:]
+			scopeEntries, err := ioutil.ReadDir(node_modules)
+			if err != nil {
+				if os.IsNotExist(err) {
+					continue
+				} else {
+					return nil, err
+				}
+			}
+			for _, scopeEntry := range scopeEntries {
+				if !scopeEntry.IsDir() {
+					continue
+				}
+				directory := path.Join(node_modules, name, scopeEntry.Name())
+				err := processProject(directory, &scope)
+				if err != nil {
+					return nil, err
+				}
+			}
+		} else { // ./node_modules/package/
+			directory := path.Join(node_modules, name)
+			err := processProject(directory, nil)
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 	return returned, nil
 }

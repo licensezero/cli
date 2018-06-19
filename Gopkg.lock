@@ -15,6 +15,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/yookoala/realpath"
+  packages = ["."]
+  revision = "d19ef9c409d9817c1e685775e53d361b03eabbc8"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   revision = "027cca12c2d63e3d62b670d901e8a2c95854feec"
@@ -31,6 +37,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a9a540a9f5e3b1b8410b2e9662b77f5a863d92ff67db892c3ae67e3aec734eec"
+  inputs-digest = "bc61276ba27cf889e753af879ce0d2626b9a28b7dcfd22431ef05c717f27bdc8"
   solver-name = "gps-cdcl"
   solver-version = 1
