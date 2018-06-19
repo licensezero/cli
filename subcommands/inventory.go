@@ -1,6 +1,7 @@
 package subcommands
 
 import "encoding/json"
+import "log"
 import "io/ioutil"
 import "os"
 import "path"
@@ -128,13 +129,13 @@ func ValidMetadata(result *Project) bool {
 }
 
 func ReadProjects(cwd string) ([]Project, error) {
-	return ReadNPMProjects(cwd, map[string]Project{})
+	return ReadNPMProjects(cwd)
 }
 
-func ReadNPMProjects(packagePath string, cache map[string]Project) ([]Project, error) {
+func ReadNPMProjects(packagePath string) ([]Project, error) {
 	var returned []Project
 	node_modules := path.Join(packagePath, "node_modules")
-	entries, err := ioutil.ReadDir(node_modules)
+	entries, err := readAndStatDir(node_modules)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return []Project{}, nil
@@ -143,12 +144,6 @@ func ReadNPMProjects(packagePath string, cache map[string]Project) ([]Project, e
 		}
 	}
 	processProject := func(directory string, scope *string) error {
-		realDirectory, realPathError := realpath.Realpath(directory)
-		if realPathError == nil {
-			if _, ok := cache[realDirectory]; ok {
-				return nil
-			}
-		}
 		package_json := path.Join(directory, "package.json")
 		data, err := ioutil.ReadFile(package_json)
 		if err != nil {
@@ -156,7 +151,12 @@ func ReadNPMProjects(packagePath string, cache map[string]Project) ([]Project, e
 		}
 		var parsed PackageJSONFile
 		json.Unmarshal(data, &parsed)
+		anyNewProjects := false
 		for _, envelope := range parsed.Envelopes {
+			if alreadyHaveProject(returned, envelope.Manifest.ProjectID) {
+				continue
+			}
+			anyNewProjects = true
 			project := Project{
 				Type:     "npm",
 				Path:     directory,
@@ -164,30 +164,36 @@ func ReadNPMProjects(packagePath string, cache map[string]Project) ([]Project, e
 				Version:  parsed.Version,
 				Manifest: envelope.Manifest,
 			}
+			realDirectory, err := realpath.Realpath(directory)
+			if err != nil {
+				project.Path = realDirectory
+			} else {
+				project.Path = directory
+			}
 			if scope != nil {
 				project.Scope = *scope
 			}
-			if realPathError == nil {
-				cache[realDirectory] = project
-			}
 			returned = append(returned, project)
 		}
-		below, recursionError := ReadNPMProjects(directory, cache)
-		if recursionError != nil {
-			return recursionError
+		if anyNewProjects {
+			below, recursionError := ReadNPMProjects(directory)
+			if recursionError != nil {
+				return recursionError
+			}
+			returned = append(returned, below...)
 		}
-		returned = append(returned, below...)
 		return nil
 	}
 	for _, entry := range entries {
-		// Skip non-directories.
 		if !entry.IsDir() {
 			continue
 		}
 		name := entry.Name()
+		log.Println(name)
 		if strings.HasPrefix(name, "@") { // ./node_modules/@scope/package
 			scope := name[1:]
-			scopeEntries, err := ioutil.ReadDir(node_modules)
+			scopePath := path.Join(node_modules, name)
+			scopeEntries, err := readAndStatDir(scopePath)
 			if err != nil {
 				if os.IsNotExist(err) {
 					continue
@@ -211,6 +217,65 @@ func ReadNPMProjects(packagePath string, cache map[string]Project) ([]Project, e
 			if err != nil {
 				return nil, err
 			}
+		}
+	}
+	return returned, nil
+}
+
+func alreadyHaveProject(projects []Project, projectID string) bool {
+	for _, other := range projects {
+		if other.Manifest.ProjectID == projectID {
+			return true
+		}
+	}
+	return false
+}
+
+func isDirSymlink(linkPath string) (bool, error) {
+	resolvedPath, err := os.Readlink(linkPath)
+	if err != nil {
+		return false, err
+	}
+	info, err := os.Stat(resolvedPath)
+	if err != nil {
+		return false, err
+	}
+	return info.IsDir(), nil
+}
+
+func isSymlink(entry os.FileInfo) bool {
+	return entry.Mode()&os.ModeSymlink != 0
+}
+
+// Like ioutil.ReadDir, but don't sort, and read all symlinks.
+func readAndStatDir(directoryPath string) ([]os.FileInfo, error) {
+	directory, err := os.Open(directoryPath)
+	if err != nil {
+		return nil, err
+	}
+	entries, err := directory.Readdir(-1)
+	directory.Close()
+	if err != nil {
+		return nil, err
+	}
+	returned := make([]os.FileInfo, len(entries))
+	for i, entry := range entries {
+		if isSymlink(entry) {
+			linkPath := path.Join(directoryPath, entry.Name())
+			targetPath, err := os.Readlink(linkPath)
+			if err != nil {
+				return nil, err
+			}
+			if !path.IsAbs(targetPath) {
+				targetPath = path.Join(path.Dir(directoryPath), targetPath)
+			}
+			newEntry, err := os.Stat(targetPath)
+			if err != nil {
+				return nil, err
+			}
+			returned[i] = newEntry
+		} else {
+			returned[i] = entry
 		}
 	}
 	return returned, nil
