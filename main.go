@@ -1,6 +1,6 @@
 package main
 
-import "./subcommands"
+import "github.com/licensezero/cli/subcommands"
 import "fmt"
 import "github.com/mitchellh/go-homedir"
 import "os"
