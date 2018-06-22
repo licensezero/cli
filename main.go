@@ -53,7 +53,7 @@ func main() {
 }
 
 func showUsage() {
-	fmt.Println("Manage License Zero dependences.")
+	fmt.Println("Manage License Zero dependencies.")
 	fmt.Println("")
 	fmt.Println("Subcommands:")
 	for name, info := range commands {
