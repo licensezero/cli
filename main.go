@@ -56,7 +56,13 @@ func showUsage() {
 	fmt.Println("Manage License Zero dependencies.")
 	fmt.Println("")
 	fmt.Println("Subcommands:")
+	longestSubcommand := 0
+	for name, _ := range commands {
+		if len(name) > longestSubcommand {
+			longestSubcommand = len(name) + 1
+		}
+	}
 	for name, info := range commands {
-		fmt.Println("\t" + name + ": " + info.Description)
+		fmt.Printf("  %-" + fmt.Sprintf("%d", longestSubcommand) + "s %s\n", name, info.Description)
 	}
 }
