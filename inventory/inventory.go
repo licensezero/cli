@@ -15,19 +15,21 @@ type Project struct {
 }
 
 type ProjectManifestEnvelope struct {
-	LicensorSignature string          `json:"agentSignature"`
-	AgentSignature    string          `json:"licensorSignature"`
+	LicensorSignature string          `json:"licensorSignature"`
+	AgentSignature    string          `json:"agentSignature"`
 	Manifest          ProjectManifest `json:"license"`
 }
 
 type ProjectManifest struct {
+	// Note: These declaration must appear in the order so as to
+	// serialize in the correct order for signature verification.
+	Homepage     string `json:"homepage"`
 	Jurisdiction string `json:"jurisdiction"`
 	Name         string `json:"name"`
 	ProjectID    string `json:"projectID"`
 	PublicKey    string `json:"publicKey"`
 	Terms        string `json:"terms"`
 	Version      string `json:"version"`
-	Homepage     string `json:"homepage"`
 }
 
 type Projects struct {
@@ -57,11 +59,21 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 	if err != nil {
 		return nil, err
 	}
+	agentPublicKey, err := api.FetchAgentPublicKey()
+	if err != nil {
+		return nil, err
+	}
 	var returned Projects
 	for _, result := range projects {
-		agentPublicKey, err := api.FetchAgentPublicKey()
-		err = CheckMetadata(&result, agentPublicKey)
+		projectResponse, err := api.Project(result.Envelope.Manifest.ProjectID)
 		if err != nil {
+			returned.Invalid = append(returned.Invalid, result)
+			continue
+		}
+		err = CheckMetadata(&result, projectResponse.Licensor.PublicKey, agentPublicKey)
+		if err != nil {
+			// TOD: Remove
+			panic(err)
 			returned.Invalid = append(returned.Invalid, result)
 			continue
 		} else {

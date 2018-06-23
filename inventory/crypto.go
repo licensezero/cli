@@ -6,7 +6,12 @@ import "encoding/json"
 import "errors"
 import "golang.org/x/crypto/ed25519"
 
-func CheckMetadata(project *Project, agentKeyHex string) error {
+type AgentSignaturePaackage struct {
+	Manifest          ProjectManifest `json:"license"`
+	LicensorSignature string          `json:"licensorSignature"`
+}
+
+func CheckMetadata(project *Project, licensorKeyHex string, agentKeyHex string) error {
 	serialized, err := json.Marshal(project.Envelope.Manifest)
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
@@ -14,13 +19,22 @@ func CheckMetadata(project *Project, agentKeyHex string) error {
 		return errors.New("could not serialize Manifest")
 	}
 	err = checkManifestSignature(
-		project.Envelope.Manifest.PublicKey,
+		licensorKeyHex,
 		project.Envelope.LicensorSignature,
 		compacted.Bytes(),
 		"licensor",
 	)
 	if err != nil {
 		return err
+	}
+	serialized, err = json.Marshal(AgentSignaturePaackage{
+		Manifest:          project.Envelope.Manifest,
+		LicensorSignature: project.Envelope.LicensorSignature,
+	})
+	compacted = bytes.NewBuffer([]byte{})
+	err = json.Compact(compacted, serialized)
+	if err != nil {
+		return errors.New("could not serialize agent signature packet")
 	}
 	err = checkManifestSignature(
 		agentKeyHex,
@@ -35,12 +49,12 @@ func CheckMetadata(project *Project, agentKeyHex string) error {
 }
 
 func checkManifestSignature(publicKey string, signature string, json []byte, source string) error {
-	signatureBytes := make([]byte, 64)
+	signatureBytes := make([]byte, hex.DecodedLen(len(signature)))
 	_, err := hex.Decode(signatureBytes, []byte(signature))
 	if err != nil {
 		return errors.New("invalid " + source + "signature")
 	}
-	publicKeyBytes := make([]byte, 32)
+	publicKeyBytes := make([]byte, hex.DecodedLen(len(publicKey)))
 	_, err = hex.Decode(publicKeyBytes, []byte(publicKey))
 	if err != nil {
 		return errors.New("invalid " + source + " public key")

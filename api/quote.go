@@ -26,6 +26,7 @@ type QuoteProject struct {
 type LicensorInformation struct {
 	Name         string
 	Jurisdiction string
+	PublicKey    string
 }
 
 type Pricing struct {

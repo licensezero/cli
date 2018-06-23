@@ -28,7 +28,11 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
+  packages = [
+    "ed25519",
+    "ed25519/internal/edwards25519",
+    "ssh/terminal"
+  ]
   revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
 
 [[projects]]
@@ -43,6 +47,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c1c58f5eba38edec0bcb206d62a826d8db593fa34b6ecc3508916dbfab2e0e59"
+  inputs-digest = "bb07d9d740f00639e6c97c04205d908fc265c9b4bb8daea669e8d90d4138618c"
   solver-name = "gps-cdcl"
   solver-version = 1
