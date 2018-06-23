@@ -34,5 +34,5 @@ func WriteIdentity(home string, identity *Identity) error {
 	if directoryError != nil {
 		return directoryError
 	}
-	return ioutil.WriteFile(identityPath(home), data, 0744)
+	return ioutil.WriteFile(identityPath(home), data, 0644)
 }

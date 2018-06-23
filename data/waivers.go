@@ -102,9 +102,9 @@ func WriteWaiver(home string, waiver *WaiverEnvelope) error {
 	if err != nil {
 		return err
 	}
-	err = os.MkdirAll(WaiversPath(home), 0744)
+	err = os.MkdirAll(WaiversPath(home), 0644)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(WaiverPath(home, waiver.ProjectID), json, 0744)
+	return ioutil.WriteFile(WaiverPath(home, waiver.ProjectID), json, 0644)
 }

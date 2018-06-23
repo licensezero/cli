@@ -81,9 +81,9 @@ func WriteLicense(home string, license *LicenseEnvelope) error {
 	if err != nil {
 		return err
 	}
-	err = os.MkdirAll(LicensesPath(home), 0744)
+	err = os.MkdirAll(LicensesPath(home), 0644)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(LicensePath(home, license.ProjectID), json, 0744)
+	return ioutil.WriteFile(LicensePath(home, license.ProjectID), json, 0644)
 }

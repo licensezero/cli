@@ -33,5 +33,5 @@ func WriteLicensor(home string, licensor *Licensor) error {
 	if directoryError != nil {
 		return directoryError
 	}
-	return ioutil.WriteFile(licensorPath(home), data, 0744)
+	return ioutil.WriteFile(licensorPath(home), data, 0644)
 }

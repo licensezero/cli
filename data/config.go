@@ -9,5 +9,5 @@ func configPath(home string) string {
 
 func makeConfigDirectory(home string) error {
 	path := configPath(home)
-	return os.MkdirAll(path, 0744)
+	return os.MkdirAll(path, 0644)
 }
