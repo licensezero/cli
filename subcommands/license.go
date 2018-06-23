@@ -31,7 +31,7 @@ var License = Subcommand{
 			}
 			licensor, err := data.ReadLicensor(paths.Home)
 			if err != nil {
-				os.Stderr.WriteString("create a licensor identity with `licensezero set-licensor-id`")
+				os.Stderr.WriteString("create a licensor identity with `licensezero register` or `licensezero set-licensor-id`.")
 				os.Exit(1)
 			}
 			var terms string
