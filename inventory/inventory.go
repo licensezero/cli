@@ -115,10 +115,9 @@ func HaveLicense(project *Project, licenses []data.LicenseEnvelope, identity *da
 
 func HaveWaiver(project *Project, waivers []data.WaiverEnvelope, identity *data.Identity) bool {
 	for _, waiver := range waivers {
-		if waiver.Manifest.ProjectID == project.Envelope.Manifest.ProjectID &&
-			waiver.Manifest.Beneficiary == identity.Name &&
-			waiver.Manifest.Jurisdiction == identity.Jurisdiction &&
-			waiver.Manifest.EMail == identity.EMail {
+		if waiver.ProjectID == project.Envelope.Manifest.ProjectID &&
+			waiver.Manifest.Beneficiary.Name == identity.Name &&
+			waiver.Manifest.Beneficiary.Jurisdiction == identity.Jurisdiction {
 			return true
 		}
 	}

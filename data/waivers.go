@@ -9,20 +9,29 @@ import "strconv"
 import "time"
 
 type WaiverEnvelope struct {
-	Manifest  WaiverManifest `json:"waiver"`
-	ProjectID string         `json:"projectID"`
-	Document  string         `json:"document"`
-	PublicKey string         `json:"publicKey"`
-	Signature string         `json:"signature"`
-}
-
-type WaiverManifest struct {
-	ProjectID    string `json:"projectID"`
-	Date         string
-	Term         string
-	Beneficiary  string
-	Jurisdiction string
-	EMail        string
+	ProjectID string `json:"projectID"`
+	Manifest  struct {
+		Form        string `json:"FORM"`
+		Version     string `json:"VERSION"`
+		Beneficiary struct {
+			Name         string `json:"name"`
+			Jurisdiction string `json:"jurisdiction"`
+		} `json:"beneficiary"`
+		Date     string `json:"date"`
+		Licensor struct {
+			Name         string `json:"name"`
+			Jurisdiction string `json:"jurisdiction"`
+		} `json:"licensor"`
+		Project struct {
+			ProjectID   string `json:"projectID"`
+			Description string `json:"description"`
+			Homepage    string `json:"homepage"`
+		} `json:"project"`
+		Term string `json:"term"`
+	} `json:"manifest"`
+	Document  string `json:"document"`
+	Signature string `json:"signature"`
+	PublicKey string `json:"publicKey"`
 }
 
 func WaiversPath(home string) string {
