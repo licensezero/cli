@@ -72,8 +72,6 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 		}
 		err = CheckMetadata(&result, projectResponse.Licensor.PublicKey, agentPublicKey)
 		if err != nil {
-			// TOD: Remove
-			panic(err)
 			returned.Invalid = append(returned.Invalid, result)
 			continue
 		} else {
