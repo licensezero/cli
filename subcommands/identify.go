@@ -1,6 +1,7 @@
 package subcommands
 
 import "os"
+import "github.com/licensezero/cli/data"
 
 var Identify = Subcommand{
 	Description: "Identify yourself.",
@@ -12,12 +13,12 @@ var Identify = Subcommand{
 			name := args[0]
 			jurisdiction := args[1]
 			email := args[2]
-			newIdentity := Identity{
+			newIdentity := data.Identity{
 				Name:         name,
 				Jurisdiction: jurisdiction,
 				EMail:        email,
 			}
-			existingIdentity, _ := readIdentity(paths.Home)
+			existingIdentity, _ := data.ReadIdentity(paths.Home)
 			if existingIdentity != nil && *existingIdentity != newIdentity {
 				if !Confirm("Overwrite existing identity?") {
 					os.Exit(0)
@@ -35,7 +36,7 @@ var Identify = Subcommand{
 				os.Stderr.WriteString("Invalid E-Mail.\n")
 				os.Exit(1)
 			}
-			err := writeIdentity(paths.Home, &newIdentity)
+			err := data.WriteIdentity(paths.Home, &newIdentity)
 			if err != nil {
 				os.Stderr.WriteString("Could not write identity file.\n")
 				os.Exit(1)

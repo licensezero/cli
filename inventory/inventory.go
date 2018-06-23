@@ -1,12 +1,13 @@
-package subcommands
+package inventory
 
 import "encoding/json"
-import "log"
+import "github.com/licensezero/cli/data"
 import "io/ioutil"
+import "log"
 import "os"
 import "path"
 import "strings"
-import realpath "github.com/yookoala/realpath"
+import "github.com/yookoala/realpath"
 
 type Project struct {
 	Type     string
@@ -48,21 +49,21 @@ type Projects struct {
 	Invalid    []Project
 }
 
-func Inventory(paths Paths, ignoreNC bool, ignoreR bool) (*Projects, error) {
-	identity, _ := readIdentity(paths.Home)
-	var licenses []LicenseManifest
-	var waivers []WaiverManifest
+func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects, error) {
+	identity, _ := data.ReadIdentity(home)
+	var licenses []data.LicenseManifest
+	var waivers []data.WaiverManifest
 	if identity != nil {
-		readLicenses, err := ReadLicenses(paths.Home)
+		readLicenses, err := data.ReadLicenses(home)
 		if err != nil {
 			licenses = readLicenses
 		}
-		readWaivers, err := ReadWaivers(paths.Home)
+		readWaivers, err := data.ReadWaivers(home)
 		if err != nil {
 			waivers = readWaivers
 		}
 	}
-	projects, err := ReadProjects(paths.CWD)
+	projects, err := ReadProjects(cwd)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +99,7 @@ func Inventory(paths Paths, ignoreNC bool, ignoreR bool) (*Projects, error) {
 	return &returned, nil
 }
 
-func HaveLicense(project *Project, licenses []LicenseManifest) bool {
+func HaveLicense(project *Project, licenses []data.LicenseManifest) bool {
 	// TODO: Check license identity.
 	for _, license := range licenses {
 		if license.ProjectID == project.Manifest.ProjectID {
@@ -108,7 +109,7 @@ func HaveLicense(project *Project, licenses []LicenseManifest) bool {
 	return false
 }
 
-func HaveWaiver(project *Project, waivers []WaiverManifest) bool {
+func HaveWaiver(project *Project, waivers []data.WaiverManifest) bool {
 	// TODO: Check waiver identity.
 	for _, waiver := range waivers {
 		if waiver.ProjectID == project.Manifest.ProjectID {
@@ -118,7 +119,7 @@ func HaveWaiver(project *Project, waivers []WaiverManifest) bool {
 	return false
 }
 
-func OwnProject(project *Project, identity *Identity) bool {
+func OwnProject(project *Project, identity *data.Identity) bool {
 	return project.Manifest.Name == identity.Name &&
 		project.Manifest.Jurisdiction == identity.Jurisdiction
 }

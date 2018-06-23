@@ -4,6 +4,7 @@ import "bytes"
 import "encoding/json"
 import "flag"
 import "fmt"
+import "github.com/licensezero/cli/inventory"
 import "io/ioutil"
 import "net/http"
 import "os"
@@ -42,7 +43,7 @@ var Quote = Subcommand{
 		noNoncommercial := flagSet.Bool("no-noncommercial", false, "Ignore L0-NC dependencies.")
 		noReciprocal := flagSet.Bool("no-reciprocal", false, "Ignore L0-R dependencies.")
 		flagSet.Parse(args)
-		projects, err := Inventory(paths, *noNoncommercial, *noReciprocal)
+		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
 		if err != nil {
 			os.Stderr.WriteString("Could not read dependeny tree.")
 			os.Exit(1)

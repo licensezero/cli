@@ -1,4 +1,4 @@
-package subcommands
+package data
 
 import "encoding/json"
 import "io/ioutil"
@@ -19,7 +19,7 @@ func identityPath(home string) string {
 	return path.Join(configPath(home), "identity.json")
 }
 
-func readIdentity(home string) (*Identity, error) {
+func ReadIdentity(home string) (*Identity, error) {
 	path := identityPath(home)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -30,7 +30,7 @@ func readIdentity(home string) (*Identity, error) {
 	return &identity, nil
 }
 
-func writeIdentity(home string, identity *Identity) error {
+func WriteIdentity(home string, identity *Identity) error {
 	data, jsonError := json.Marshal(identity)
 	if jsonError != nil {
 		return jsonError
@@ -56,7 +56,7 @@ func licensorPath(home string) string {
 	return path.Join(configPath(home), "licensor.json")
 }
 
-func readLicensor(home string) (*Licensor, error) {
+func ReadLicensor(home string) (*Licensor, error) {
 	path := licensorPath(home)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -67,7 +67,7 @@ func readLicensor(home string) (*Licensor, error) {
 	return &licensor, nil
 }
 
-func writeLicensor(home string, licensor *Licensor) error {
+func WriteLicensor(home string, licensor *Licensor) error {
 	data, jsonError := json.Marshal(licensor)
 	if jsonError != nil {
 		return jsonError

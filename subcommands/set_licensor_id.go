@@ -1,7 +1,8 @@
 package subcommands
 
-import "os"
 import "fmt"
+import "github.com/licensezero/cli/data"
+import "os"
 
 var SetLicensorID = Subcommand{
 	Description: "Set your licensezero.com licensor ID.",
@@ -13,17 +14,17 @@ var SetLicensorID = Subcommand{
 			licensorID := args[0]
 			fmt.Println(licensorID)
 			token := SecretPrompt("Token: ")
-			newLicensor := Licensor{
+			newLicensor := data.Licensor{
 				LicensorID: licensorID,
 				Token:      token,
 			}
-			existingLicensor, _ := readLicensor(paths.Home)
+			existingLicensor, _ := data.ReadLicensor(paths.Home)
 			if existingLicensor != nil && *existingLicensor != newLicensor {
 				if !Confirm("Overwrite existing licensor info?") {
 					os.Exit(0)
 				}
 			}
-			err := writeLicensor(paths.Home, &newLicensor)
+			err := data.WriteLicensor(paths.Home, &newLicensor)
 			if err != nil {
 				os.Stderr.WriteString("Could not write licensor file.\n")
 				os.Exit(1)

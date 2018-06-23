@@ -4,6 +4,8 @@ import "bytes"
 import "encoding/json"
 import "flag"
 import "fmt"
+import "github.com/licensezero/cli/inventory"
+import "github.com/licensezero/cli/data"
 import "github.com/skratchdot/open-golang/open"
 import "io/ioutil"
 import "net/http"
@@ -30,12 +32,12 @@ var Buy = Subcommand{
 		noNoncommercial := flagSet.Bool("no-noncommercial", false, "Ignore L0-NC dependencies.")
 		noReciprocal := flagSet.Bool("no-reciprocal", false, "Ignore L0-R dependencies.")
 		flagSet.Parse(args)
-		identity, err := readIdentity(paths.Home)
+		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
 			os.Stderr.WriteString("Create an identity with `licensezero identify` first.")
 			os.Exit(1)
 		}
-		projects, err := Inventory(paths, *noNoncommercial, *noReciprocal)
+		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
 		if err != nil {
 			os.Stderr.WriteString("Could not read dependeny tree.")
 			os.Exit(1)
