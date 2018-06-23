@@ -66,7 +66,7 @@ var Quote = Subcommand{
 			fmt.Printf("Invalid: %d\n", len(invalid))
 			var projectIDs []string
 			for _, project := range unlicensed {
-				projectIDs = append(projectIDs, project.Manifest.ProjectID)
+				projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
 			}
 			bodyData := QuoteRequest{
 				Action:   "quote",
@@ -93,10 +93,10 @@ var Quote = Subcommand{
 				fmt.Println("  Description: " + project.Description)
 				fmt.Println("  Repository: " + project.Repository)
 				for _, prior := range unlicensed {
-					if prior.Manifest.ProjectID == project.ProjectID {
-						if prior.Manifest.Terms == "noncommercial" {
+					if prior.Envelope.Manifest.ProjectID == project.ProjectID {
+						if prior.Envelope.Manifest.Terms == "noncommercial" {
 							fmt.Println("  Terms: Noncommercial " + prior.Version)
-						} else if prior.Manifest.Terms == "reciprocal" {
+						} else if prior.Envelope.Manifest.Terms == "reciprocal" {
 							fmt.Println("  Terms: Reciprocal " + prior.Version)
 						}
 						break

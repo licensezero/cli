@@ -8,15 +8,9 @@ import "strings"
 import "github.com/yookoala/realpath"
 
 type PackageJSONFile struct {
-	Name      string                   `json:"name"`
-	Version   string                   `json:"version"`
-	Envelopes []ProjectManifestEnvlope `json:"licensezero"`
-}
-
-type ProjectManifestEnvlope struct {
-	LicensorSignature string          `json:"agentSignature"`
-	AgentSignature    string          `json:"licensorSignature"`
-	Manifest          ProjectManifest `json:"license"`
+	Name      string                    `json:"name"`
+	Version   string                    `json:"version"`
+	Envelopes []ProjectManifestEnvelope `json:"licensezero"`
 }
 
 func ReadNPMProjects(packagePath string) ([]Project, error) {
@@ -49,7 +43,7 @@ func ReadNPMProjects(packagePath string) ([]Project, error) {
 				Path:     directory,
 				Name:     parsed.Name,
 				Version:  parsed.Version,
-				Manifest: envelope.Manifest,
+				Envelope: envelope,
 			}
 			realDirectory, err := realpath.Realpath(directory)
 			if err != nil {
@@ -110,7 +104,7 @@ func ReadNPMProjects(packagePath string) ([]Project, error) {
 
 func alreadyHaveProject(projects []Project, projectID string) bool {
 	for _, other := range projects {
-		if other.Manifest.ProjectID == projectID {
+		if other.Envelope.Manifest.ProjectID == projectID {
 			return true
 		}
 	}

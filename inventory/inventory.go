@@ -1,6 +1,11 @@
 package inventory
 
+import "bytes"
+import "encoding/json"
+import "errors"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
+import "net/http"
 import "os"
 import "path"
 
@@ -10,7 +15,13 @@ type Project struct {
 	Scope    string
 	Name     string
 	Version  string
-	Manifest ProjectManifest
+	Envelope ProjectManifestEnvelope
+}
+
+type ProjectManifestEnvelope struct {
+	LicensorSignature string          `json:"agentSignature"`
+	AgentSignature    string          `json:"licensorSignature"`
+	Manifest          ProjectManifest `json:"license"`
 }
 
 type ProjectManifest struct {
@@ -52,7 +63,9 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 	}
 	var returned Projects
 	for _, result := range projects {
-		if !ValidMetadata(&result) {
+		agentPublicKey, err := fetchAgentPublicKey()
+		err = CheckMetadata(&result, agentPublicKey)
+		if err != nil {
 			returned.Invalid = append(returned.Invalid, result)
 			continue
 		} else {
@@ -69,11 +82,11 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 		if identity != nil && OwnProject(&result, identity) {
 			continue
 		}
-		if result.Manifest.Terms == "noncommercial" && ignoreNC {
+		if result.Envelope.Manifest.Terms == "noncommercial" && ignoreNC {
 			returned.Ignored = append(returned.Ignored, result)
 			continue
 		}
-		if result.Manifest.Terms == "reciprocal" && ignoreR {
+		if result.Envelope.Manifest.Terms == "reciprocal" && ignoreR {
 			returned.Ignored = append(returned.Ignored, result)
 			continue
 		}
@@ -85,7 +98,7 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 func HaveLicense(project *Project, licenses []data.LicenseManifest) bool {
 	// TODO: Check license identity.
 	for _, license := range licenses {
-		if license.ProjectID == project.Manifest.ProjectID {
+		if license.ProjectID == project.Envelope.Manifest.ProjectID {
 			return true
 		}
 	}
@@ -95,7 +108,7 @@ func HaveLicense(project *Project, licenses []data.LicenseManifest) bool {
 func HaveWaiver(project *Project, waivers []data.WaiverManifest) bool {
 	// TODO: Check waiver identity.
 	for _, waiver := range waivers {
-		if waiver.ProjectID == project.Manifest.ProjectID {
+		if waiver.ProjectID == project.Envelope.Manifest.ProjectID {
 			return true
 		}
 	}
@@ -103,13 +116,8 @@ func HaveWaiver(project *Project, waivers []data.WaiverManifest) bool {
 }
 
 func OwnProject(project *Project, identity *data.Identity) bool {
-	return project.Manifest.Name == identity.Name &&
-		project.Manifest.Jurisdiction == identity.Jurisdiction
-}
-
-func ValidMetadata(result *Project) bool {
-	// TODO
-	return true
+	return project.Envelope.Manifest.Name == identity.Name &&
+		project.Envelope.Manifest.Jurisdiction == identity.Jurisdiction
 }
 
 func ReadProjects(cwd string) ([]Project, error) {
@@ -152,4 +160,32 @@ func readAndStatDir(directoryPath string) ([]os.FileInfo, error) {
 		}
 	}
 	return returned, nil
+}
+
+type KeyRequest struct {
+	Action string `json:"action"`
+}
+
+type KeyResponse struct {
+	Key string `json:"key"`
+}
+
+func fetchAgentPublicKey() (string, error) {
+	bodyData := KeyRequest{Action: "key"}
+	body, err := json.Marshal(bodyData)
+	if err != nil {
+		return "", errors.New("error encoding agent key request body")
+	}
+	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
+	defer response.Body.Close()
+	responseBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return "", errors.New("error reading agent key response body")
+	}
+	var parsed KeyResponse
+	err = json.Unmarshal(responseBody, &parsed)
+	if err != nil {
+		return "", errors.New("error parsing agent key response body")
+	}
+	return parsed.Key, nil
 }

@@ -54,7 +54,7 @@ var Buy = Subcommand{
 			}
 			var projectIDs []string
 			for _, project := range unlicensed {
-				projectIDs = append(projectIDs, project.Manifest.ProjectID)
+				projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
 			}
 			bodyData := BuyRequest{
 				Action:       "order",
