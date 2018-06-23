@@ -7,7 +7,7 @@ func ValidName(name string) bool {
 }
 
 func ValidJurisdiction(name string) bool {
-	// TODO
+	// TODO: Implement jurisdiction validation.
 	return true
 }
 
