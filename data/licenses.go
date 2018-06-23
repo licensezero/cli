@@ -36,7 +36,11 @@ type LicenseManifest struct {
 }
 
 func LicensePath(home string, projectID string) string {
-	return path.Join(home, "licenses", projectID+".json")
+	return path.Join(LicensesPath(home), projectID+".json")
+}
+
+func LicensesPath(home string) string {
+	return path.Join(configPath(home), "licenses")
 }
 
 func ReadLicenses(home string) ([]LicenseEnvelope, error) {
@@ -52,7 +56,8 @@ func ReadLicenses(home string) ([]LicenseEnvelope, error) {
 	var returned []LicenseEnvelope
 	for _, entry := range entries {
 		name := entry.Name()
-		license, err := readLicense(home, name)
+		filePath := path.Join(home, "licenses", name)
+		license, err := ReadLicense(filePath)
 		if err != nil {
 			return nil, err
 		}
@@ -61,8 +66,7 @@ func ReadLicenses(home string) ([]LicenseEnvelope, error) {
 	return returned, nil
 }
 
-func readLicense(home string, file string) (*LicenseEnvelope, error) {
-	filePath := path.Join(home, "licenses", file)
+func ReadLicense(filePath string) (*LicenseEnvelope, error) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, err
@@ -70,4 +74,16 @@ func readLicense(home string, file string) (*LicenseEnvelope, error) {
 	var license LicenseEnvelope
 	json.Unmarshal(data, &license)
 	return &license, nil
+}
+
+func WriteLicense(home string, license *LicenseEnvelope) error {
+	json, err := json.Marshal(license)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(LicensesPath(home), 0744)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(LicensePath(home, license.ProjectID), json, 0744)
 }

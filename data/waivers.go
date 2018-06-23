@@ -9,7 +9,11 @@ import "strconv"
 import "time"
 
 type WaiverEnvelope struct {
-	Manifest WaiverManifest `json:"manifest"`
+	Manifest  WaiverManifest `json:"waiver"`
+	ProjectID string         `json:"projectID"`
+	Document  string         `json:"document"`
+	PublicKey string         `json:"publicKey"`
+	Signature string         `json:"signature"`
 }
 
 type WaiverManifest struct {
@@ -21,12 +25,16 @@ type WaiverManifest struct {
 	EMail        string
 }
 
+func WaiversPath(home string) string {
+	return path.Join(configPath(home), "waivers")
+}
+
 func WaiverPath(home string, projectID string) string {
-	return path.Join(home, "waivers", projectID+".json")
+	return path.Join(WaiversPath(home), projectID+".json")
 }
 
 func ReadWaivers(home string) ([]WaiverEnvelope, error) {
-	directoryPath := path.Join(configPath(home), "waivers")
+	directoryPath := WaiversPath(home)
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {
@@ -38,7 +46,8 @@ func ReadWaivers(home string) ([]WaiverEnvelope, error) {
 	var returned []WaiverEnvelope
 	for _, entry := range entries {
 		name := entry.Name()
-		waiver, err := readWaiver(home, name)
+		filePath := path.Join(directoryPath, name)
+		waiver, err := ReadWaiver(filePath)
 		if err != nil {
 			return nil, err
 		}
@@ -69,8 +78,7 @@ func Unexpired(waiver *WaiverEnvelope) (bool, error) {
 	return true, nil
 }
 
-func readWaiver(home string, file string) (*WaiverEnvelope, error) {
-	filePath := path.Join(home, "waivers", file)
+func ReadWaiver(filePath string) (*WaiverEnvelope, error) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, err
@@ -78,4 +86,16 @@ func readWaiver(home string, file string) (*WaiverEnvelope, error) {
 	var waiver WaiverEnvelope
 	json.Unmarshal(data, &waiver)
 	return &waiver, nil
+}
+
+func WriteWaiver(home string, waiver *WaiverEnvelope) error {
+	json, err := json.Marshal(waiver)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(WaiversPath(home), 0744)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(WaiverPath(home, waiver.ProjectID), json, 0744)
 }
