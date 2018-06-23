@@ -1,11 +1,7 @@
 package inventory
 
-import "bytes"
-import "encoding/json"
-import "errors"
+import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
-import "io/ioutil"
-import "net/http"
 import "os"
 import "path"
 
@@ -63,7 +59,7 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 	}
 	var returned Projects
 	for _, result := range projects {
-		agentPublicKey, err := fetchAgentPublicKey()
+		agentPublicKey, err := api.FetchAgentPublicKey()
 		err = CheckMetadata(&result, agentPublicKey)
 		if err != nil {
 			returned.Invalid = append(returned.Invalid, result)
@@ -160,32 +156,4 @@ func readAndStatDir(directoryPath string) ([]os.FileInfo, error) {
 		}
 	}
 	return returned, nil
-}
-
-type KeyRequest struct {
-	Action string `json:"action"`
-}
-
-type KeyResponse struct {
-	Key string `json:"key"`
-}
-
-func fetchAgentPublicKey() (string, error) {
-	bodyData := KeyRequest{Action: "key"}
-	body, err := json.Marshal(bodyData)
-	if err != nil {
-		return "", errors.New("error encoding agent key request body")
-	}
-	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
-	responseBody, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return "", errors.New("error reading agent key response body")
-	}
-	var parsed KeyResponse
-	err = json.Unmarshal(responseBody, &parsed)
-	if err != nil {
-		return "", errors.New("error parsing agent key response body")
-	}
-	return parsed.Key, nil
 }

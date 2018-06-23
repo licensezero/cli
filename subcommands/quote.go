@@ -1,40 +1,10 @@
 package subcommands
 
-import "bytes"
-import "encoding/json"
 import "flag"
 import "fmt"
+import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/inventory"
-import "io/ioutil"
-import "net/http"
 import "os"
-
-type QuoteRequest struct {
-	Action   string   `json:"action"`
-	Projects []string `json:"projects"`
-}
-
-type QuoteResponse struct {
-	Projects []QuoteProject `json:"projects"`
-}
-
-type QuoteProject struct {
-	Licensor    LicensorInformation `json:"licensor"`
-	ProjectID   string              `json:"projectID"`
-	Description string              `json:"description"`
-	Repository  string              `json:"homepage"`
-	Pricing     Pricing             `json:"pricing"`
-	Retracted   bool                `json:"retracted"`
-}
-
-type LicensorInformation struct {
-	Name         string
-	Jurisdiction string
-}
-
-type Pricing struct {
-	Private int
-}
 
 var Quote = Subcommand{
 	Description: "Quote missing private licenses.",
@@ -68,26 +38,13 @@ var Quote = Subcommand{
 			for _, project := range unlicensed {
 				projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
 			}
-			bodyData := QuoteRequest{
-				Action:   "quote",
-				Projects: projectIDs,
-			}
-			body, err := json.Marshal(bodyData)
+			response, err := api.Quote(projectIDs)
 			if err != nil {
-				os.Stderr.WriteString("Could not construct quote request.")
+				os.Stderr.WriteString("Error requesting quote.")
 				os.Exit(1)
 			}
-			response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-			defer response.Body.Close()
-			responseBody, err := ioutil.ReadAll(response.Body)
-			if err != nil {
-				os.Stderr.WriteString("Invalid server response.\n")
-				os.Exit(1)
-			}
-			var parsed QuoteResponse
-			json.Unmarshal(responseBody, &parsed)
 			total := 0
-			for _, project := range parsed.Projects {
+			for _, project := range response.Projects {
 				total += project.Pricing.Private
 				fmt.Println("\n- Project: " + project.ProjectID)
 				fmt.Println("  Description: " + project.Description)
