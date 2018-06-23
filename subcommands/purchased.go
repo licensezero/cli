@@ -3,6 +3,8 @@ package subcommands
 import "os"
 import "fmt"
 
+// TODO: Implement purchased subcommand.
+
 var Purchased = Subcommand{
 	Description: "Import a bundle of purchased licenses from URL.",
 	Handler: func(args []string, paths Paths) {

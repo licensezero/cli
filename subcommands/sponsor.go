@@ -4,6 +4,8 @@ import "flag"
 import "fmt"
 import "os"
 
+// TODO: Implement sponsor subcommand.
+
 var Sponsor = Subcommand{
 	Description: "Sponsor relicensing of a project onto permissive terms.",
 	Handler: func(args []string, paths Paths) {

@@ -3,6 +3,8 @@ package subcommands
 import "os"
 import "fmt"
 
+// TODO: Implement retract subcommand.
+
 var Retract = Subcommand{
 	Description: "Retract a package from sale.",
 	Handler: func(args []string, paths Paths) {

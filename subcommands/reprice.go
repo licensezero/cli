@@ -4,6 +4,8 @@ import "flag"
 import "fmt"
 import "os"
 
+// TODO: Implement reprice subcommand.
+
 var Reprice = Subcommand{
 	Description: "Change project pricing.",
 	Handler: func(args []string, paths Paths) {

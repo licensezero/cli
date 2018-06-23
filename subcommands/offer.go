@@ -4,6 +4,8 @@ import "flag"
 import "fmt"
 import "os"
 
+// TODO: Implement offer subcommand.
+
 var Offer = Subcommand{
 	Description: "Offer private licenses for sale.",
 	Handler: func(args []string, paths Paths) {

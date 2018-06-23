@@ -4,6 +4,8 @@ import "flag"
 import "fmt"
 import "os"
 
+// TODO: Implement waive subcommand.
+
 var Waive = Subcommand{
 	Description: "Generate a signed waiver.",
 	Handler: func(args []string, paths Paths) {
