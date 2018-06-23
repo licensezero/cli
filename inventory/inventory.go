@@ -43,8 +43,8 @@ type Projects struct {
 
 func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects, error) {
 	identity, _ := data.ReadIdentity(home)
-	var licenses []data.LicenseManifest
-	var waivers []data.WaiverManifest
+	var licenses []data.LicenseEnvelope
+	var waivers []data.WaiverEnvelope
 	if identity != nil {
 		readLicenses, err := data.ReadLicenses(home)
 		if err != nil {
@@ -77,11 +77,11 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 		} else {
 			returned.Licensable = append(returned.Licensable, result)
 		}
-		if HaveLicense(&result, licenses) {
+		if HaveLicense(&result, licenses, identity) {
 			returned.Licensed = append(returned.Licensed, result)
 			continue
 		}
-		if HaveWaiver(&result, waivers) {
+		if HaveWaiver(&result, waivers, identity) {
 			returned.Waived = append(returned.Waived, result)
 			continue
 		}
@@ -101,20 +101,24 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 	return &returned, nil
 }
 
-func HaveLicense(project *Project, licenses []data.LicenseManifest) bool {
-	// TODO: Check license identity.
+func HaveLicense(project *Project, licenses []data.LicenseEnvelope, identity *data.Identity) bool {
 	for _, license := range licenses {
-		if license.ProjectID == project.Envelope.Manifest.ProjectID {
+		if license.ProjectID == project.Envelope.Manifest.ProjectID &&
+			license.Manifest.Licensee.Name == identity.Name &&
+			license.Manifest.Licensee.Jurisdiction == identity.Jurisdiction &&
+			license.Manifest.Licensee.EMail == identity.EMail {
 			return true
 		}
 	}
 	return false
 }
 
-func HaveWaiver(project *Project, waivers []data.WaiverManifest) bool {
-	// TODO: Check waiver identity.
+func HaveWaiver(project *Project, waivers []data.WaiverEnvelope, identity *data.Identity) bool {
 	for _, waiver := range waivers {
-		if waiver.ProjectID == project.Envelope.Manifest.ProjectID {
+		if waiver.Manifest.ProjectID == project.Envelope.Manifest.ProjectID &&
+			waiver.Manifest.Beneficiary == identity.Name &&
+			waiver.Manifest.Jurisdiction == identity.Jurisdiction &&
+			waiver.Manifest.EMail == identity.EMail {
 			return true
 		}
 	}

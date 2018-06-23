@@ -22,17 +22,17 @@ func WaiverPath(home string, projectID string) string {
 	return path.Join(home, "waivers", projectID+".json")
 }
 
-func ReadWaivers(home string) ([]WaiverManifest, error) {
+func ReadWaivers(home string) ([]WaiverEnvelope, error) {
 	directoryPath := path.Join(configPath(home), "waivers")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {
-			return []WaiverManifest{}, nil
+			return []WaiverEnvelope{}, nil
 		} else {
 			return nil, directoryReadError
 		}
 	}
-	var returned []WaiverManifest
+	var returned []WaiverEnvelope
 	for _, entry := range entries {
 		name := entry.Name()
 		waiver, err := readWaiver(home, name)
@@ -40,7 +40,7 @@ func ReadWaivers(home string) ([]WaiverManifest, error) {
 			return nil, err
 		}
 		if Unexpired(&waiver.Manifest) {
-			returned = append(returned, waiver.Manifest)
+			returned = append(returned, *waiver)
 		}
 	}
 	return returned, nil
