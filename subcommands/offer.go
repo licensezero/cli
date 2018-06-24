@@ -6,35 +6,36 @@ import "os"
 
 // TODO: Implement offer subcommand.
 
+const offerDescription = "Offer private licenses for sale."
+
 var Offer = Subcommand{
-	Description: "Offer private licenses for sale.",
+	Description: offerDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("offer", flag.ContinueOnError)
-		relicense := flagSet.Int("relicense", 0, "Relicense price, in cents.")
+		relicense := Relicense(flagSet)
+		price := Price(flagSet)
 		err := flagSet.Parse(args)
 		if err != nil {
 			offerUsage()
 		}
-		if flagSet.NArg() != 1 {
+		if *price == 0 {
 			offerUsage()
-		} else {
-			price := args[0]
-			fmt.Println(price)
-			if *relicense > 0 {
-				fmt.Println(*relicense)
-			}
-			os.Exit(0)
 		}
+		fmt.Println(price)
+		if *relicense > 0 {
+			fmt.Println(*relicense)
+		}
+		os.Exit(0)
 	},
 }
 
 func offerUsage() {
-	os.Stderr.WriteString(`Offer private licenses for sale.
-
-Usage:
-	<price> [--relicense CENTS]
-
-Options:
-	--relicense		Relicense price, in cents.
-`)
+	usage := offerDescription + "\n\n" +
+		"Usage:\n" +
+		"  licensezero offer --price CENTS [--relicense CENTS]\n\n" +
+		"Options:\n" +
+		"  --price CENTS      " + priceLine + "\n" +
+		"  --relicense CENTS  " + relicenseLine + "\n"
+	os.Stderr.WriteString(usage)
+	os.Exit(1)
 }

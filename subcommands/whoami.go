@@ -4,8 +4,10 @@ import "fmt"
 import "github.com/licensezero/cli/data"
 import "os"
 
+const whoAmIDescription = "Show your licensee identity."
+
 var WhoAmI = Subcommand{
-	Description: "Show your licensee identity.",
+	Description: whoAmIDescription,
 	Handler: func(args []string, paths Paths) {
 		data, err := data.ReadIdentity(paths.Home)
 		if err != nil {

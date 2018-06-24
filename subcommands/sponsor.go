@@ -6,8 +6,10 @@ import "os"
 
 // TODO: Implement sponsor subcommand.
 
+const sponsorDescription = "Sponsor relicensing of a project onto permissive terms."
+
 var Sponsor = Subcommand{
-	Description: "Sponsor relicensing of a project onto permissive terms.",
+	Description: sponsorDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("sponsor", flag.ContinueOnError)
 		doNotOpen := DoNotOpen(flagSet)
@@ -23,6 +25,9 @@ var Sponsor = Subcommand{
 }
 
 func sponsorUsage() {
-	os.Stdout.WriteString(`Sponsor relicensing of a project onto permissive terms.`)
+	usage := sponsorDescription + "\n\n" +
+		"Usage:\n" +
+		"  licensezero sponsor\n"
+	os.Stdout.WriteString(usage)
 	os.Exit(1)
 }

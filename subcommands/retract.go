@@ -1,20 +1,36 @@
 package subcommands
 
-import "os"
+import "flag"
 import "fmt"
+import "os"
 
 // TODO: Implement retract subcommand.
 
+const retractDescription = "Retract a package from sale."
+
 var Retract = Subcommand{
-	Description: "Retract a package from sale.",
+	Description: retractDescription,
 	Handler: func(args []string, paths Paths) {
-		if len(args) != 1 {
-			os.Stderr.WriteString("<project id>")
-			os.Exit(1)
-		} else {
-			projectID := args[0]
-			fmt.Println(projectID)
-			os.Exit(0)
+		flagSet := flag.NewFlagSet("retract", flag.ContinueOnError)
+		projectID := ProjectID(flagSet)
+		err := flagSet.Parse(args)
+		if err != nil || *projectID == "" {
+			retractUsage()
 		}
+		if len(args) != 1 {
+			retractUsage()
+		}
+		fmt.Println(projectID)
+		os.Exit(0)
 	},
+}
+
+func retractUsage() {
+	usage := retractDescription + "\n\n" +
+		"Usage:\n" +
+		"  licensezero retract --project-id ID\n\n" +
+		"Options:\n" +
+		"  --project-id ID  " + projectIDLine + "\n"
+	os.Stderr.WriteString(usage)
+	os.Exit(1)
 }

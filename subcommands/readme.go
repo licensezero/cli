@@ -5,8 +5,10 @@ import "errors"
 import "io/ioutil"
 import "os"
 
+const readmeDescription = "Append licensing information to README."
+
 var README = Subcommand{
-	Description: "Append licensing information to README.",
+	Description: readmeDescription,
 	Handler: func(args []string, paths Paths) {
 		var existing string
 		data, err := ioutil.ReadFile("README.md")

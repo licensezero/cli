@@ -1,33 +1,43 @@
 package subcommands
 
+import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "os"
 
-var Lock = Subcommand{
-	Description: "Lock project pricing",
-	Handler: func(args []string, paths Paths) {
-		if len(args) != 2 {
-			os.Stderr.WriteString(`Lock project pricing.
+const lockDescription = "Lock project pricing"
 
-Usage;
-  <project id> <date>
-`)
-			os.Exit(1)
-		} else {
-			projectID := args[0]
-			date := args[1]
-			licensor, err := data.ReadLicensor(paths.Home)
-			if err != nil {
-				os.Stderr.WriteString("Create a licensor identity with `licensezero register` or `licensezero set-licensor-id`.")
-				os.Exit(1)
-			}
-			err = api.Lock(licensor, projectID, date)
-			if err != nil {
-				os.Stderr.WriteString(err.Error())
-				os.Exit(1)
-			}
-			os.Exit(0)
+var Lock = Subcommand{
+	Description: lockDescription,
+	Handler: func(args []string, paths Paths) {
+		flagSet := flag.NewFlagSet("lock", flag.ContinueOnError)
+		projectID := ProjectID(flagSet)
+		unlock := flagSet.String("unlock", "", "")
+		err := flagSet.Parse(args)
+		if err != nil {
+			lockUsage()
 		}
+		licensor, err := data.ReadLicensor(paths.Home)
+		if err != nil {
+			os.Stderr.WriteString("Create a licensor identity with `licensezero register` or `licensezero set-licensor-id`.")
+			os.Exit(1)
+		}
+		err = api.Lock(licensor, *projectID, *unlock)
+		if err != nil {
+			os.Stderr.WriteString(err.Error())
+			os.Exit(1)
+		}
+		os.Exit(0)
 	},
+}
+
+func lockUsage() {
+	usage := lockDescription + "\n\n" +
+		"Usage:\n" +
+		"  licensezero lock --project-id ID --unlock DATE\n\n" +
+		"Options:\n" +
+		"  --project-id  " + projectIDLine + "\n" +
+		"  --unlock      Unlock date.\n"
+	os.Stderr.WriteString(usage)
+	os.Exit(1)
 }

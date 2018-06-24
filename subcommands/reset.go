@@ -4,8 +4,10 @@ import "os"
 
 // TODO: Implement reset subcommand.
 
+const resetDescription = "Reset your access token."
+
 var Reset = Subcommand{
-	Description: "Reset your access token.",
+	Description: resetDescription,
 	Handler: func(args []string, paths Paths) {
 		os.Exit(0)
 	},

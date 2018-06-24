@@ -8,23 +8,18 @@ import "github.com/licensezero/cli/data"
 import "github.com/skratchdot/open-golang/open"
 import "os"
 
+const buyDescription = "Buy missing private licenses"
+
 var Buy = Subcommand{
-	Description: "Buy missing private licenses.",
+	Description: buyDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("buy", flag.ContinueOnError)
 		doNotOpen := DoNotOpen(flagSet)
-		noNoncommercial := flagSet.Bool("no-noncommercial", false, "Ignore L0-NC dependencies.")
-		noReciprocal := flagSet.Bool("no-reciprocal", false, "Ignore L0-R dependencies.")
+		noNoncommercial := NoNoncommercial(flagSet)
+		noReciprocal := NoReciprocal(flagSet)
 		err := flagSet.Parse(args)
 		if err != nil {
-			os.Stderr.WriteString(`Buy missing private licenses.
-
-Options;
-	--no-noncommercial  Ignore packages under noncommerical terms.
-	--no-reciprocal     Ignore packages under reciprocal terms.
-	--do-not-open       Do not open buy page in web browser.
-`)
-			os.Exit(1)
+			buyUsage()
 		}
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
@@ -62,4 +57,17 @@ Options;
 			os.Exit(0)
 		}
 	},
+}
+
+func buyUsage() {
+	usage :=
+		buyDescription + "\n\n" +
+			"Usage:\n" +
+			"  licensezero buy\n\n" +
+			"Options:\n" +
+			"  --no-noncommercial  " + noNoncommercialLine + "\n" +
+			"  --no-reciprocal     " + noReciprocalLine + "\n" +
+			"  --do-not-open       " + doNotOpenLine + "\n"
+	os.Stderr.WriteString(usage)
+	os.Exit(1)
 }

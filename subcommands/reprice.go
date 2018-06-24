@@ -6,13 +6,16 @@ import "os"
 
 // TODO: Implement reprice subcommand.
 
+const repriceDescription = "Change project pricing"
+
 var Reprice = Subcommand{
-	Description: "Change project pricing.",
+	Description: repriceDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("reprice", flag.ContinueOnError)
-		relicense := flagSet.Uint("relicense", 0, "Relicense price, in cents.")
+		price := Price(flagSet)
+		relicense := Relicense(flagSet)
 		err := flagSet.Parse(args)
-		if err != nil {
+		if err != nil || *price == 0 {
 			repriceUsage()
 		}
 		if flagSet.NArg() != 1 {
@@ -29,12 +32,12 @@ var Reprice = Subcommand{
 }
 
 func repriceUsage() {
-	os.Stderr.WriteString(`Change project pricing.
-
-Usage:
-	<price> [--relicense CENTS]
-
-Options:
-	--relicense		Relicense price, in cents.
-`)
+	usage := repriceDescription + "\n\n" +
+		"Usage:\n" +
+		"  licensezero reprice --price CENTS [--relicense CENTS]\n\n" +
+		"Options:\n" +
+		"  --price      " + priceLine + "\n" +
+		"  --relicense  " + relicenseLine + "\n"
+	os.Stderr.WriteString(usage)
+	os.Exit(1)
 }

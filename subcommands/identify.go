@@ -1,14 +1,27 @@
 package subcommands
 
-import "os"
+import "flag"
 import "github.com/licensezero/cli/data"
+import "os"
+
+const identifyDescription = "Identify yourself for buying and checking licenses."
 
 var Identify = Subcommand{
-	Description: "Identify yourself.",
+	Description: identifyDescription,
 	Handler: func(args []string, paths Paths) {
+		flagSet := flag.NewFlagSet("identify", flag.ContinueOnError)
+		jurisdiction := flagSet.String("jurisdiction", "", "")
+		name := flagSet.String("name", "", "")
+		email := flagSet.String("email", "", "")
+		err := flagSet.Parse(args)
+		if err != nil {
+			identifyUsage()
+		}
+		if len(*jurisdiction) == 0 || len(*name) == 0 || len(*email) == 0 {
+			identifyUsage()
+		}
 		if len(args) != 3 {
-			os.Stderr.WriteString("<name> <jurisdiction> <email>\n")
-			os.Exit(1)
+			identifyUsage()
 		} else {
 			name := args[0]
 			jurisdiction := args[1]
@@ -45,4 +58,16 @@ var Identify = Subcommand{
 			}
 		}
 	},
+}
+
+func identifyUsage() {
+	usage := identifyDescription + "\n\n" +
+		"Usage:\n" +
+		"  licensezero identify --name NAME --jurisdiction CODE --email ADDRESS\n\n" +
+		"Options:\n" +
+		"  --email ADDRESS      Your e-mail address\n" +
+		"  --jurisdiction CODE  Your tax jurisdiction (ISO 3166-2, like \"US-CA\")\n" +
+		"  --name NAME          Your full name.\n"
+	os.Stderr.WriteString(usage)
+	os.Exit(1)
 }
