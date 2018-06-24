@@ -42,7 +42,7 @@ var Waive = Subcommand{
 			}
 			bytes, err := api.Waive(licensor, projectID, *beneficiary, *jurisdiction, term)
 			if err != nil {
-				os.Stderr.WriteString(err.Error())
+				os.Stderr.WriteString(err.Error() + "\n")
 				os.Exit(1)
 			}
 			os.Stdout.Write(bytes)

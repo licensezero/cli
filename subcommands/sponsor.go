@@ -25,7 +25,7 @@ var Sponsor = Subcommand{
 		}
 		location, err := api.Sponsor(identity, *projectID)
 		if err != nil {
-			os.Stdout.WriteString(err.Error())
+			os.Stdout.WriteString(err.Error() + "\n")
 			os.Exit(1)
 		}
 		openURLAndExit(location, doNotOpen)

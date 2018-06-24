@@ -21,10 +21,10 @@ var Reset = Subcommand{
 		}
 		err = api.Reset(identity, licensor)
 		if err != nil {
-			os.Stderr.WriteString(err.Error())
+			os.Stderr.WriteString(err.Error() + "\n")
 			os.Exit(1)
 		}
-		os.Stdout.WriteString("Check your e-mail for the reset link.")
+		os.Stdout.WriteString("Check your e-mail for the reset link.\n")
 		os.Exit(0)
 	},
 }

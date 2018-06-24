@@ -24,7 +24,7 @@ var Buy = Subcommand{
 		}
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
 		if err != nil {
-			os.Stderr.WriteString("Could not read dependeny tree.")
+			os.Stderr.WriteString("Could not read dependeny tree.\n")
 			os.Exit(1)
 		} else {
 			licensable := projects.Licensable
@@ -43,7 +43,7 @@ var Buy = Subcommand{
 			}
 			location, err := api.Buy(identity, projectIDs)
 			if err != nil {
-				os.Stderr.WriteString(err.Error())
+				os.Stderr.WriteString(err.Error() + "\n")
 				os.Exit(1)
 			}
 			openURLAndExit(location, doNotOpen)

@@ -26,7 +26,7 @@ var Retract = Subcommand{
 		}
 		err = api.Retract(licensor, *projectID)
 		if err != nil {
-			os.Stderr.WriteString(err.Error())
+			os.Stderr.WriteString(err.Error() + "\n")
 			os.Exit(1)
 		}
 		os.Exit(0)

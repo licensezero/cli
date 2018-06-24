@@ -22,7 +22,7 @@ var Lock = Subcommand{
 		}
 		err = api.Lock(licensor, *projectID, *unlock)
 		if err != nil {
-			os.Stderr.WriteString(err.Error())
+			os.Stderr.WriteString(err.Error() + "\n")
 			os.Exit(1)
 		}
 		os.Exit(0)

@@ -19,7 +19,7 @@ var Quote = Subcommand{
 		flagSet.Parse(args)
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
 		if err != nil {
-			os.Stderr.WriteString("Could not read dependeny tree.")
+			os.Stderr.WriteString("Could not read dependeny tree.\n")
 			os.Exit(1)
 		} else {
 			licensable := projects.Licensable
@@ -44,7 +44,7 @@ var Quote = Subcommand{
 			}
 			response, err := api.Quote(projectIDs)
 			if err != nil {
-				os.Stderr.WriteString("Error requesting quote.")
+				os.Stderr.WriteString("Error requesting quote.\n")
 				os.Exit(1)
 			}
 			var total uint

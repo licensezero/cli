@@ -24,7 +24,7 @@ var Purchased = Subcommand{
 		defer response.Body.Close()
 		responseBody, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			os.Stderr.WriteString("Error reading " + *bundle)
+			os.Stderr.WriteString("Error reading " + *bundle + ".\n")
 			os.Exit(1)
 		}
 		var parsed struct {
@@ -32,7 +32,7 @@ var Purchased = Subcommand{
 		}
 		err = json.Unmarshal(responseBody, &parsed)
 		if err != nil {
-			os.Stderr.WriteString("Error parsing license bundle.")
+			os.Stderr.WriteString("Error parsing license bundle.\n")
 			os.Exit(1)
 		}
 		imported := 0
@@ -40,7 +40,7 @@ var Purchased = Subcommand{
 			// TODO: Validate licenses.
 			err = data.WriteLicense(paths.Home, &license)
 			if err != nil {
-				os.Stderr.WriteString("Error writing license for project ID" + license.ProjectID + ".")
+				os.Stderr.WriteString("Error writing license for project ID" + license.ProjectID + ".\n")
 				// Continue importing other licenses.
 			} else {
 				imported++

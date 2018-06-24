@@ -42,7 +42,7 @@ var License = Subcommand{
 		}
 		response, err := api.License(licensor, *projectID, terms)
 		if err != nil {
-			os.Stderr.WriteString("error sending license information request")
+			os.Stderr.WriteString("Error sending license information request.\n")
 			os.Exit(1)
 		}
 		// Add metadata to package.json.
@@ -50,13 +50,13 @@ var License = Subcommand{
 		package_json := path.Join(paths.CWD, "package.json")
 		data, err := ioutil.ReadFile(package_json)
 		if err != nil {
-			os.Stderr.WriteString("could not read package.json")
+			os.Stderr.WriteString("Could not read package.json.\n")
 			os.Exit(1)
 		}
 		var existingMetadata interface{}
 		err = json.Unmarshal(data, &existingMetadata)
 		if err != nil {
-			os.Stderr.WriteString("error parsing package.json")
+			os.Stderr.WriteString("Error parsing package.json.\n")
 			os.Exit(1)
 		}
 		itemsMap := existingMetadata.(map[string]interface{})
@@ -66,16 +66,16 @@ var License = Subcommand{
 				if *stack {
 					entries = append(entries, newEntry)
 				} else {
-					os.Stderr.WriteString("package.json already has License Zero metadata. Use --stack to stack metadata.")
+					os.Stderr.WriteString("package.json already has License Zero metadata.\nUse --stack to stack metadata.\n")
 					os.Exit(1)
 				}
 			} else {
-				os.Stderr.WriteString("package.json has an invalid licensezero property.")
+				os.Stderr.WriteString("package.json has an invalid licensezero property.\n")
 				os.Exit(1)
 			}
 		} else {
 			if *stack {
-				os.Stderr.WriteString("Cannot stack License Zero metadata. There is no preexisting metadata.")
+				os.Stderr.WriteString("Cannot stack License Zero metadata. There is no preexisting metadata.\n")
 				os.Exit(1)
 			} else {
 				entries = []interface{}{newEntry}
@@ -84,20 +84,20 @@ var License = Subcommand{
 		itemsMap["licensezero"] = entries
 		serialized, err := json.Marshal(existingMetadata)
 		if err != nil {
-			os.Stderr.WriteString("error serializing new JSON")
+			os.Stderr.WriteString("Error serializing new JSON\n")
 			os.Exit(1)
 		}
 		indented := bytes.NewBuffer([]byte{})
 		err = json.Indent(indented, serialized, "", "  ")
 		if err != nil {
-			os.Stderr.WriteString("error indenting new JSON")
+			os.Stderr.WriteString("Error indenting new JSON.\n")
 			os.Exit(1)
 		}
 		err = ioutil.WriteFile(package_json, indented.Bytes(), 0644)
 		// Append to LICENSE.
 		err = writeLICENSE(&response)
 		if err != nil {
-			os.Stderr.WriteString(err.Error())
+			os.Stderr.WriteString(err.Error() + "\n")
 			os.Exit(1)
 		}
 		os.Exit(0)

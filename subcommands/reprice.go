@@ -34,7 +34,7 @@ var Reprice = Subcommand{
 		} else {
 			projectIDs, _, err := readEntries(paths.CWD)
 			if err != nil {
-				os.Stderr.WriteString("Could not read package.json.")
+				os.Stderr.WriteString("Could not read package.json.\n")
 				os.Exit(1)
 			}
 			if len(projectIDs) > 0 {
