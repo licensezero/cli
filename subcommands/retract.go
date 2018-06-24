@@ -1,12 +1,13 @@
 package subcommands
 
 import "flag"
-import "fmt"
+import "github.com/licensezero/cli/api"
+import "github.com/licensezero/cli/data"
 import "os"
 
-// TODO: Implement retract subcommand.
-
 const retractDescription = "Retract a package from sale."
+
+// TODO: --quiet for retract
 
 var Retract = Subcommand{
 	Description: retractDescription,
@@ -18,10 +19,16 @@ var Retract = Subcommand{
 		if *projectID == "" {
 			retractUsage()
 		}
-		if len(args) != 1 {
-			retractUsage()
+		licensor, err := data.ReadLicensor(paths.Home)
+		if err != nil {
+			os.Stderr.WriteString("Create a licensor identity with `licensezero register` or `licensezero set-licensor-id`.")
+			os.Exit(1)
 		}
-		fmt.Println(projectID)
+		err = api.Retract(licensor, *projectID)
+		if err != nil {
+			os.Stderr.WriteString(err.Error())
+			os.Exit(1)
+		}
 		os.Exit(0)
 	},
 }
