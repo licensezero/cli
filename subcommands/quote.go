@@ -46,7 +46,7 @@ var Quote = Subcommand{
 				os.Stderr.WriteString("Error requesting quote.")
 				os.Exit(1)
 			}
-			total := 0
+			var total uint
 			for _, project := range response.Projects {
 				total += project.Pricing.Private
 				fmt.Println("\n- Project: " + project.ProjectID)
@@ -86,7 +86,7 @@ func quoteUsage() {
 	os.Exit(1)
 }
 
-func currency(cents int) string {
+func currency(cents uint) string {
 	if cents < 100 {
 		if cents < 10 {
 			return "$0.0" + string(cents)

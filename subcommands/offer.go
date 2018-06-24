@@ -26,17 +26,6 @@ var Offer = Subcommand{
 			os.Stderr.WriteString(licensorHint + "\n")
 			os.Exit(1)
 		}
-		projectIDs, _, err := readEntries(paths.CWD)
-		if err != nil {
-			os.Stderr.WriteString("Could not read package.json.")
-			os.Exit(1)
-		}
-		if len(projectIDs) > 0 {
-			os.Stderr.WriteString("package.json already has License Zero project metadata.\n")
-			if !Confirm("Create a new project?") {
-				os.Exit(1)
-			}
-		}
 		if !ConfirmAgencyTerms() {
 			os.Stderr.WriteString(agencyTermsHint + "\n")
 			os.Exit(1)

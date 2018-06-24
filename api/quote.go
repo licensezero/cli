@@ -30,7 +30,8 @@ type LicensorInformation struct {
 }
 
 type Pricing struct {
-	Private int
+	Private   uint `json:"private"`
+	Relicense uint `json:"relicense,omitempty"`
 }
 
 func Quote(projectIDs []string) (QuoteResponse, error) {

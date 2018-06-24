@@ -1,10 +1,9 @@
 package subcommands
 
 import "flag"
-import "fmt"
+import "github.com/licensezero/cli/api"
+import "github.com/licensezero/cli/data"
 import "os"
-
-// TODO: Implement reprice subcommand.
 
 const repriceDescription = "Change project pricing."
 
@@ -14,17 +13,42 @@ var Reprice = Subcommand{
 		flagSet := flag.NewFlagSet("reprice", flag.ExitOnError)
 		price := Price(flagSet)
 		relicense := Relicense(flagSet)
+		projectIDFlag := ProjectID(flagSet)
 		flagSet.Usage = repriceUsage
 		flagSet.Parse(args)
-		if flagSet.NArg() != 1 {
+		if *price == 0 {
 			repriceUsage()
-		} else {
-			fmt.Println(price)
-			if *relicense > 0 {
-				fmt.Println(*relicense)
-			}
-			os.Exit(0)
 		}
+		licensor, err := data.ReadLicensor(paths.Home)
+		if err != nil {
+			os.Stderr.WriteString(licensorHint + "\n")
+			os.Exit(1)
+		}
+		if err != nil {
+			os.Stderr.WriteString(err.Error() + "\n")
+			os.Exit(1)
+		}
+		var projectID string
+		if *projectIDFlag != "" {
+			projectID = *projectIDFlag
+		} else {
+			projectIDs, _, err := readEntries(paths.CWD)
+			if err != nil {
+				os.Stderr.WriteString("Could not read package.json.")
+				os.Exit(1)
+			}
+			if len(projectIDs) > 0 {
+				os.Stderr.WriteString("package.json has metadata for multiple License Zero projects.\n")
+				os.Stderr.WriteString("Use --project-id to specify your project ID.")
+				os.Exit(1)
+			}
+		}
+		err = api.Reprice(licensor, projectID, *price, *relicense)
+		if err != nil {
+			os.Stderr.WriteString(err.Error() + "\n")
+			os.Exit(1)
+		}
+		os.Exit(0)
 	},
 }
 
@@ -33,8 +57,9 @@ func repriceUsage() {
 		"Usage:\n" +
 		"  licensezero reprice --price CENTS [--relicense CENTS]\n\n" +
 		"Options:\n" +
-		"  --price      " + priceLine + "\n" +
-		"  --relicense  " + relicenseLine + "\n"
+		"  --price          " + priceLine + "\n" +
+		"  --project-id ID  Project ID (UUID).\n" +
+		"  --relicense      " + relicenseLine + "\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }
