@@ -4,7 +4,7 @@ import "flag"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const identifyDescription = "Identify yourself for buying and checking licenses."
+const identifyDescription = "Identify yourself for quoting and buying licenses."
 
 var Identify = Subcommand{
 	Description: identifyDescription,

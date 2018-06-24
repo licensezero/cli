@@ -6,7 +6,7 @@ import "os"
 
 // TODO: Implement purchased subcommand.
 
-const purchasedDescription = "Import a bundle of purchased licenses from URL."
+const purchasedDescription = "Download a bundle of purchased licenses."
 
 var Purchased = Subcommand{
 	Description: purchasedDescription,
