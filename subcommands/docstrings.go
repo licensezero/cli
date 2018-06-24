@@ -11,3 +11,5 @@ const priceLine = "Private license price, in US cents."
 const relicenseLine = "Cost to relicense on permissive terms, in US cents."
 
 const projectIDLine = "Project ID (UUID)."
+
+const createIdentityHint = "Create a licensor identity with `licensezero register` or `licensezero set-licensor-id`."

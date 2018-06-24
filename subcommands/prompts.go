@@ -1,6 +1,7 @@
 package subcommands
 
 import "fmt"
+import "github.com/licensezero/cli/api"
 import "golang.org/x/crypto/ssh/terminal"
 import "strings"
 import "syscall"
@@ -32,4 +33,10 @@ func SecretPrompt(prompt string) string {
 	response = string(data)
 	fmt.Println()
 	return response
+}
+
+const termsPrompt = "Do you agree to " + api.TermsReference + "?"
+
+func ConfirmTermsOfService() bool {
+	return Confirm(termsPrompt)
 }
