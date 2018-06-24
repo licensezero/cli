@@ -11,13 +11,14 @@ const purchasedDescription = "Import a bundle of purchased licenses from URL."
 var Purchased = Subcommand{
 	Description: purchasedDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("purchased", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("purchased", flag.ExitOnError)
 		bundle := flagSet.String("bundle", "", "")
-		err := flagSet.Parse(args)
-		if err != nil || *bundle == "" {
+		flagSet.Usage = purchasedUsage
+		flagSet.Parse(args)
+		if *bundle == "" {
 			purchasedUsage()
 		}
-		fmt.Println(bundle)
+		fmt.Println(*bundle)
 		os.Exit(0)
 	},
 }

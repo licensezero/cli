@@ -11,14 +11,14 @@ const importDescription = "Import a private license or waiver from file"
 var Import = Subcommand{
 	Description: importDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("import", flag.ContinueOnError)
-		file := flagSet.String("file", "", "")
-		err := flagSet.Parse(args)
-		if err != nil || *file == "" {
+		flagSet := flag.NewFlagSet("import", flag.ExitOnError)
+		filePath := flagSet.String("file", "", "")
+		flagSet.Usage = importUsage
+		flagSet.Parse(args)
+		if *filePath == "" {
 			importUsage()
 		}
-		filePath := args[0]
-		bytes, err := ioutil.ReadFile(filePath)
+		bytes, err := ioutil.ReadFile(*filePath)
 		var initialParse interface{}
 		err = json.Unmarshal(bytes, initialParse)
 		if err != nil {
@@ -27,7 +27,7 @@ var Import = Subcommand{
 		}
 		itemsMap := initialParse.(map[string]interface{})
 		if _, ok := itemsMap["license"]; ok {
-			license, err := data.ReadLicense(filePath)
+			license, err := data.ReadLicense(*filePath)
 			if err != nil {
 				os.Stderr.WriteString("error reading license")
 				os.Exit(1)
@@ -39,7 +39,7 @@ var Import = Subcommand{
 				os.Exit(1)
 			}
 		} else {
-			waiver, err := data.ReadWaiver(filePath)
+			waiver, err := data.ReadWaiver(*filePath)
 			if err != nil {
 				os.Stderr.WriteString("error reading waiver")
 				os.Exit(1)

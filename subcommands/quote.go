@@ -11,13 +11,11 @@ const quoteDescription = "Quote missing private licenses."
 var Quote = Subcommand{
 	Description: quoteDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("quote", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
 		noNoncommercial := NoNoncommercial(flagSet)
 		noReciprocal := NoReciprocal(flagSet)
-		err := flagSet.Parse(args)
-		if err != nil {
-			quoteUsage()
-		}
+		flagSet.Usage = quoteUsage
+		flagSet.Parse(args)
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
 		if err != nil {
 			os.Stderr.WriteString("Could not read dependeny tree.")

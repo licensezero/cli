@@ -13,14 +13,12 @@ const buyDescription = "Buy missing private licenses"
 var Buy = Subcommand{
 	Description: buyDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("buy", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("buy", flag.ExitOnError)
 		doNotOpen := DoNotOpen(flagSet)
 		noNoncommercial := NoNoncommercial(flagSet)
 		noReciprocal := NoReciprocal(flagSet)
-		err := flagSet.Parse(args)
-		if err != nil {
-			buyUsage()
-		}
+		flagSet.Usage = buyUsage
+		flagSet.Parse(args)
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
 			os.Stderr.WriteString("Create an identity with `licensezero identify` first.")

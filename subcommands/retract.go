@@ -11,10 +11,11 @@ const retractDescription = "Retract a package from sale."
 var Retract = Subcommand{
 	Description: retractDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("retract", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("retract", flag.ExitOnError)
 		projectID := ProjectID(flagSet)
-		err := flagSet.Parse(args)
-		if err != nil || *projectID == "" {
+		flagSet.Usage = retractUsage
+		flagSet.Parse(args)
+		if *projectID == "" {
 			retractUsage()
 		}
 		if len(args) != 1 {

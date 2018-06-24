@@ -10,13 +10,11 @@ const lockDescription = "Lock project pricing"
 var Lock = Subcommand{
 	Description: lockDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("lock", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("lock", flag.ExitOnError)
 		projectID := ProjectID(flagSet)
 		unlock := flagSet.String("unlock", "", "")
-		err := flagSet.Parse(args)
-		if err != nil {
-			lockUsage()
-		}
+		flagSet.Usage = lockUsage
+		flagSet.Parse(args)
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
 			os.Stderr.WriteString("Create a licensor identity with `licensezero register` or `licensezero set-licensor-id`.")

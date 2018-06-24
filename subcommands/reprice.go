@@ -11,17 +11,14 @@ const repriceDescription = "Change project pricing"
 var Reprice = Subcommand{
 	Description: repriceDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("reprice", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("reprice", flag.ExitOnError)
 		price := Price(flagSet)
 		relicense := Relicense(flagSet)
-		err := flagSet.Parse(args)
-		if err != nil || *price == 0 {
-			repriceUsage()
-		}
+		flagSet.Usage = repriceUsage
+		flagSet.Parse(args)
 		if flagSet.NArg() != 1 {
 			repriceUsage()
 		} else {
-			price := args[0]
 			fmt.Println(price)
 			if *relicense > 0 {
 				fmt.Println(*relicense)

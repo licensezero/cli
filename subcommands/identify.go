@@ -9,14 +9,12 @@ const identifyDescription = "Identify yourself for buying and checking licenses.
 var Identify = Subcommand{
 	Description: identifyDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("identify", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("identify", flag.ExitOnError)
 		jurisdiction := flagSet.String("jurisdiction", "", "")
 		name := flagSet.String("name", "", "")
 		email := flagSet.String("email", "", "")
-		err := flagSet.Parse(args)
-		if err != nil {
-			identifyUsage()
-		}
+		flagSet.Usage = identifyUsage
+		flagSet.Parse(args)
 		if len(*jurisdiction) == 0 || len(*name) == 0 || len(*email) == 0 {
 			identifyUsage()
 		}

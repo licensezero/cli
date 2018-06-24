@@ -11,14 +11,15 @@ const waiveDescription = "Generate a signed waiver"
 var Waive = Subcommand{
 	Description: waiveDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("waive", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("waive", flag.ExitOnError)
 		jurisdiction := flagSet.String("jurisdiction", "", "Jurisdiction.")
 		days := flagSet.Uint("days", 0, "Days.")
 		forever := flagSet.Bool("forever", false, "Forever.")
 		beneficiary := flagSet.String("beneficiary", "", "Beneficiary legal name.")
 		projectID := ProjectID(flagSet)
-		err := flagSet.Parse(args)
-		if err != nil || *projectID == "" {
+		flagSet.Usage = waiveUsage
+		flagSet.Parse(args)
+		if *projectID == "" {
 			waiveUsage()
 		} else if *forever && *days > 0 {
 			waiveUsage()
@@ -53,13 +54,13 @@ var Waive = Subcommand{
 func waiveUsage() {
 	usage := waiveDescription + "\n\n" +
 		"Usage:\n" +
-		"	 licensezero waive --project-id ID --beneficiary NAME --jurisdiction CODE (--days DAYS | --forever)\n\n" +
+		"  licensezero waive --project-id ID --beneficiary NAME --jurisdiction CODE (--days DAYS | --forever)\n\n" +
 		"Options:\n" +
 		"  --project-id ID      " + projectIDLine + "\n" +
-		"	 --beneficiary NAME   Beneficiary legal name.\n" +
-		"	 --days DAYS          Term, in days.\n" +
-		"	 --forever            Infinite term.\n" +
-		"	 --jurisdiction CODE  Beneficiary jurisdiction (ISO 3166-2, like \"US-CA\").\n"
+		"  --beneficiary NAME   Beneficiary legal name.\n" +
+		"  --days DAYS          Term, in days.\n" +
+		"  --forever            Infinite term.\n" +
+		"  --jurisdiction CODE  Beneficiary jurisdiction (ISO 3166-2, like \"US-CA\").\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

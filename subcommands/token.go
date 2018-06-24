@@ -10,10 +10,11 @@ const tokenDescription = "Set your licensezero.com licensor ID"
 var Token = Subcommand{
 	Description: tokenDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("quote", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
 		licensorID := flag.String("licensor-id", "", "")
-		err := flagSet.Parse(args)
-		if err != nil || *licensorID == "" {
+		flagSet.Usage = tokenUsage
+		flagSet.Parse(args)
+		if *licensorID == "" {
 			tokenUsage()
 		}
 		if len(args) != 1 {
@@ -31,7 +32,7 @@ var Token = Subcommand{
 				os.Exit(0)
 			}
 		}
-		err = data.WriteLicensor(paths.Home, &newLicensor)
+		err := data.WriteLicensor(paths.Home, &newLicensor)
 		if err != nil {
 			os.Stderr.WriteString("Could not write licensor file.\n")
 			os.Exit(1)

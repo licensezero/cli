@@ -11,13 +11,11 @@ const offerDescription = "Offer private licenses for sale."
 var Offer = Subcommand{
 	Description: offerDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("offer", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("offer", flag.ExitOnError)
 		relicense := Relicense(flagSet)
 		price := Price(flagSet)
-		err := flagSet.Parse(args)
-		if err != nil {
-			offerUsage()
-		}
+		flagSet.Usage = offerUsage
+		flagSet.Parse(args)
 		if *price == 0 {
 			offerUsage()
 		}

@@ -11,12 +11,10 @@ const sponsorDescription = "Sponsor relicensing of a project onto permissive ter
 var Sponsor = Subcommand{
 	Description: sponsorDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("sponsor", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("sponsor", flag.ExitOnError)
 		doNotOpen := DoNotOpen(flagSet)
-		err := flagSet.Parse(args)
-		if err != nil {
-			sponsorUsage()
-		}
+		flagSet.Usage = sponsorUsage
+		flagSet.Parse(args)
 		if *doNotOpen {
 			fmt.Println("not opening")
 		}

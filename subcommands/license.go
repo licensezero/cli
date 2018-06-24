@@ -15,15 +15,13 @@ const licenseDescription = "Write a public license file and metadata."
 var License = Subcommand{
 	Description: licenseDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("license", flag.ContinueOnError)
+		flagSet := flag.NewFlagSet("license", flag.ExitOnError)
 		projectID := ProjectID(flagSet)
 		noncommercial := flagSet.Bool("noncommercial", false, "Use noncommercial public license.")
 		reciprocal := flagSet.Bool("reciprocal", false, "Use reciprocal public license.")
 		stack := flagSet.Bool("stack", false, "Stack licensing metadata.")
-		err := flagSet.Parse(args)
-		if err != nil {
-			licenseUsage()
-		}
+		flagSet.Usage = licenseUsage
+		flagSet.Parse(args)
 		if *noncommercial && *reciprocal {
 			licenseUsage()
 		}
