@@ -30,7 +30,7 @@ var License = Subcommand{
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(licensorHint)
+			os.Stderr.WriteString(licensorHint + "\n")
 			os.Exit(1)
 		}
 		var terms string

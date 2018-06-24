@@ -11,7 +11,7 @@ var Register = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(identityHint)
+			os.Stderr.WriteString(identityHint + "\n")
 			os.Exit(1)
 		}
 		os.Stdout.WriteString("Name: " + identity.Name + "\n")

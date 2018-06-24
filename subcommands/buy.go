@@ -21,7 +21,7 @@ var Buy = Subcommand{
 		flagSet.Parse(args)
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString("Create an identity with `licensezero identify` first.")
+			os.Stderr.WriteString(identityHint + "\n")
 			os.Exit(1)
 		}
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)

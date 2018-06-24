@@ -17,7 +17,7 @@ var Lock = Subcommand{
 		flagSet.Parse(args)
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString("Create a licensor identity with `licensezero register` or `licensezero set-licensor-id`.")
+			os.Stderr.WriteString(licensorHint + "\n")
 			os.Exit(1)
 		}
 		err = api.Lock(licensor, *projectID, *unlock)
