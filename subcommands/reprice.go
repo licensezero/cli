@@ -9,9 +9,12 @@ import "os"
 var Reprice = Subcommand{
 	Description: "Change project pricing.",
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("reprice", flag.ExitOnError)
-		relicense := flagSet.Int("relicense", 0, "Relicense price, in cents.")
-		flagSet.Parse(args)
+		flagSet := flag.NewFlagSet("reprice", flag.ContinueOnError)
+		relicense := flagSet.Uint("relicense", 0, "Relicense price, in cents.")
+		err := flagSet.Parse(args)
+		if err != nil {
+			repriceUsage()
+		}
 		if flagSet.NArg() != 1 {
 			repriceUsage()
 		} else {
@@ -26,7 +29,9 @@ var Reprice = Subcommand{
 }
 
 func repriceUsage() {
-	os.Stderr.WriteString(`Usage:
+	os.Stderr.WriteString(`Change project pricing.
+
+Usage:
 	<price> [--relicense CENTS]
 
 Options:

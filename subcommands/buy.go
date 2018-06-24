@@ -11,11 +11,21 @@ import "os"
 var Buy = Subcommand{
 	Description: "Buy missing private licenses.",
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("buy", flag.ExitOnError)
+		flagSet := flag.NewFlagSet("buy", flag.ContinueOnError)
 		doNotOpen := DoNotOpen(flagSet)
 		noNoncommercial := flagSet.Bool("no-noncommercial", false, "Ignore L0-NC dependencies.")
 		noReciprocal := flagSet.Bool("no-reciprocal", false, "Ignore L0-R dependencies.")
-		flagSet.Parse(args)
+		err := flagSet.Parse(args)
+		if err != nil {
+			os.Stderr.WriteString(`Buy missing private licenses.
+
+Options;
+	--no-noncommercial  Ignore packages under noncommerical terms.
+	--no-reciprocal     Ignore packages under reciprocal terms.
+	--do-not-open       Do not open buy page in web browser.
+`)
+			os.Exit(1)
+		}
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
 			os.Stderr.WriteString("Create an identity with `licensezero identify` first.")

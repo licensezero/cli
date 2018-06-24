@@ -13,15 +13,17 @@ import "path"
 var License = Subcommand{
 	Description: "Write a public license file and metadata.",
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("license", flag.ExitOnError)
+		flagSet := flag.NewFlagSet("license", flag.ContinueOnError)
 		noncommercial := flagSet.Bool("noncommercial", false, "Use noncommercial public license.")
 		reciprocal := flagSet.Bool("reciprocal", false, "Use reciprocal public license.")
 		stack := flagSet.Bool("stack", false, "Stack licensing metadata.")
-		if *noncommercial && *reciprocal {
-			os.Stderr.WriteString("specify either --reciprocal OR --noncommercial")
-			os.Exit(1)
+		err := flagSet.Parse(args)
+		if err != nil {
+			licenseUsage()
 		}
-		flagSet.Parse(args)
+		if *noncommercial && *reciprocal {
+			licenseUsage()
+		}
 		if flagSet.NArg() != 1 {
 			licenseUsage()
 		} else {
@@ -31,7 +33,7 @@ var License = Subcommand{
 			}
 			licensor, err := data.ReadLicensor(paths.Home)
 			if err != nil {
-				os.Stderr.WriteString("create a licensor identity with `licensezero register` or `licensezero set-licensor-id`.")
+				os.Stderr.WriteString("Create a licensor identity with `licensezero register` or `licensezero set-licensor-id`.")
 				os.Exit(1)
 			}
 			var terms string
@@ -145,8 +147,15 @@ func signatureLines(signature string) string {
 }
 
 func licenseUsage() {
-	os.Stderr.WriteString(`Usage:
-	 <project id> (--noncommercial | --reciprocal)
+	os.Stderr.WriteString(`Write a publice LICENSE file and metadata.
+
+Usage:
+	 <project id> (--noncommercial | --reciprocal) [--stack]
+
+Options:
+	--noncommerical  Use the noncommercial license.
+	--reciprocal     Use the reciprocal license.
+	--stack          Stack multiple project metadata entries.
 `)
 	os.Exit(1)
 }

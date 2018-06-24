@@ -9,9 +9,12 @@ import "os"
 var Offer = Subcommand{
 	Description: "Offer private licenses for sale.",
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("offer", flag.ExitOnError)
+		flagSet := flag.NewFlagSet("offer", flag.ContinueOnError)
 		relicense := flagSet.Int("relicense", 0, "Relicense price, in cents.")
-		flagSet.Parse(args)
+		err := flagSet.Parse(args)
+		if err != nil {
+			offerUsage()
+		}
 		if flagSet.NArg() != 1 {
 			offerUsage()
 		} else {
@@ -26,7 +29,9 @@ var Offer = Subcommand{
 }
 
 func offerUsage() {
-	os.Stderr.WriteString(`Usage:
+	os.Stderr.WriteString(`Offer private licenses for sale.
+
+Usage:
 	<price> [--relicense CENTS]
 
 Options:

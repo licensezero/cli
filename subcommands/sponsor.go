@@ -9,12 +9,20 @@ import "os"
 var Sponsor = Subcommand{
 	Description: "Sponsor relicensing of a project onto permissive terms.",
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("sponsor", flag.ExitOnError)
+		flagSet := flag.NewFlagSet("sponsor", flag.ContinueOnError)
 		doNotOpen := DoNotOpen(flagSet)
-		flagSet.Parse(args)
+		err := flagSet.Parse(args)
+		if err != nil {
+			sponsorUsage()
+		}
 		if *doNotOpen {
 			fmt.Println("not opening")
 		}
 		os.Exit(0)
 	},
+}
+
+func sponsorUsage() {
+	os.Stdout.WriteString(`Sponsor relicensing of a project onto permissive terms.`)
+	os.Exit(1)
 }

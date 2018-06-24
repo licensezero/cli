@@ -9,10 +9,13 @@ import "os"
 var Quote = Subcommand{
 	Description: "Quote missing private licenses.",
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
+		flagSet := flag.NewFlagSet("quote", flag.ContinueOnError)
 		noNoncommercial := flagSet.Bool("no-noncommercial", false, "Ignore L0-NC dependencies.")
 		noReciprocal := flagSet.Bool("no-reciprocal", false, "Ignore L0-R dependencies.")
-		flagSet.Parse(args)
+		err := flagSet.Parse(args)
+		if err != nil {
+			quoteUsage()
+		}
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
 		if err != nil {
 			os.Stderr.WriteString("Could not read dependeny tree.")
@@ -70,6 +73,16 @@ var Quote = Subcommand{
 			os.Exit(0)
 		}
 	},
+}
+
+func quoteUsage() {
+	os.Stderr.WriteString(`Quote missing private licenses.
+
+Options:
+	--no-noncommercial  Ignore packages under noncommerical terms.
+	--no-reciprocal     Ignore packages under reciprocal terms.
+	--do-not-open       Do not open buy page in web browser.
+`)
 }
 
 func currency(cents int) string {
