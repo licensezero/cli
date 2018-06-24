@@ -81,8 +81,7 @@ func quoteUsage() {
 		"  licensezero quote\n\n" +
 		"Options:\n" +
 		"  --no-noncommercial  " + noNoncommercialLine + "\n" +
-		"  --no-reciprocal     " + noReciprocalLine + "\n" +
-		"  --do-not-open       " + doNotOpenLine + "\n"
+		"  --no-reciprocal     " + noReciprocalLine + "\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

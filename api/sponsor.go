@@ -1,0 +1,44 @@
+package api
+
+import "bytes"
+import "encoding/json"
+import "errors"
+import "github.com/licensezero/cli/data"
+import "io/ioutil"
+import "net/http"
+
+type SponsorRequest struct {
+	Action       string `json:"action"`
+	ProjectID    string `json:"projectID"`
+	Sponsor      string `json:"sponsor"`
+	Jurisdiction string `json:"jurisdiction"`
+	EMail        string `json:"email"`
+}
+
+type SponsorResponse struct {
+	Location string `json:"location"`
+}
+
+func Sponsor(identity *data.Identity, projectID string) (string, error) {
+	bodyData := SponsorRequest{
+		Action:       "sponsor",
+		ProjectID:    projectID,
+		Sponsor:      identity.Name,
+		Jurisdiction: identity.Jurisdiction,
+		EMail:        identity.EMail,
+	}
+	body, err := json.Marshal(bodyData)
+	if err != nil {
+		return "", errors.New("could not construct sponsor request")
+	}
+	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
+	defer response.Body.Close()
+	responseBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return "", errors.New("invalid server response")
+	}
+	var parsed SponsorResponse
+	json.Unmarshal(responseBody, &parsed)
+	location := parsed.Location
+	return "https://licensezero.com" + location, nil
+}

@@ -5,7 +5,6 @@ import "fmt"
 import "github.com/licensezero/cli/inventory"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
-import "github.com/skratchdot/open-golang/open"
 import "os"
 
 const buyDescription = "Buy missing private licenses."
@@ -48,11 +47,7 @@ var Buy = Subcommand{
 				fmt.Println(err.Error())
 				os.Exit(1)
 			}
-			os.Stdout.WriteString(location + "\n")
-			if !*doNotOpen {
-				open.Run(location)
-			}
-			os.Exit(0)
+			openURLAndExit(location, doNotOpen)
 		}
 	},
 }
