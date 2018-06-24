@@ -1,7 +1,6 @@
 package subcommands
 
 import "flag"
-import "fmt"
 import "github.com/licensezero/cli/inventory"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
@@ -31,11 +30,11 @@ var Buy = Subcommand{
 			licensable := projects.Licensable
 			unlicensed := projects.Unlicensed
 			if len(licensable) == 0 {
-				fmt.Println("No License Zero depedencies found.")
+				os.Stdout.WriteString("No License Zero depedencies found.\n")
 				os.Exit(0)
 			}
 			if len(unlicensed) == 0 {
-				fmt.Println("No private licenses to buy.")
+				os.Stdout.WriteString("No private licenses to buy.\n")
 				os.Exit(0)
 			}
 			var projectIDs []string
@@ -44,7 +43,7 @@ var Buy = Subcommand{
 			}
 			location, err := api.Buy(identity, projectIDs)
 			if err != nil {
-				fmt.Println(err.Error())
+				os.Stderr.WriteString(err.Error())
 				os.Exit(1)
 			}
 			openURLAndExit(location, doNotOpen)

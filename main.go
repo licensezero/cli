@@ -54,9 +54,7 @@ func main() {
 }
 
 func showUsage() {
-	fmt.Println("Manage License Zero dependencies.")
-	fmt.Println("")
-	fmt.Println("Subcommands:")
+	usage := "Manage License Zero projects and dependencies.\n\nSubcommands:\n"
 	longestSubcommand := 0
 	var names []string
 	for name, _ := range commands {
@@ -68,6 +66,7 @@ func showUsage() {
 	sort.Strings(names)
 	for _, name := range names {
 		info := commands[name]
-		fmt.Printf("  %-"+fmt.Sprintf("%d", longestSubcommand)+"s %s\n", name, info.Description)
+		usage += fmt.Sprintf("  %-"+fmt.Sprintf("%d", longestSubcommand)+"s %s\n", name, info.Description)
 	}
+	os.Stdout.WriteString(usage)
 }
