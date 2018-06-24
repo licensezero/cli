@@ -29,8 +29,7 @@ func SecretPrompt(prompt string) string {
 	if err != nil {
 		panic(err)
 	}
-	var response string
-	response = string(data)
+	response := string(data)
 	fmt.Println()
 	return response
 }

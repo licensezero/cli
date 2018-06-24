@@ -5,6 +5,7 @@ import "encoding/json"
 import "errors"
 import "github.com/licensezero/cli/data"
 import "net/http"
+import "strconv"
 
 type LockRequest struct {
 	Action     string `json:"action"`
@@ -31,7 +32,7 @@ func Lock(licensor *data.Licensor, projectID string, unlock string) error {
 		return err
 	}
 	if response.StatusCode != 200 {
-		return errors.New("Server responded " + string(response.StatusCode))
+		return errors.New("Server responded " + strconv.Itoa(response.StatusCode))
 	}
 	return nil
 }

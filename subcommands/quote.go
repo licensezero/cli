@@ -5,6 +5,7 @@ import "fmt"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/inventory"
 import "os"
+import "strconv"
 
 const quoteDescription = "Quote missing private licenses."
 
@@ -89,9 +90,9 @@ func quoteUsage() {
 func currency(cents uint) string {
 	if cents < 100 {
 		if cents < 10 {
-			return "$0.0" + string(cents)
+			return "$0.0" + strconv.Itoa(int(cents))
 		} else {
-			return "$0." + string(cents)
+			return "$0." + strconv.Itoa(int(cents))
 		}
 	} else {
 		asString := fmt.Sprintf("%d", cents)

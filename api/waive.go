@@ -6,6 +6,7 @@ import "errors"
 import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "net/http"
+import "strconv"
 
 type WaiveRequest struct {
 	Action       string `json:"action"`
@@ -34,7 +35,7 @@ func Waive(licensor *data.Licensor, projectID, beneficiary, jurisdiction, term s
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
 	defer response.Body.Close()
 	if response.StatusCode != 200 {
-		return nil, errors.New("Server responded " + string(response.StatusCode))
+		return nil, errors.New("Server responded " + strconv.Itoa(response.StatusCode))
 	}
 	return ioutil.ReadAll(response.Body)
 }
