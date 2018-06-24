@@ -1,10 +1,12 @@
 package subcommands
 
+import "encoding/json"
 import "flag"
-import "fmt"
+import "github.com/licensezero/cli/data"
+import "io/ioutil"
+import "net/http"
 import "os"
-
-// TODO: Implement purchased subcommand.
+import "strconv"
 
 const purchasedDescription = "Download a bundle of purchased licenses."
 
@@ -18,7 +20,33 @@ var Purchased = Subcommand{
 		if *bundle == "" {
 			purchasedUsage()
 		}
-		fmt.Println(*bundle)
+		response, err := http.Get(*bundle)
+		defer response.Body.Close()
+		responseBody, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			os.Stderr.WriteString("Error reading " + *bundle)
+			os.Exit(1)
+		}
+		var parsed struct {
+			Licenses []data.LicenseEnvelope `json:"licenses"`
+		}
+		err = json.Unmarshal(responseBody, &parsed)
+		if err != nil {
+			os.Stderr.WriteString("Error parsing license bundle.")
+			os.Exit(1)
+		}
+		imported := 0
+		for _, license := range parsed.Licenses {
+			// TODO: Validate licenses.
+			err = data.WriteLicense(paths.Home, &license)
+			if err != nil {
+				os.Stderr.WriteString("Error writing license for project ID" + license.ProjectID + ".")
+				// Continue importing other licenses.
+			} else {
+				imported++
+			}
+		}
+		os.Stdout.WriteString("Imported " + strconv.Itoa(imported) + " licenses.")
 		os.Exit(0)
 	},
 }
