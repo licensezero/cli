@@ -4,7 +4,7 @@ import "os"
 
 // TODO: Implement register subcommand.
 
-const registerDescription = "Register to sell private licenses through licensezero.com"
+const registerDescription = "Register to sell private licenses through licensezero.com."
 
 var Register = Subcommand{
 	Description: registerDescription,

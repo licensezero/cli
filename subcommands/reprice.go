@@ -6,7 +6,7 @@ import "os"
 
 // TODO: Implement reprice subcommand.
 
-const repriceDescription = "Change project pricing"
+const repriceDescription = "Change project pricing."
 
 var Reprice = Subcommand{
 	Description: repriceDescription,

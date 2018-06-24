@@ -8,7 +8,7 @@ import "github.com/licensezero/cli/data"
 import "github.com/skratchdot/open-golang/open"
 import "os"
 
-const buyDescription = "Buy missing private licenses"
+const buyDescription = "Buy missing private licenses."
 
 var Buy = Subcommand{
 	Description: buyDescription,
