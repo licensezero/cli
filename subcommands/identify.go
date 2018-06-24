@@ -15,45 +15,38 @@ var Identify = Subcommand{
 		email := flagSet.String("email", "", "")
 		flagSet.Usage = identifyUsage
 		flagSet.Parse(args)
-		if len(*jurisdiction) == 0 || len(*name) == 0 || len(*email) == 0 {
+		if *jurisdiction == "" || *name == "" || *email == "" {
 			identifyUsage()
 		}
-		if len(args) != 3 {
-			identifyUsage()
-		} else {
-			name := args[0]
-			jurisdiction := args[1]
-			email := args[2]
-			newIdentity := data.Identity{
-				Name:         name,
-				Jurisdiction: jurisdiction,
-				EMail:        email,
-			}
-			existingIdentity, _ := data.ReadIdentity(paths.Home)
-			if existingIdentity != nil && *existingIdentity != newIdentity {
-				if !Confirm("Overwrite existing identity?") {
-					os.Exit(0)
-				}
-			}
-			if !ValidName(name) {
-				os.Stderr.WriteString("Invalid Name.\n")
-				os.Exit(1)
-			}
-			if !ValidJurisdiction(jurisdiction) {
-				os.Stderr.WriteString("Invalid Jurisdiction.\n")
-				os.Exit(1)
-			}
-			if !ValidEMail(email) {
-				os.Stderr.WriteString("Invalid E-Mail.\n")
-				os.Exit(1)
-			}
-			err := data.WriteIdentity(paths.Home, &newIdentity)
-			if err != nil {
-				os.Stderr.WriteString("Could not write identity file.\n")
-				os.Exit(1)
-			} else {
+		newIdentity := data.Identity{
+			Name:         *name,
+			Jurisdiction: *jurisdiction,
+			EMail:        *email,
+		}
+		existingIdentity, _ := data.ReadIdentity(paths.Home)
+		if existingIdentity != nil && *existingIdentity != newIdentity {
+			if !Confirm("Overwrite existing identity?") {
 				os.Exit(0)
 			}
+		}
+		if !ValidName(*name) {
+			os.Stderr.WriteString("Invalid Name.\n")
+			os.Exit(1)
+		}
+		if !ValidJurisdiction(*jurisdiction) {
+			os.Stderr.WriteString("Invalid Jurisdiction.\n")
+			os.Exit(1)
+		}
+		if !ValidEMail(*email) {
+			os.Stderr.WriteString("Invalid E-Mail.\n")
+			os.Exit(1)
+		}
+		err := data.WriteIdentity(paths.Home, &newIdentity)
+		if err != nil {
+			os.Stderr.WriteString("Could not write identity file.\n")
+			os.Exit(1)
+		} else {
+			os.Exit(0)
 		}
 	},
 }
