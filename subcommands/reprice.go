@@ -5,7 +5,7 @@ import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const repriceDescription = "Change project pricing."
+const repriceDescription = "Change pricing for your project."
 
 var Reprice = Subcommand{
 	Description: repriceDescription,

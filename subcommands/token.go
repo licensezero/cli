@@ -5,7 +5,7 @@ import "fmt"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const tokenDescription = "Set your licensezero.com licensor ID."
+const tokenDescription = "Set your licensezero.com licensor ID and access token."
 
 var Token = Subcommand{
 	Description: tokenDescription,

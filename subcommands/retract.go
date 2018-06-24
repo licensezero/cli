@@ -5,7 +5,7 @@ import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const retractDescription = "Retract a package from sale."
+const retractDescription = "Retract project licenses for a project from sale."
 
 // TODO: --quiet for retract
 

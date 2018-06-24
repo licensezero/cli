@@ -5,7 +5,7 @@ import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const lockDescription = "Lock project pricing."
+const lockDescription = "Lock project pricing and availability until a given date."
 
 var Lock = Subcommand{
 	Description: lockDescription,

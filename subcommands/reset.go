@@ -4,7 +4,7 @@ import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const resetDescription = "Reset your access token."
+const resetDescription = "Reset your licensor access token by e-mail."
 
 var Reset = Subcommand{
 	Description: resetDescription,

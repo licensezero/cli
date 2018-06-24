@@ -6,7 +6,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "os"
 
-const importDescription = "Import a private license or waiver from file."
+const importDescription = "Import a private license or waiver from a file."
 
 var Import = Subcommand{
 	Description: importDescription,

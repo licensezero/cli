@@ -7,7 +7,7 @@ import "github.com/licensezero/cli/inventory"
 import "os"
 import "strconv"
 
-const quoteDescription = "Quote missing private licenses."
+const quoteDescription = "Quote the cost of private licenses you need."
 
 var Quote = Subcommand{
 	Description: quoteDescription,

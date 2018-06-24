@@ -6,7 +6,7 @@ import "github.com/licensezero/cli/data"
 import "os"
 import "strconv"
 
-const waiveDescription = "Generate a signed waiver."
+const waiveDescription = "Generate a waiver for your project."
 
 var Waive = Subcommand{
 	Description: waiveDescription,

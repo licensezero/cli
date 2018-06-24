@@ -7,7 +7,7 @@ import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const buyDescription = "Buy missing private licenses."
+const buyDescription = "Buy private licenses you are missing."
 
 var Buy = Subcommand{
 	Description: buyDescription,

@@ -4,7 +4,7 @@ import "fmt"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const whoAmIDescription = "Show your licensee identity."
+const whoAmIDescription = "Show your name, tax jurisdiction, and e-mail."
 
 var WhoAmI = Subcommand{
 	Description: whoAmIDescription,

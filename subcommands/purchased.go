@@ -8,7 +8,7 @@ import "net/http"
 import "os"
 import "strconv"
 
-const purchasedDescription = "Download a bundle of purchased licenses."
+const purchasedDescription = "Download a bundle of licenses you bought from licensezero.com."
 
 var Purchased = Subcommand{
 	Description: purchasedDescription,
