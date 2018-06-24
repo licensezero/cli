@@ -40,3 +40,9 @@ const termsPrompt = "Do you agree to " + api.TermsReference + "?"
 func ConfirmTermsOfService() bool {
 	return Confirm(termsPrompt)
 }
+
+const agencyPrompt = "Do you agree to " + api.AgencyReference + "?"
+
+func ConfirmAgencyTerms() bool {
+	return Confirm(agencyPrompt)
+}

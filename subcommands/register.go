@@ -22,7 +22,7 @@ var Register = Subcommand{
 			os.Exit(1)
 		}
 		if !ConfirmTermsOfService() {
-			os.Stderr.WriteString("You must agree to the terms of service to register.\n")
+			os.Stderr.WriteString(termsHint + "\n")
 			os.Exit(1)
 		}
 		err = api.Register(identity)

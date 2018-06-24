@@ -15,3 +15,7 @@ const projectIDLine = "Project ID (UUID)."
 const licensorHint = "Create a licensor identity with `licensezero register`."
 
 const identityHint = "Create a licensor identity with `licensezero identify`."
+
+const termsHint = "You must agree to the terms of service to register."
+
+const agencyTermsHint = "You must agree to the agency terms to offer private licenses through licensezero.com."
