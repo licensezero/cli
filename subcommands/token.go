@@ -1,7 +1,6 @@
 package subcommands
 
 import "flag"
-import "fmt"
 import "github.com/licensezero/cli/data"
 import "os"
 
@@ -10,17 +9,13 @@ const tokenDescription = "Set your licensezero.com licensor ID and access token.
 var Token = Subcommand{
 	Description: tokenDescription,
 	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
-		licensorID := flag.String("licensor-id", "", "")
+		flagSet := flag.NewFlagSet("token", flag.ExitOnError)
+		licensorID := flagSet.String("licensor-id", "", "Licensor ID")
 		flagSet.Usage = tokenUsage
 		flagSet.Parse(args)
 		if *licensorID == "" {
 			tokenUsage()
 		}
-		if len(args) != 1 {
-			tokenUsage()
-		}
-		fmt.Println(licensorID)
 		token := SecretPrompt("Token: ")
 		newLicensor := data.Licensor{
 			LicensorID: *licensorID,
@@ -47,7 +42,7 @@ func tokenUsage() {
 		"Usage:\n" +
 		"  licensezero token --licensor-id ID\n\n" +
 		"Options:\n" +
-		"  --licensor-id ID  Licensor ID (UUID)."
+		"  --licensor-id ID  Licensor ID (UUID).\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }
