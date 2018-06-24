@@ -6,23 +6,23 @@ import "github.com/mitchellh/go-homedir"
 import "os"
 
 var commands = map[string]subcommands.Subcommand{
-	"buy":             subcommands.Buy,
-	"identify":        subcommands.Identify,
-	"import":          subcommands.Import,
-	"license":         subcommands.License,
-	"lock":            subcommands.Lock,
-	"offer":           subcommands.Offer,
-	"purchased":       subcommands.Purchased,
-	"quote":           subcommands.Quote,
-	"readme":          subcommands.README,
-	"register":        subcommands.Register,
-	"reprice":         subcommands.Reprice,
-	"reset":           subcommands.Reset,
-	"retract":         subcommands.Retract,
-	"set-licensor-id": subcommands.SetLicensorID,
-	"sponsor":         subcommands.Sponsor,
-	"waive":           subcommands.Waive,
-	"whoami":          subcommands.WhoAmI,
+	"buy":       subcommands.Buy,
+	"identify":  subcommands.Identify,
+	"import":    subcommands.Import,
+	"license":   subcommands.License,
+	"lock":      subcommands.Lock,
+	"offer":     subcommands.Offer,
+	"purchased": subcommands.Purchased,
+	"quote":     subcommands.Quote,
+	"readme":    subcommands.README,
+	"register":  subcommands.Register,
+	"reprice":   subcommands.Reprice,
+	"reset":     subcommands.Reset,
+	"retract":   subcommands.Retract,
+	"sponsor":   subcommands.Sponsor,
+	"token":     subcommands.Token,
+	"waive":     subcommands.Waive,
+	"whoami":    subcommands.WhoAmI,
 }
 
 func main() {
@@ -63,6 +63,6 @@ func showUsage() {
 		}
 	}
 	for name, info := range commands {
-		fmt.Printf("  %-" + fmt.Sprintf("%d", longestSubcommand) + "s %s\n", name, info.Description)
+		fmt.Printf("  %-"+fmt.Sprintf("%d", longestSubcommand)+"s %s\n", name, info.Description)
 	}
 }
