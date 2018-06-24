@@ -1,9 +1,10 @@
 package main
 
-import "github.com/licensezero/cli/subcommands"
 import "fmt"
+import "github.com/licensezero/cli/subcommands"
 import "github.com/mitchellh/go-homedir"
 import "os"
+import "sort"
 
 var commands = map[string]subcommands.Subcommand{
 	"buy":       subcommands.Buy,
@@ -57,12 +58,16 @@ func showUsage() {
 	fmt.Println("")
 	fmt.Println("Subcommands:")
 	longestSubcommand := 0
+	var names []string
 	for name, _ := range commands {
 		if len(name) > longestSubcommand {
 			longestSubcommand = len(name) + 1
 		}
+		names = append(names, name)
 	}
-	for name, info := range commands {
+	sort.Strings(names)
+	for _, name := range names {
+		info := commands[name]
 		fmt.Printf("  %-"+fmt.Sprintf("%d", longestSubcommand)+"s %s\n", name, info.Description)
 	}
 }
