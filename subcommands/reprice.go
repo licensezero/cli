@@ -19,7 +19,7 @@ var Reprice = Subcommand{
 		silent := Silent(flagSet)
 		flagSet.Usage = repriceUsage
 		flagSet.Parse(args)
-		if *price == 0 {
+		if *price == 0 || *projectIDFlag == "" {
 			repriceUsage()
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
@@ -61,7 +61,7 @@ var Reprice = Subcommand{
 func repriceUsage() {
 	usage := repriceDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero reprice --price CENTS [--relicense CENTS]\n\n" +
+		"  licensezero reprice --project-id ID --price CENTS [--relicense CENTS]\n\n" +
 		"Options:\n" +
 		"  --price          " + priceLine + "\n" +
 		"  --project-id ID  Project ID (UUID).\n" +
