@@ -56,6 +56,44 @@ func TestIdentifySilent(t *testing.T) {
 	})
 }
 
+func TestWhoAmIWithoutIdentity(t *testing.T) {
+	InTestDir(t, func() {
+		command := exec.Command("./licensezero", "whoami")
+		var stdout bytes.Buffer
+		command.Stdout = &stdout
+		err := command.Run()
+		if err == nil {
+			t.Error("Should fail")
+		}
+	})
+}
+
+func TestWhoAmIWithIdentity(t *testing.T) {
+	InTestDir(t, func() {
+		name := "John Doe"
+		email := "test@example.com"
+		jurisdiction := "US-CA"
+		exec.Command("./licensezero", "identify", "--name", name, "--jurisdiction", jurisdiction, "--email", email, "--silent").Run()
+		whoami := exec.Command("./licensezero", "whoami")
+		var stdout bytes.Buffer
+		whoami.Stdout = &stdout
+		err := whoami.Run()
+		if err != nil {
+			t.Error(err)
+		}
+		output := string(stdout.Bytes())
+		if !strings.Contains(output, name) {
+			t.Error("does not list name")
+		}
+		if !strings.Contains(output, email) {
+			t.Error("does not list e-mail")
+		}
+		if !strings.Contains(output, jurisdiction) {
+			t.Error("does not list jurisdiction")
+		}
+	})
+}
+
 func InTestDir(t *testing.T, script func()) {
 	directory, err := ioutil.TempDir("/tmp", "licensezero-test")
 	if err != nil {
