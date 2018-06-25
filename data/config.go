@@ -3,7 +3,7 @@ package data
 import "os"
 import "path"
 
-func configPath(home string) string {
+func ConfigPath(home string) string {
 	fromEnvironment := os.Getenv("LICENSEZERO_CONFIG")
 	if fromEnvironment != "" {
 		return fromEnvironment
@@ -13,6 +13,6 @@ func configPath(home string) string {
 }
 
 func makeConfigDirectory(home string) error {
-	path := configPath(home)
+	path := ConfigPath(home)
 	return os.MkdirAll(path, 0644)
 }

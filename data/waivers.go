@@ -35,7 +35,7 @@ type WaiverEnvelope struct {
 }
 
 func WaiversPath(home string) string {
-	return path.Join(configPath(home), "waivers")
+	return path.Join(ConfigPath(home), "waivers")
 }
 
 func WaiverPath(home string, projectID string) string {

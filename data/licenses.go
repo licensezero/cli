@@ -40,11 +40,11 @@ func LicensePath(home string, projectID string) string {
 }
 
 func LicensesPath(home string) string {
-	return path.Join(configPath(home), "licenses")
+	return path.Join(ConfigPath(home), "licenses")
 }
 
 func ReadLicenses(home string) ([]LicenseEnvelope, error) {
-	directoryPath := path.Join(configPath(home), "licenses")
+	directoryPath := path.Join(ConfigPath(home), "licenses")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {

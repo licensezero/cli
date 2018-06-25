@@ -9,6 +9,7 @@ import "sort"
 var Rev string // Set via ldflags.
 
 var commands = map[string]subcommands.Subcommand{
+	"backup":    subcommands.Backup,
 	"buy":       subcommands.Buy,
 	"bugs":      subcommands.Bugs,
 	"identify":  subcommands.Identify,

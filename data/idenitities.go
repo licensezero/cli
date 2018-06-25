@@ -11,7 +11,7 @@ type Identity struct {
 }
 
 func identityPath(home string) string {
-	return path.Join(configPath(home), "identity.json")
+	return path.Join(ConfigPath(home), "identity.json")
 }
 
 func ReadIdentity(home string) (*Identity, error) {

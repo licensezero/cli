@@ -10,7 +10,7 @@ type Licensor struct {
 }
 
 func licensorPath(home string) string {
-	return path.Join(configPath(home), "licensor.json")
+	return path.Join(ConfigPath(home), "licensor.json")
 }
 
 func ReadLicensor(home string) (*Licensor, error) {
