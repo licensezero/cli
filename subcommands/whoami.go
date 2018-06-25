@@ -7,7 +7,7 @@ import "os"
 const whoAmIDescription = "Show your name, tax jurisdiction, and e-mail."
 
 var WhoAmI = Subcommand{
-	Tag:         "buyer",
+	Tag:         "misc",
 	Description: whoAmIDescription,
 	Handler: func(args []string, paths Paths) {
 		identity, err := data.ReadIdentity(paths.Home)
