@@ -10,16 +10,13 @@ const AgencyReference = "the agency terms at https://licensezero.com/terms/agenc
 const agencyStatement = "I agree to " + AgencyReference + "."
 
 type OfferRequest struct {
-	Action     string `json:"action"`
-	LicensorID string `json:"licensorID"`
-	Token      string `json:"token"`
-	Homepage   string `json:"homepage"`
-	Pricing    struct {
-		Private   uint `json:"private"`
-		Relicense uint `json:"relicense,omitempty"`
-	} `json:"pricing"`
-	Description string `json:"description"`
-	Terms       string `json:"terms"`
+	Action      string  `json:"action"`
+	LicensorID  string  `json:"licensorID"`
+	Token       string  `json:"token"`
+	Homepage    string  `json:"homepage"`
+	Pricing     Pricing `json:"pricing"`
+	Description string  `json:"description"`
+	Terms       string  `json:"terms"`
 }
 
 type OfferResponse struct {
@@ -33,7 +30,11 @@ func Offer(licensor *data.Licensor, homepage, description string, private, relic
 		Token:       licensor.Token,
 		Description: description,
 		Homepage:    homepage,
-		Terms:       agencyStatement,
+		Pricing: Pricing{
+			Private:   private,
+			Relicense: relicense,
+		},
+		Terms: agencyStatement,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {

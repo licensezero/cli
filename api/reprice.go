@@ -19,6 +19,7 @@ func Reprice(licensor *data.Licensor, projectID string, private, relicense uint)
 	bodyData := RepriceRequest{
 		Action:     "reprice",
 		LicensorID: licensor.LicensorID,
+		ProjectID:  projectID,
 		Token:      licensor.Token,
 		Pricing: Pricing{
 			Private:   private,
