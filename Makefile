@@ -1,6 +1,6 @@
 .PHONY: licensezero test
 
-LDFLAGS=-X main.Rev=$(shell git rev-parse --short HEAD)
+LDFLAGS=-X main.Rev=$(shell git tag -l --points-at HEAD | sed 's/^v//')
 
 licensezero:
 	go build -o licensezero -ldflags "$(LDFLAGS)"

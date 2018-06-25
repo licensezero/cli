@@ -9,7 +9,7 @@ var Version = Subcommand{
 	Description: versionDescription,
 	Handler: func(args []string, paths Paths) {
 		if args[0] == "" {
-			os.Stdout.WriteString("Development Version\n")
+			os.Stdout.WriteString("Development Build\n")
 		} else {
 			os.Stdout.WriteString(args[0] + "\n")
 		}
