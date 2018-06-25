@@ -1,5 +1,4 @@
 ---
-# TODO: Set up Travis CI release.
 language: go
 go: 1.10.x
 sudo: false
@@ -13,4 +12,14 @@ install: dep ensure
 script:
   - make
   - make test
-  - make build
+before_deploy: make build
+deploy:
+  provider: releases
+  skip_cleanup: true
+  file_glob: true
+  file: licensezero-*
+  on:
+    repo: licensezero/cli
+    tags: true
+  api_key:
+    secure: jzBSnATaRNgglXT9uQH/z1N/ilWsQf7t2HIGzBhZ8eFvszdHo4V/03V53cZmxv02M2tiNJsWN1H2rY2Op9C3ETeSKExEFSZDlp4y9QTrKwjll0j0TOVRdId7eVJFxjzMQSgjpn72am8HiNTtvwESYvoZ4vekqeFf8+s/T2pzGxTZ1EwynLO+41y31kaUXeE7xxstdrytQrTucyETrEZrQjBYmYyUZT0glQg4vDWuAL+Y6j/0rbqzfl1w7A8rWF8ORv2djcEcrQsqjSOfOmi/BP7C2Vs5SG0Jp5OITY1FwTjvfzSHqkmOGIvurEgd3OuJUIQalGP4/EFLX0pLZToHoRFwB9rSNI/4aF+Fn1eaQQSDuBmMXjcQKtZqk8fbKBhEYF508Qv5ouyyvQPfrHaTQy/XjzXObMtf4+jVg6JihUvgI6x6Dd1GOYKvGteMQeRBIPAU6EBUE0CNNkz+laZyTUzV6XdYCs56yFyyA7SAuUnR5aYLqhbD2iFMgGhAylJ6Ap3e1YXCSG9nAtkyUobevuqHEnzz4j3PkBvy9/pP9y6WTwPUXJZ+pCIdHhx0FKgTrmgY1DBLX1hxzqlmwILbfVAbHoCSNvcyN9bHeMYW97B9dtiCqz4+7BCRqkQaC0L8GeO9eLBeVfoDefpWB67hD5Utb1E0rv6E27ZO5Tz2Jd4=
