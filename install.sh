@@ -54,6 +54,8 @@ fi
 [ "$code" != 200 ] && fail "Release data request failed with status $code."
 tag="$(echo "$releases" | tr -s '\n' ' ' | sed 's/.*"tag_name":"//' | sed 's/".*//')"
 
+echo "Latest Release: $tag"
+
 # Download Executable
 executable="licensezero-${os}-${architecture}${executable_suffix}"
 tmp=$(mktemp)
@@ -70,4 +72,6 @@ fi
 
 # Install Executable
 chmod +x "$tmp"
-mv "$tmp" "$GOBIN/licensezero${executable_suffix}"
+install_path="$GOBIN/licensezero${executable_suffix}"
+mv "$tmp" "$install_path"
+echo "Installed To: $install_path"
