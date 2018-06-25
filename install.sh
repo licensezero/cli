@@ -38,8 +38,7 @@ GITHUB_REPOSITORY="https://github.com/licensezero/cli"
 
 # Find Latest Release
 ACCEPT_JSON="Accept: application/json"
-release_url="$GITHUB_REPOSITORY/releases"
-echo "$release_url"
+release_url="$GITHUB_REPOSITORY/releases/latest"
 if [ -x "$(command -v curl)" ]; then
   response=$(curl --silent --location --write-out 'HTTPSTATUS:%{http_code}' --header "$ACCEPT_JSON" "$release_url")
   releases=$(echo "$response" | sed -e 's/HTTPSTATUS\:.*//g')
