@@ -6,6 +6,8 @@ import "github.com/mitchellh/go-homedir"
 import "os"
 import "sort"
 
+var Rev string // Set via ldflags.
+
 var commands = map[string]subcommands.Subcommand{
 	"buy":       subcommands.Buy,
 	"identify":  subcommands.Identify,
@@ -22,6 +24,7 @@ var commands = map[string]subcommands.Subcommand{
 	"retract":   subcommands.Retract,
 	"sponsor":   subcommands.Sponsor,
 	"token":     subcommands.Token,
+	"version":   subcommands.Version,
 	"waive":     subcommands.Waive,
 	"whoami":    subcommands.WhoAmI,
 }
@@ -42,7 +45,11 @@ func main() {
 	if len(arguments) > 1 {
 		subcommand := os.Args[1]
 		if value, ok := commands[subcommand]; ok {
-			value.Handler(os.Args[2:], paths)
+			if subcommand == "version" {
+				value.Handler([]string{Rev}, paths)
+			} else {
+				value.Handler(os.Args[2:], paths)
+			}
 		} else {
 			showUsage()
 			os.Exit(1)
