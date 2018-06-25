@@ -18,6 +18,10 @@ type WaiveRequest struct {
 	Term         interface{} `json:"term"`
 }
 
+type WaiveResponse struct {
+	Error interface{} `json:"error"`
+}
+
 func Waive(licensor *data.Licensor, projectID, beneficiary, jurisdiction string, term interface{}) ([]byte, error) {
 	bodyData := WaiveRequest{
 		Action:       "waiver",

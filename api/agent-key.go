@@ -11,7 +11,8 @@ type KeyRequest struct {
 }
 
 type KeyResponse struct {
-	Key string `json:"key"`
+	Error interface{} `json:"error"`
+	Key   string      `json:"key"`
 }
 
 func FetchAgentPublicKey() (string, error) {
@@ -30,6 +31,9 @@ func FetchAgentPublicKey() (string, error) {
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return "", errors.New("error parsing agent key response body")
+	}
+	if message, ok := parsed.Error.(string); ok {
+		return "", errors.New(message)
 	}
 	return parsed.Key, nil
 }

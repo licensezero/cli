@@ -2,6 +2,7 @@ package api
 
 import "bytes"
 import "encoding/json"
+import "errors"
 import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "net/http"
@@ -20,7 +21,8 @@ type OfferRequest struct {
 }
 
 type OfferResponse struct {
-	ProjectID string `json:"projectID"`
+	Error     interface{} `json:"error"`
+	ProjectID string      `json:"projectID"`
 }
 
 func Offer(licensor *data.Licensor, homepage, description string, private, relicense uint) (string, error) {
@@ -50,6 +52,9 @@ func Offer(licensor *data.Licensor, homepage, description string, private, relic
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return "", err
+	}
+	if message, ok := parsed.Error.(string); ok {
+		return "", errors.New(message)
 	}
 	return parsed.ProjectID, nil
 }

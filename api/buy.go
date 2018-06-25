@@ -17,7 +17,8 @@ type BuyRequest struct {
 }
 
 type BuyResponse struct {
-	Location string `json:"location"`
+	Error    interface{} `json:"error"`
+	Location string      `json:"location"`
 }
 
 func Buy(identity *data.Identity, projectIDs []string) (string, error) {
@@ -40,7 +41,13 @@ func Buy(identity *data.Identity, projectIDs []string) (string, error) {
 		return "", errors.New("invalid server response")
 	}
 	var parsed BuyResponse
-	json.Unmarshal(responseBody, &parsed)
+	err = json.Unmarshal(responseBody, &parsed)
+	if err != nil {
+		return "", err
+	}
+	if message, ok := parsed.Error.(string); ok {
+		return "", errors.New(message)
+	}
 	location := parsed.Location
 	return "https://licensezero.com" + location, nil
 }

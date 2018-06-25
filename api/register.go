@@ -19,6 +19,10 @@ type RegisterRequest struct {
 	Terms        string `json:"terms"`
 }
 
+type RegisterResponse struct {
+	Error interface{} `json:"error"`
+}
+
 func Register(identity *data.Identity) error {
 	bodyData := RegisterRequest{
 		Action:       "register",
@@ -40,9 +44,7 @@ func Register(identity *data.Identity) error {
 	if err != nil {
 		return err
 	}
-	var parsed struct {
-		Error interface{} `json:"error"`
-	}
+	var parsed RegisterResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return err

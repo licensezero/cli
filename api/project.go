@@ -12,6 +12,7 @@ type ProjectRequest struct {
 }
 
 type ProjectResponse struct {
+	Error    interface{}         `json:"error"`
 	Licensor LicensorInformation `json:"licensor"`
 }
 
@@ -34,6 +35,9 @@ func Project(projectID string) (ProjectResponse, error) {
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return ProjectResponse{}, errors.New("error parsing agent key response body")
+	}
+	if message, ok := parsed.Error.(string); ok {
+		return ProjectResponse{}, errors.New(message)
 	}
 	return parsed, nil
 }

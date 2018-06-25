@@ -16,7 +16,8 @@ type SponsorRequest struct {
 }
 
 type SponsorResponse struct {
-	Location string `json:"location"`
+	Error    interface{} `json:"error"`
+	Location string      `json:"location"`
 }
 
 func Sponsor(identity *data.Identity, projectID string) (string, error) {
@@ -38,7 +39,13 @@ func Sponsor(identity *data.Identity, projectID string) (string, error) {
 		return "", errors.New("invalid server response")
 	}
 	var parsed SponsorResponse
-	json.Unmarshal(responseBody, &parsed)
+	err = json.Unmarshal(responseBody, &parsed)
+	if err != nil {
+		return "", err
+	}
+	if message, ok := parsed.Error.(string); ok {
+		return "", errors.New(message)
+	}
 	location := parsed.Location
 	return "https://licensezero.com" + location, nil
 }

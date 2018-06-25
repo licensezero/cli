@@ -2,6 +2,7 @@ package api
 
 import "bytes"
 import "encoding/json"
+import "errors"
 import "io/ioutil"
 import "net/http"
 
@@ -11,6 +12,7 @@ type QuoteRequest struct {
 }
 
 type QuoteResponse struct {
+	Error    interface{}    `json:"error"`
 	Projects []QuoteProject `json:"projects"`
 }
 
@@ -53,6 +55,9 @@ func Quote(projectIDs []string) (QuoteResponse, error) {
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return QuoteResponse{}, err
+	}
+	if message, ok := parsed.Error.(string); ok {
+		return QuoteResponse{}, errors.New(message)
 	}
 	return parsed, nil
 }
