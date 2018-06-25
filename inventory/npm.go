@@ -110,3 +110,5 @@ func alreadyHaveProject(projects []Project, projectID string) bool {
 	}
 	return false
 }
+
+// TODO: Move package.json writing function into inventory.
