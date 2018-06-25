@@ -78,7 +78,7 @@ func showUsage() {
 	}
 	listSubcommands("For Buyers", buyer)
 	listSubcommands("For Sellers", seller)
-	listSubcommands("Miscellaneous", buyer)
+	listSubcommands("Miscellaneous", misc)
 }
 
 func listSubcommands(header string, list map[string]subcommands.Subcommand) {
