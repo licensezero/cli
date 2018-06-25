@@ -4,7 +4,7 @@ import "flag"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const identifyDescription = "Wave your personal details for quoting and buying licenses."
+const identifyDescription = "Save your personal details for quoting and buying licenses."
 
 var Identify = Subcommand{
 	Tag:         "buyer",
