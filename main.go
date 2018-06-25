@@ -65,8 +65,9 @@ func showUsage() {
 	longestSubcommand := 0
 	var names []string
 	for name, _ := range commands {
-		if len(name) > longestSubcommand {
-			longestSubcommand = len(name) + 1
+		length := len(name) + 1
+		if length > longestSubcommand {
+			longestSubcommand = length
 		}
 		names = append(names, name)
 	}
