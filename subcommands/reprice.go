@@ -7,6 +7,8 @@ import "os"
 
 const repriceDescription = "Change pricing for your project."
 
+// TODO: Clarify UI for withdrawing relicense offers.
+
 var Reprice = Subcommand{
 	Description: repriceDescription,
 	Handler: func(args []string, paths Paths) {
