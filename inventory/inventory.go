@@ -6,12 +6,12 @@ import "os"
 import "path"
 
 type Project struct {
-	Type     string
-	Path     string
-	Scope    string
-	Name     string
-	Version  string
-	Envelope ProjectManifestEnvelope
+	Type     string                  `json:"type"`
+	Path     string                  `json:"path"`
+	Scope    string                  `json:"scope,omitempty"`
+	Name     string                  `json:"name"`
+	Version  string                  `json:"version"`
+	Envelope ProjectManifestEnvelope `json:"envelope"`
 }
 
 type ProjectManifestEnvelope struct {
@@ -33,12 +33,12 @@ type ProjectManifest struct {
 }
 
 type Projects struct {
-	Licensable []Project
-	Licensed   []Project
-	Waived     []Project
-	Unlicensed []Project
-	Ignored    []Project
-	Invalid    []Project
+	Licensable []Project `json:"licensable"`
+	Licensed   []Project `json:"licensed"`
+	Waived     []Project `json:"waived"`
+	Unlicensed []Project `json:"unlicensed"`
+	Ignored    []Project `json:"ignored"`
+	Invalid    []Project `json:"invalid"`
 }
 
 func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects, error) {

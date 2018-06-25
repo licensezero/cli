@@ -1,13 +1,12 @@
 package subcommands
 
+import "encoding/json"
 import "flag"
 import "fmt"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/inventory"
 import "os"
 import "strconv"
-
-// TODO: licensezero quote --json
 
 const quoteDescription = "Quote the cost of private licenses you need."
 
@@ -17,6 +16,7 @@ var Quote = Subcommand{
 		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
 		noNoncommercial := NoNoncommercial(flagSet)
 		noReciprocal := NoReciprocal(flagSet)
+		outputJSON := flagSet.Bool("json", false, "")
 		flagSet.Usage = quoteUsage
 		flagSet.Parse(args)
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
@@ -30,6 +30,15 @@ var Quote = Subcommand{
 		unlicensed := projects.Unlicensed
 		ignored := projects.Ignored
 		invalid := projects.Invalid
+		if *outputJSON {
+			marshalled, err := json.Marshal(projects)
+			if err != nil {
+				os.Stderr.WriteString("Error serializing output.\n")
+				os.Exit(1)
+			}
+			os.Stdout.WriteString(string(marshalled) + "\n")
+			os.Exit(0)
+		}
 		if len(licensable) == 0 {
 			fmt.Println("No License Zero dependencies found.")
 			os.Exit(0)
@@ -81,6 +90,7 @@ func quoteUsage() {
 		"Usage:\n" +
 		"  licensezero quote\n\n" +
 		"Options:\n" +
+		"  --json              Output JSON.\n" +
 		"  --no-noncommercial  " + noNoncommercialLine + "\n" +
 		"  --no-reciprocal     " + noReciprocalLine + "\n"
 	os.Stderr.WriteString(usage)
