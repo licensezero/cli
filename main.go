@@ -10,6 +10,7 @@ var Rev string // Set via ldflags.
 
 var commands = map[string]subcommands.Subcommand{
 	"buy":       subcommands.Buy,
+	"bugs":      subcommands.Bugs,
 	"identify":  subcommands.Identify,
 	"import":    subcommands.Import,
 	"license":   subcommands.License,
