@@ -10,7 +10,7 @@ var Token = Subcommand{
 	Description: tokenDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("token", flag.ExitOnError)
-		licensorID := flagSet.String("licensor-id", "", "Licensor ID")
+		licensorID := flagSet.String("licensor", "", "Licensor ID")
 		silent := Silent(flagSet)
 		flagSet.Usage = tokenUsage
 		flagSet.Parse(args)
@@ -43,10 +43,10 @@ var Token = Subcommand{
 func tokenUsage() {
 	usage := tokenDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero token --licensor-id ID\n\n" +
+		"  licensezero token --licensor ID\n\n" +
 		"Options:\n" +
-		"  --licensor-id ID  Licensor ID (UUID).\n" +
-		"  --silent          " + silentLine + "\n"
+		"  --licensor ID  Licensor ID (UUID).\n" +
+		"  --silent       " + silentLine + "\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }
