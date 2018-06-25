@@ -2,11 +2,12 @@ package api
 
 import "bytes"
 import "encoding/json"
+import "errors"
 import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "net/http"
 
-type LicenseRequest struct {
+type PublicRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
@@ -14,7 +15,8 @@ type LicenseRequest struct {
 	Terms      string `json:"terms"`
 }
 
-type LicenseResponse struct {
+type PublicResponse struct {
+	Error    interface{} `json:"error"`
 	Metadata interface{} `json:"metadata"`
 	License  struct {
 		Document          string `json:"document"`
@@ -23,9 +25,9 @@ type LicenseResponse struct {
 	} `json:"license"`
 }
 
-func License(licensor *data.Licensor, projectID string, terms string) (LicenseResponse, error) {
-	bodyData := LicenseRequest{
-		Action:     "license",
+func Public(licensor *data.Licensor, projectID string, terms string) (PublicResponse, error) {
+	bodyData := PublicRequest{
+		Action:     "public",
 		ProjectID:  projectID,
 		Terms:      terms,
 		LicensorID: licensor.LicensorID,
@@ -33,18 +35,21 @@ func License(licensor *data.Licensor, projectID string, terms string) (LicenseRe
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {
-		return LicenseResponse{}, err
+		return PublicResponse{}, err
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
 	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return LicenseResponse{}, err
+		return PublicResponse{}, err
 	}
-	var parsed LicenseResponse
+	var parsed PublicResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
-		return LicenseResponse{}, err
+		return PublicResponse{}, err
+	}
+	if parsed.Error.(bool) {
+		return PublicResponse{}, errors.New(parsed.Error.(string))
 	}
 	return parsed, nil
 }

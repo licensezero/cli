@@ -1,5 +1,7 @@
 package subcommands
 
+import "fmt"
+
 import "bytes"
 import "encoding/json"
 import "errors"
@@ -44,7 +46,7 @@ var License = Subcommand{
 		if *reciprocal {
 			terms = "reciprocal"
 		}
-		response, err := api.License(licensor, *projectID, terms)
+		response, err := api.Public(licensor, *projectID, terms)
 		if err != nil {
 			os.Stderr.WriteString("Error sending license information request.\n")
 			os.Exit(1)
@@ -114,7 +116,7 @@ var License = Subcommand{
 	},
 }
 
-func writeLICENSE(response *api.LicenseResponse) error {
+func writeLICENSE(response *api.PublicResponse) error {
 	var toWrite string
 	existing, err := ioutil.ReadFile("LICENSE")
 	if err != nil {
@@ -129,6 +131,7 @@ func writeLICENSE(response *api.LicenseResponse) error {
 	if len(toWrite) != 0 {
 		toWrite = toWrite + "\n\n"
 	}
+	fmt.Println(response)
 	toWrite = toWrite +
 		response.License.Document + "\n\n" +
 		"---\n\n" +
