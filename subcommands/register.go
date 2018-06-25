@@ -7,6 +7,7 @@ import "os"
 const registerDescription = "Register to sell private licenses through licensezero.com."
 
 var Register = Subcommand{
+	Tag:         "seller",
 	Description: registerDescription,
 	Handler: func(args []string, paths Paths) {
 		identity, err := data.ReadIdentity(paths.Home)

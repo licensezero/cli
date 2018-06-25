@@ -9,6 +9,7 @@ import "os"
 const importDescription = "Import a private license or waiver from a file."
 
 var Import = Subcommand{
+	Tag:         "buyer",
 	Description: importDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("import", flag.ExitOnError)

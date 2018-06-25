@@ -5,6 +5,7 @@ import "os"
 const versionDescription = "Print version."
 
 var Version = Subcommand{
+	Tag:         "misc",
 	Description: versionDescription,
 	Handler: func(args []string, paths Paths) {
 		if args[0] == "" {

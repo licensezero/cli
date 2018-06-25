@@ -62,10 +62,30 @@ func main() {
 }
 
 func showUsage() {
-	usage := "Manage License Zero projects and dependencies.\n\nSubcommands:\n"
+	os.Stdout.WriteString("Manage License Zero projects and dependencies.\n\nSubcommands:\n")
+	buyer := map[string]subcommands.Subcommand{}
+	seller := map[string]subcommands.Subcommand{}
+	misc := map[string]subcommands.Subcommand{}
+	for key, value := range commands {
+		switch value.Tag {
+		case "buyer":
+			buyer[key] = value
+		case "seller":
+			seller[key] = value
+		default:
+			misc[key] = value
+		}
+	}
+	listSubcommands("For Buyers", buyer)
+	listSubcommands("For Sellers", seller)
+	listSubcommands("Miscellaneous", buyer)
+}
+
+func listSubcommands(header string, list map[string]subcommands.Subcommand) {
+	os.Stdout.WriteString("\n  " + header + ":\n\n")
 	longestSubcommand := 0
 	var names []string
-	for name, _ := range commands {
+	for name, _ := range list {
 		length := len(name) + 1
 		if length > longestSubcommand {
 			longestSubcommand = length
@@ -74,8 +94,7 @@ func showUsage() {
 	}
 	sort.Strings(names)
 	for _, name := range names {
-		info := commands[name]
-		usage += fmt.Sprintf("  %-"+fmt.Sprintf("%d", longestSubcommand)+"s %s\n", name, info.Description)
+		info := list[name]
+		fmt.Printf("  %-"+fmt.Sprintf("%d", longestSubcommand)+"s %s\n", name, info.Description)
 	}
-	os.Stdout.WriteString(usage)
 }

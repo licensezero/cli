@@ -8,6 +8,7 @@ import "os"
 const waiveDescription = "Generate a waiver for your project."
 
 var Waive = Subcommand{
+	Tag:         "seller",
 	Description: waiveDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("waive", flag.ExitOnError)

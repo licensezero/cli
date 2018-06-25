@@ -8,6 +8,7 @@ import "os"
 const retractDescription = "Retract project licenses for a project from sale."
 
 var Retract = Subcommand{
+	Tag:         "seller",
 	Description: retractDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("retract", flag.ExitOnError)

@@ -10,6 +10,7 @@ const repriceDescription = "Change pricing for your project."
 // TODO: Clarify UI for withdrawing relicense offers.
 
 var Reprice = Subcommand{
+	Tag:         "seller",
 	Description: repriceDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("reprice", flag.ExitOnError)

@@ -8,6 +8,7 @@ import "os"
 const lockDescription = "Lock project pricing and availability until a given date."
 
 var Lock = Subcommand{
+	Tag:         "seller",
 	Description: lockDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("lock", flag.ExitOnError)

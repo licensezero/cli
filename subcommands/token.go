@@ -7,6 +7,7 @@ import "os"
 const tokenDescription = "Set your licensezero.com licensor ID and access token."
 
 var Token = Subcommand{
+	Tag:         "seller",
 	Description: tokenDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("token", flag.ExitOnError)

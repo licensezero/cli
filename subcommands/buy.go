@@ -11,6 +11,7 @@ import "os"
 const buyDescription = "Buy private licenses you are missing."
 
 var Buy = Subcommand{
+	Tag:         "buyer",
 	Description: buyDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("buy", flag.ExitOnError)

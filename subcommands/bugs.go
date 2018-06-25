@@ -6,6 +6,7 @@ import "os"
 const bugsDescription = "Access the bug tracker for the application."
 
 var Bugs = Subcommand{
+	Tag:         "misc",
 	Description: bugsDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("bugs", flag.ExitOnError)

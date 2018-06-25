@@ -9,6 +9,7 @@ import "os"
 const readmeDescription = "Append licensing information to README."
 
 var README = Subcommand{
+	Tag:         "seller",
 	Description: readmeDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("readme", flag.ExitOnError)

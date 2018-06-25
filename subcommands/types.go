@@ -6,6 +6,7 @@ type Paths struct {
 }
 
 type Subcommand struct {
+	Tag         string
 	Description string
 	Handler     func([]string, Paths)
 }

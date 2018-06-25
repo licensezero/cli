@@ -8,6 +8,7 @@ import "os"
 const sponsorDescription = "Sponsor relicensing of a project onto permissive terms."
 
 var Sponsor = Subcommand{
+	Tag:         "buyer",
 	Description: sponsorDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("sponsor", flag.ExitOnError)

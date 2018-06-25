@@ -11,6 +11,7 @@ import "strconv"
 const purchasedDescription = "Download a bundle of licenses you bought from licensezero.com."
 
 var Purchased = Subcommand{
+	Tag:         "buyer",
 	Description: purchasedDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("purchased", flag.ExitOnError)

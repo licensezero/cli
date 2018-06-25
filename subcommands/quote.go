@@ -11,6 +11,7 @@ import "strconv"
 const quoteDescription = "Quote the cost of private licenses you need."
 
 var Quote = Subcommand{
+	Tag:         "buyer",
 	Description: quoteDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)

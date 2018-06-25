@@ -13,6 +13,7 @@ import "path"
 const licenseDescription = "Write LICENSE and package metadata for your project."
 
 var License = Subcommand{
+	Tag:         "seller",
 	Description: licenseDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("license", flag.ExitOnError)
