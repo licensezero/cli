@@ -11,7 +11,6 @@ import "strconv"
 type ResetRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
-	Name       string `json:"name"`
 	EMail      string `json:"email"`
 }
 
@@ -23,7 +22,6 @@ func Reset(identity *data.Identity, licensor *data.Licensor) error {
 	bodyData := ResetRequest{
 		Action:     "reset",
 		LicensorID: licensor.LicensorID,
-		Name:       identity.Name,
 		EMail:      identity.EMail,
 	}
 	body, err := json.Marshal(bodyData)
