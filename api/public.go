@@ -51,8 +51,8 @@ func Public(licensor *data.Licensor, projectID string, terms string) (PublicResp
 	if err != nil {
 		return PublicResponse{}, err
 	}
-	if parsed.Error.(bool) {
-		return PublicResponse{}, errors.New(parsed.Error.(string))
+	if message, ok := parsed.Error.(string); ok {
+		return PublicResponse{}, errors.New(message)
 	}
 	return parsed, nil
 }
