@@ -1,9 +1,9 @@
 package subcommands
 
 import "flag"
-import "github.com/licensezero/cli/inventory"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "github.com/licensezero/cli/inventory"
 import "io/ioutil"
 import "os"
 
