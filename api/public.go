@@ -17,8 +17,11 @@ type PublicRequest struct {
 
 type PublicResponse struct {
 	Error    interface{} `json:"error"`
-	Metadata interface{} `json:"metadata"`
-	License  struct {
+	Metadata struct {
+		License     string      `json:"license"`
+		LicenseZero interface{} `json:"licensezero"`
+	} `json:"metadata"`
+	License struct {
 		Document          string `json:"document"`
 		LicensorSignature string `json:"licensorSignature"`
 		AgentSignature    string `json:"agentSignature"`

@@ -1,7 +1,5 @@
 package subcommands
 
-import "fmt"
-
 import "bytes"
 import "encoding/json"
 import "errors"
@@ -52,7 +50,7 @@ var License = Subcommand{
 			os.Exit(1)
 		}
 		// Add metadata to package.json.
-		newEntry := response.Metadata
+		newEntry := response.Metadata.LicenseZero
 		package_json := path.Join(paths.CWD, "package.json")
 		data, err := ioutil.ReadFile(package_json)
 		if err != nil {
@@ -131,7 +129,6 @@ func writeLICENSE(response *api.PublicResponse) error {
 	if len(toWrite) != 0 {
 		toWrite = toWrite + "\n\n"
 	}
-	fmt.Println(response)
 	toWrite = toWrite +
 		response.License.Document + "\n\n" +
 		"---\n\n" +
