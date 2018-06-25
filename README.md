@@ -4,4 +4,4 @@ _This Go port of the License Zero is under active prerelease development.  Use t
 
 ## Installation
 
-See [release on GitHub](https://github.com/licensezero/cli/releases) for binary builds.
+See [releases on GitHub](https://github.com/licensezero/cli/releases) for binary builds.
