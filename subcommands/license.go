@@ -29,6 +29,9 @@ var License = Subcommand{
 		if *noncommercial && *reciprocal {
 			licenseUsage()
 		}
+		if *projectID == "" {
+			licenseUsage()
+		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
 			os.Stderr.WriteString(licensorHint + "\n")
