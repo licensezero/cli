@@ -9,4 +9,4 @@ test: licensezero
 	go test
 
 build:
-	gox -os="linux darwin windows freebsd" -arch="386 amd64" -output="licensezero-{{.OS}}-{{.Arch}}" -ldflags "$(LDFLAGS)" -verbose
+	gox -os="linux darwin windows freebsd" -arch="386 amd64 arm" -output="licensezero-{{.OS}}-{{.Arch}}" -ldflags "$(LDFLAGS)" -verbose
