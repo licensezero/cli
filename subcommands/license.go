@@ -26,7 +26,7 @@ var License = Subcommand{
 		if *noncommercial && *reciprocal {
 			licenseUsage()
 		}
-		if *noncommercial && *reciprocal {
+		if !*noncommercial && !*reciprocal {
 			licenseUsage()
 		}
 		if *projectID == "" {
