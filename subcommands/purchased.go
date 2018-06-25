@@ -17,6 +17,7 @@ var Purchased = Subcommand{
 		flagSet := flag.NewFlagSet("purchased", flag.ExitOnError)
 		bundle := flagSet.String("bundle", "", "")
 		silent := Silent(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = purchasedUsage
 		flagSet.Parse(args)
 		if *bundle == "" {

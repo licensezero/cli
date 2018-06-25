@@ -3,6 +3,7 @@ package subcommands
 import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
 import "os"
 
 const offerDescription = "Offer private licenses for sale through licensezero.com."
@@ -17,6 +18,7 @@ var Offer = Subcommand{
 		description := flagSet.String("description", "", "")
 		doNotOpen := DoNotOpen(flagSet)
 		price := Price(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = offerUsage
 		flagSet.Parse(args)
 		if *price == 0 || *homepage == "" {

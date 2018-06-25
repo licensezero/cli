@@ -2,6 +2,7 @@ package subcommands
 
 import "flag"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
 import "os"
 
 const identifyDescription = "Save your personal details for quoting and buying licenses."
@@ -15,6 +16,7 @@ var Identify = Subcommand{
 		name := flagSet.String("name", "", "")
 		email := flagSet.String("email", "", "")
 		silent := Silent(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = identifyUsage
 		flagSet.Parse(args)
 		if *jurisdiction == "" || *name == "" || *email == "" {

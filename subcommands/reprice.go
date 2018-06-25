@@ -3,6 +3,7 @@ package subcommands
 import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
 import "os"
 
 const repriceDescription = "Change pricing for your project."
@@ -18,6 +19,7 @@ var Reprice = Subcommand{
 		relicense := Relicense(flagSet)
 		projectIDFlag := ProjectID(flagSet)
 		silent := Silent(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = repriceUsage
 		flagSet.Parse(args)
 		if *price == 0 || *projectIDFlag == "" {

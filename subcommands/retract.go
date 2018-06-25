@@ -3,6 +3,7 @@ package subcommands
 import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
 import "os"
 
 const retractDescription = "Retract project licenses for a project from sale."
@@ -14,6 +15,7 @@ var Retract = Subcommand{
 		flagSet := flag.NewFlagSet("retract", flag.ExitOnError)
 		projectID := ProjectID(flagSet)
 		silent := Silent(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = retractUsage
 		flagSet.Parse(args)
 		if *projectID == "" {

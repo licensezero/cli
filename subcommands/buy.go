@@ -4,6 +4,7 @@ import "flag"
 import "github.com/licensezero/cli/inventory"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
 import "os"
 
 // TODO: licensezero buy --json
@@ -18,6 +19,7 @@ var Buy = Subcommand{
 		doNotOpen := DoNotOpen(flagSet)
 		noNoncommercial := NoNoncommercial(flagSet)
 		noReciprocal := NoReciprocal(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = buyUsage
 		flagSet.Parse(args)
 		identity, err := data.ReadIdentity(paths.Home)

@@ -2,6 +2,7 @@ package subcommands
 
 import "flag"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
 import "os"
 
 const tokenDescription = "Set your licensezero.com licensor ID and access token."
@@ -13,6 +14,7 @@ var Token = Subcommand{
 		flagSet := flag.NewFlagSet("token", flag.ExitOnError)
 		licensorID := flagSet.String("licensor", "", "Licensor ID")
 		silent := Silent(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = tokenUsage
 		flagSet.Parse(args)
 		if *licensorID == "" {

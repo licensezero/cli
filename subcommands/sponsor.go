@@ -3,6 +3,7 @@ package subcommands
 import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
 import "os"
 
 const sponsorDescription = "Sponsor relicensing of a project onto permissive terms."
@@ -14,6 +15,7 @@ var Sponsor = Subcommand{
 		flagSet := flag.NewFlagSet("sponsor", flag.ExitOnError)
 		doNotOpen := DoNotOpen(flagSet)
 		projectID := ProjectID(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = sponsorUsage
 		flagSet.Parse(args)
 		if *projectID == "" {

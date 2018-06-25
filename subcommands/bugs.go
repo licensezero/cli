@@ -1,6 +1,7 @@
 package subcommands
 
 import "flag"
+import "io/ioutil"
 import "os"
 
 const bugsDescription = "Access the bug tracker for the application."
@@ -11,6 +12,7 @@ var Bugs = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("bugs", flag.ExitOnError)
 		doNotOpen := DoNotOpen(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = bugsUsage
 		flagSet.Parse(args)
 		openURLAndExit("https://github.com/licensezero/cli/issues", doNotOpen)

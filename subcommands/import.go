@@ -15,6 +15,7 @@ var Import = Subcommand{
 		flagSet := flag.NewFlagSet("import", flag.ExitOnError)
 		filePath := flagSet.String("file", "", "")
 		silent := Silent(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = importUsage
 		flagSet.Parse(args)
 		if *filePath == "" {

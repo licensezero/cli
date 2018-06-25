@@ -3,6 +3,7 @@ package subcommands
 import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
 import "os"
 
 const waiveDescription = "Generate a waiver for your project."
@@ -17,6 +18,7 @@ var Waive = Subcommand{
 		forever := flagSet.Bool("forever", false, "Forever.")
 		beneficiary := flagSet.String("beneficiary", "", "Beneficiary legal name.")
 		projectID := ProjectID(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = waiveUsage
 		flagSet.Parse(args)
 		if *projectID == "" {

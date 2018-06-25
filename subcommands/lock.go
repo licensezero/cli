@@ -3,6 +3,7 @@ package subcommands
 import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "io/ioutil"
 import "os"
 
 const lockDescription = "Lock project pricing and availability until a given date."
@@ -15,6 +16,7 @@ var Lock = Subcommand{
 		projectID := ProjectID(flagSet)
 		unlock := flagSet.String("unlock", "", "")
 		silent := Silent(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = lockUsage
 		flagSet.Parse(args)
 		licensor, err := data.ReadLicensor(paths.Home)

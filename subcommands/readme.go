@@ -14,6 +14,7 @@ var README = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("readme", flag.ExitOnError)
 		silent := Silent(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = readmeUsage
 		flagSet.Parse(args)
 		var existing string

@@ -22,6 +22,7 @@ var License = Subcommand{
 		reciprocal := flagSet.Bool("reciprocal", false, "Use reciprocal public license.")
 		stack := flagSet.Bool("stack", false, "Stack licensing metadata.")
 		silent := Silent(flagSet)
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = licenseUsage
 		flagSet.Parse(args)
 		if *noncommercial && *reciprocal {

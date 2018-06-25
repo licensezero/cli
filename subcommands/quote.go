@@ -5,6 +5,7 @@ import "flag"
 import "fmt"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/inventory"
+import "io/ioutil"
 import "os"
 import "strconv"
 
@@ -18,6 +19,7 @@ var Quote = Subcommand{
 		noNoncommercial := NoNoncommercial(flagSet)
 		noReciprocal := NoReciprocal(flagSet)
 		outputJSON := flagSet.Bool("json", false, "")
+		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = quoteUsage
 		flagSet.Parse(args)
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
