@@ -35,9 +35,9 @@ var Sponsor = Subcommand{
 func sponsorUsage() {
 	usage := sponsorDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero sponsor --project-id ID\n\n" +
+		"  licensezero sponsor --project ID\n\n" +
 		"Options:\n" +
-		"  --project-id ID  Project ID (UUID)."
+		"  --project ID  Project ID (UUID)."
 	os.Stdout.WriteString(usage)
 	os.Exit(1)
 }

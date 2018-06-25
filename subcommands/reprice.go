@@ -42,7 +42,7 @@ var Reprice = Subcommand{
 			}
 			if len(projectIDs) > 0 {
 				os.Stderr.WriteString("package.json has metadata for multiple License Zero projects.\n")
-				os.Stderr.WriteString("Use --project-id to specify your project ID.")
+				os.Stderr.WriteString("Use --project to specify your project ID.")
 				os.Exit(1)
 			}
 		}
@@ -61,12 +61,12 @@ var Reprice = Subcommand{
 func repriceUsage() {
 	usage := repriceDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero reprice --project-id ID --price CENTS [--relicense CENTS]\n\n" +
+		"  licensezero reprice --project ID --price CENTS [--relicense CENTS]\n\n" +
 		"Options:\n" +
-		"  --price          " + priceLine + "\n" +
-		"  --project-id ID  Project ID (UUID).\n" +
-		"  --relicense      " + relicenseLine + "\n" +
-		"  --silent         " + silentLine + "\n"
+		"  --price       " + priceLine + "\n" +
+		"  --project ID  Project ID (UUID).\n" +
+		"  --relicense   " + relicenseLine + "\n" +
+		"  --silent      " + silentLine + "\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

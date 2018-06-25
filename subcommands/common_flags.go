@@ -15,7 +15,7 @@ func NoReciprocal(flagSet *flag.FlagSet) *bool {
 }
 
 func ProjectID(flagSet *flag.FlagSet) *string {
-	return flagSet.String("project-id", "", projectIDLine)
+	return flagSet.String("project", "", projectIDLine)
 }
 
 func Price(flagSet *flag.FlagSet) *uint {

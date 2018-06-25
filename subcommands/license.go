@@ -155,9 +155,9 @@ func signatureLines(signature string) string {
 func licenseUsage() {
 	usage := licenseDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero license --project-id ID (--noncommercial | --reciprocal) [--stack]\n\n" +
+		"  licensezero license --project ID (--noncommercial | --reciprocal) [--stack]\n\n" +
 		"Options:\n" +
-		"  --project-id     " + projectIDLine + "\n" +
+		"  --project        " + projectIDLine + "\n" +
 		"  --noncommerical  Use the noncommercial license.\n" +
 		"  --reciprocal     Use the reciprocal license.\n" +
 		"  --silent         " + silentLine + "\n" +

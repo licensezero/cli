@@ -52,9 +52,9 @@ var Waive = Subcommand{
 func waiveUsage() {
 	usage := waiveDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero waive --project-id ID --beneficiary NAME --jurisdiction CODE (--days DAYS | --forever)\n\n" +
+		"  licensezero waive --project ID --beneficiary NAME --jurisdiction CODE (--days DAYS | --forever)\n\n" +
 		"Options:\n" +
-		"  --project-id ID      " + projectIDLine + "\n" +
+		"  --project ID         " + projectIDLine + "\n" +
 		"  --beneficiary NAME   Beneficiary legal name.\n" +
 		"  --days DAYS          Term, in days.\n" +
 		"  --forever            Infinite term.\n" +

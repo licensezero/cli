@@ -36,11 +36,11 @@ var Lock = Subcommand{
 func lockUsage() {
 	usage := lockDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero lock --project-id ID --unlock DATE\n\n" +
+		"  licensezero lock --project ID --unlock DATE\n\n" +
 		"Options:\n" +
-		"  --project-id  " + projectIDLine + "\n" +
-		"  --silent      " + silentLine + "\n" +
-		"  --unlock      Unlock date.\n"
+		"  --project  " + projectIDLine + "\n" +
+		"  --silent   " + silentLine + "\n" +
+		"  --unlock   Unlock date.\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

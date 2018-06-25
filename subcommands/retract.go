@@ -38,10 +38,10 @@ var Retract = Subcommand{
 func retractUsage() {
 	usage := retractDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero retract --project-id ID\n\n" +
+		"  licensezero retract --project ID\n\n" +
 		"Options:\n" +
-		"  --project-id ID  " + projectIDLine + "\n" +
-		"  --silent         " + silentLine + "\n"
+		"  --project ID  " + projectIDLine + "\n" +
+		"  --silent      " + silentLine + "\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }
