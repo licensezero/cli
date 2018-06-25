@@ -4,7 +4,7 @@ import "fmt"
 import "github.com/licensezero/cli/data"
 import "os"
 
-const whoAmIDescription = "Show your name, tax jurisdiction, and e-mail."
+const whoAmIDescription = "Show your saved identification information."
 
 var WhoAmI = Subcommand{
 	Tag:         "misc",
