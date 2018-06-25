@@ -23,55 +23,53 @@ var Quote = Subcommand{
 		if err != nil {
 			os.Stderr.WriteString("Could not read dependeny tree.\n")
 			os.Exit(1)
-		} else {
-			licensable := projects.Licensable
-			licensed := projects.Licensed
-			waived := projects.Waived
-			unlicensed := projects.Unlicensed
-			ignored := projects.Ignored
-			invalid := projects.Invalid
-			if len(licensable) == 0 {
-				fmt.Println("No License Zero dependencies found.")
-				os.Exit(0)
-			}
-			fmt.Printf("License Zero Projects: %d\n", len(licensable))
-			fmt.Printf("Licensed: %d\n", len(licensed))
-			fmt.Printf("Waived: %d\n", len(waived))
-			fmt.Printf("Ignored: %d\n", len(ignored))
-			fmt.Printf("Unlicensed: %d\n", len(unlicensed))
-			fmt.Printf("Invalid: %d\n", len(invalid))
-			var projectIDs []string
-			for _, project := range unlicensed {
-				projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
-			}
-			response, err := api.Quote(projectIDs)
-			if err != nil {
-				os.Stderr.WriteString("Error requesting quote.\n")
-				os.Exit(1)
-			}
-			var total uint
-			for _, project := range response.Projects {
-				total += project.Pricing.Private
-				fmt.Println("\n- Project: " + project.ProjectID)
-				fmt.Println("  Description: " + project.Description)
-				fmt.Println("  Repository: " + project.Repository)
-				for _, prior := range unlicensed {
-					if prior.Envelope.Manifest.ProjectID == project.ProjectID {
-						if prior.Envelope.Manifest.Terms == "noncommercial" {
-							fmt.Println("  Terms: Noncommercial " + prior.Version)
-						} else if prior.Envelope.Manifest.Terms == "reciprocal" {
-							fmt.Println("  Terms: Reciprocal " + prior.Version)
-						}
-						break
+		}
+		licensable := projects.Licensable
+		licensed := projects.Licensed
+		waived := projects.Waived
+		unlicensed := projects.Unlicensed
+		ignored := projects.Ignored
+		invalid := projects.Invalid
+		if len(licensable) == 0 {
+			fmt.Println("No License Zero dependencies found.")
+			os.Exit(0)
+		}
+		fmt.Printf("License Zero Projects: %d\n", len(licensable))
+		fmt.Printf("Licensed: %d\n", len(licensed))
+		fmt.Printf("Waived: %d\n", len(waived))
+		fmt.Printf("Ignored: %d\n", len(ignored))
+		fmt.Printf("Unlicensed: %d\n", len(unlicensed))
+		fmt.Printf("Invalid: %d\n", len(invalid))
+		var projectIDs []string
+		for _, project := range unlicensed {
+			projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
+		}
+		response, err := api.Quote(projectIDs)
+		if err != nil {
+			os.Stderr.WriteString("Error requesting quote.\n")
+			os.Exit(1)
+		}
+		var total uint
+		for _, project := range response.Projects {
+			total += project.Pricing.Private
+			fmt.Println("\n- Project: " + project.ProjectID)
+			fmt.Println("  Description: " + project.Description)
+			fmt.Println("  Repository: " + project.Repository)
+			for _, prior := range unlicensed {
+				if prior.Envelope.Manifest.ProjectID == project.ProjectID {
+					if prior.Envelope.Manifest.Terms == "noncommercial" {
+						fmt.Println("  Terms: Noncommercial " + prior.Version)
+					} else if prior.Envelope.Manifest.Terms == "reciprocal" {
+						fmt.Println("  Terms: Reciprocal " + prior.Version)
 					}
+					break
 				}
-				fmt.Println("  Licensor: " + project.Licensor.Name + " [" + project.Licensor.Jurisdiction + "]")
-				if project.Retracted {
-					fmt.Println("  Retracted!")
-				}
-				fmt.Println("  Price: " + currency(project.Pricing.Private))
 			}
-
+			fmt.Println("  Licensor: " + project.Licensor.Name + " [" + project.Licensor.Jurisdiction + "]")
+			if project.Retracted {
+				fmt.Println("  Retracted!")
+			}
+			fmt.Println("  Price: " + currency(project.Pricing.Private))
 			fmt.Printf("\nTotal: %s\n", currency(total))
 			os.Exit(0)
 		}
