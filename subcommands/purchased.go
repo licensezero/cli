@@ -59,8 +59,10 @@ func purchasedUsage() {
 		"Usage:\n" +
 		"  licensezero purchased --bundle URL\n\n" +
 		"Options:\n" +
-		"  --bundle URL  URL of purchase bundle to import.\n" +
-		"  --silent      " + silentLine
+		flagsList(map[string]string{
+			"bundle URL": "URL of purchase bundle to import.",
+			"silent":     silentLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

@@ -143,7 +143,9 @@ func readmeUsage() {
 		"Usage:\n" +
 		"  licensezero readme\n\n" +
 		"Options:\n" +
-		"  --silent  " + silentLine + "\n"
+		flagsList(map[string]string{
+			"silent": silentLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

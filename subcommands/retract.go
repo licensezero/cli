@@ -40,8 +40,10 @@ func retractUsage() {
 		"Usage:\n" +
 		"  licensezero retract --project ID\n\n" +
 		"Options:\n" +
-		"  --project ID  " + projectIDLine + "\n" +
-		"  --silent      " + silentLine + "\n"
+		flagsList(map[string]string{
+			"project ID": projectIDLine,
+			"silent":     silentLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

@@ -59,10 +59,12 @@ func identifyUsage() {
 		"Usage:\n" +
 		"  licensezero identify --name NAME --jurisdiction CODE --email ADDRESS\n\n" +
 		"Options:\n" +
-		"  --email ADDRESS      Your e-mail address\n" +
-		"  --jurisdiction CODE  Your tax jurisdiction (ISO 3166-2, like \"US-CA\")\n" +
-		"  --name NAME          Your full name.\n" +
-		"  --silent             " + silentLine
+		flagsList(map[string]string{
+			"email ADDRESS":     "Your e-mail address",
+			"jurisdiction CODE": "Your tax jurisdiction (ISO 3166-2, like \"US-CA\")",
+			"name NAME":         "Your full name.",
+			"silent":            silentLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

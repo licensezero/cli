@@ -90,9 +90,11 @@ func quoteUsage() {
 		"Usage:\n" +
 		"  licensezero quote\n\n" +
 		"Options:\n" +
-		"  --json              Output JSON.\n" +
-		"  --no-noncommercial  " + noNoncommercialLine + "\n" +
-		"  --no-reciprocal     " + noReciprocalLine + "\n"
+		flagsList(map[string]string{
+			"json":             "Output JSON.",
+			"no-noncommercial": noNoncommercialLine,
+			"no-reciprocal":    noReciprocalLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

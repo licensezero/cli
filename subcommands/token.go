@@ -45,8 +45,10 @@ func tokenUsage() {
 		"Usage:\n" +
 		"  licensezero token --licensor ID\n\n" +
 		"Options:\n" +
-		"  --licensor ID  Licensor ID (UUID).\n" +
-		"  --silent       " + silentLine + "\n"
+		flagsList(map[string]string{
+			"licensor ID": "Licensor ID (UUID).",
+			"silent":      silentLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

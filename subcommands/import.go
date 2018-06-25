@@ -64,8 +64,10 @@ func importUsage() {
 		"Usage:\n" +
 		"  licensezero import --file FILE\n\n" +
 		"Options:\n" +
-		"  --file FILE  License or waiver file to import.\n" +
-		"  --silent     " + silentLine + "\n"
+		flagsList(map[string]string{
+			"file FILE": "License or waiver file to import.",
+			"silent":    silentLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

@@ -21,7 +21,9 @@ func bugsUsage() {
 		"Usage:\n" +
 		"  licensezero bugs\n\n" +
 		"Options:\n" +
-		"  --do-not-open       " + doNotOpenLine + "\n"
+		flagsList(map[string]string{
+			"do-not-open": doNotOpenLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

@@ -157,11 +157,13 @@ func licenseUsage() {
 		"Usage:\n" +
 		"  licensezero license --project ID (--noncommercial | --reciprocal) [--stack]\n\n" +
 		"Options:\n" +
-		"  --project        " + projectIDLine + "\n" +
-		"  --noncommerical  Use the noncommercial license.\n" +
-		"  --reciprocal     Use the reciprocal license.\n" +
-		"  --silent         " + silentLine + "\n" +
-		"  --stack          Stack multiple project metadata entries.\n"
+		flagsList(map[string]string{
+			"project":       projectIDLine,
+			"noncommerical": "Use the noncommercial license.",
+			"reciprocal":    "Use the reciprocal license.",
+			"silent":        silentLine,
+			"stack":         "Stack multiple project metadata entries.",
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

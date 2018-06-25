@@ -59,10 +59,12 @@ func buyUsage() {
 			"Usage:\n" +
 			"  licensezero buy\n\n" +
 			"Options:\n" +
-			"  --no-noncommercial  " + noNoncommercialLine + "\n" +
-			"  --no-reciprocal     " + noReciprocalLine + "\n" +
-			"  --do-not-open       " + doNotOpenLine + "\n" +
-			"  --silent            " + silentLine
+			flagsList(map[string]string{
+				"no-noncommercial": noNoncommercialLine,
+				"no-reciprocal":    noReciprocalLine,
+				"do-not-open":      doNotOpenLine,
+				"silent":           silentLine,
+			})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

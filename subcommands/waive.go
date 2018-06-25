@@ -54,11 +54,13 @@ func waiveUsage() {
 		"Usage:\n" +
 		"  licensezero waive --project ID --beneficiary NAME --jurisdiction CODE (--days DAYS | --forever)\n\n" +
 		"Options:\n" +
-		"  --project ID         " + projectIDLine + "\n" +
-		"  --beneficiary NAME   Beneficiary legal name.\n" +
-		"  --days DAYS          Term, in days.\n" +
-		"  --forever            Infinite term.\n" +
-		"  --jurisdiction CODE  Beneficiary jurisdiction (ISO 3166-2, like \"US-CA\").\n"
+		flagsList(map[string]string{
+			"project ID":        projectIDLine,
+			"beneficiary NAME":  "Beneficiary legal name.",
+			"days DAYS":         "Term, in days.",
+			"forever":           "Infinite term.",
+			"jurisdiction CODE": "Beneficiary jurisdiction (ISO 3166-2, like \"US-CA\").",
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

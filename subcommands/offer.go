@@ -47,11 +47,13 @@ func offerUsage() {
 		"  licensezero offer --price CENTS [--relicense CENTS] \\\n" +
 		"                    --homepage URL --description TEXT\n\n" +
 		"Options:\n" +
-		"  --description TEXT  Project description.\n" +
-		"  --do-not-open       Do not open project page in browser.\n" +
-		"  --homepage URL      Project homepage.\n" +
-		"  --price CENTS       " + priceLine + "\n" +
-		"  --relicense CENTS   " + relicenseLine + "\n"
+		flagsList(map[string]string{
+			"description TEXT": "Project description.",
+			"do-not-open":      "Do not open project page in browser.",
+			"homepage URL":     "Project homepage.",
+			"price CENTS":      priceLine,
+			"relicense CENTS":  relicenseLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

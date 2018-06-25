@@ -37,7 +37,9 @@ func sponsorUsage() {
 		"Usage:\n" +
 		"  licensezero sponsor --project ID\n\n" +
 		"Options:\n" +
-		"  --project ID  Project ID (UUID)."
+		flagsList(map[string]string{
+			"project ID": "Project ID (UUID).",
+		})
 	os.Stdout.WriteString(usage)
 	os.Exit(1)
 }

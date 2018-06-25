@@ -63,10 +63,12 @@ func repriceUsage() {
 		"Usage:\n" +
 		"  licensezero reprice --project ID --price CENTS [--relicense CENTS]\n\n" +
 		"Options:\n" +
-		"  --price       " + priceLine + "\n" +
-		"  --project ID  Project ID (UUID).\n" +
-		"  --relicense   " + relicenseLine + "\n" +
-		"  --silent      " + silentLine + "\n"
+		flagsList(map[string]string{
+			"price":      priceLine,
+			"project ID": "Project ID (UUID).",
+			"relicense":  relicenseLine,
+			"silent":     silentLine,
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

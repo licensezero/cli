@@ -38,9 +38,11 @@ func lockUsage() {
 		"Usage:\n" +
 		"  licensezero lock --project ID --unlock DATE\n\n" +
 		"Options:\n" +
-		"  --project  " + projectIDLine + "\n" +
-		"  --silent   " + silentLine + "\n" +
-		"  --unlock   Unlock date.\n"
+		flagsList(map[string]string{
+			"project": projectIDLine,
+			"silent":  silentLine,
+			"unlock":  "Unlock date.",
+		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }
