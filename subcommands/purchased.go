@@ -15,6 +15,7 @@ var Purchased = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("purchased", flag.ExitOnError)
 		bundle := flagSet.String("bundle", "", "")
+		silent := Silent(flagSet)
 		flagSet.Usage = purchasedUsage
 		flagSet.Parse(args)
 		if *bundle == "" {
@@ -46,7 +47,9 @@ var Purchased = Subcommand{
 				imported++
 			}
 		}
-		os.Stdout.WriteString("Imported " + strconv.Itoa(imported) + " licenses.")
+		if !*silent {
+			os.Stdout.WriteString("Imported " + strconv.Itoa(imported) + " licenses.\n")
+		}
 		os.Exit(0)
 	},
 }
@@ -56,7 +59,8 @@ func purchasedUsage() {
 		"Usage:\n" +
 		"  licensezero purchased --bundle URL\n\n" +
 		"Options:\n" +
-		"  --bundle URL  URL of purchase bundle to import.\n"
+		"  --bundle URL  URL of purchase bundle to import.\n" +
+		"  --silent      " + silentLine
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

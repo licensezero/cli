@@ -13,6 +13,7 @@ var Lock = Subcommand{
 		flagSet := flag.NewFlagSet("lock", flag.ExitOnError)
 		projectID := ProjectID(flagSet)
 		unlock := flagSet.String("unlock", "", "")
+		silent := Silent(flagSet)
 		flagSet.Usage = lockUsage
 		flagSet.Parse(args)
 		licensor, err := data.ReadLicensor(paths.Home)
@@ -25,6 +26,9 @@ var Lock = Subcommand{
 			os.Stderr.WriteString(err.Error() + "\n")
 			os.Exit(1)
 		}
+		if !*silent {
+			os.Stdout.WriteString("Locked pricing.\n")
+		}
 		os.Exit(0)
 	},
 }
@@ -35,6 +39,7 @@ func lockUsage() {
 		"  licensezero lock --project-id ID --unlock DATE\n\n" +
 		"Options:\n" +
 		"  --project-id  " + projectIDLine + "\n" +
+		"  --silent      " + silentLine + "\n" +
 		"  --unlock      Unlock date.\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)

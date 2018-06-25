@@ -6,6 +6,8 @@ import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "os"
 
+// TODO: licensezero buy --json
+
 const buyDescription = "Buy private licenses you are missing."
 
 var Buy = Subcommand{
@@ -59,7 +61,8 @@ func buyUsage() {
 			"Options:\n" +
 			"  --no-noncommercial  " + noNoncommercialLine + "\n" +
 			"  --no-reciprocal     " + noReciprocalLine + "\n" +
-			"  --do-not-open       " + doNotOpenLine + "\n"
+			"  --do-not-open       " + doNotOpenLine + "\n" +
+			"  --silent            " + silentLine
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

@@ -14,6 +14,7 @@ var Reprice = Subcommand{
 		price := Price(flagSet)
 		relicense := Relicense(flagSet)
 		projectIDFlag := ProjectID(flagSet)
+		silent := Silent(flagSet)
 		flagSet.Usage = repriceUsage
 		flagSet.Parse(args)
 		if *price == 0 {
@@ -48,6 +49,9 @@ var Reprice = Subcommand{
 			os.Stderr.WriteString(err.Error() + "\n")
 			os.Exit(1)
 		}
+		if !*silent {
+			os.Stdout.WriteString("Repriced.\n")
+		}
 		os.Exit(0)
 	},
 }
@@ -59,7 +63,8 @@ func repriceUsage() {
 		"Options:\n" +
 		"  --price          " + priceLine + "\n" +
 		"  --project-id ID  Project ID (UUID).\n" +
-		"  --relicense      " + relicenseLine + "\n"
+		"  --relicense      " + relicenseLine + "\n" +
+		"  --silent         " + silentLine + "\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

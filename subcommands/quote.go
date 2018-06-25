@@ -7,6 +7,8 @@ import "github.com/licensezero/cli/inventory"
 import "os"
 import "strconv"
 
+// TODO: licensezero quote --json
+
 const quoteDescription = "Quote the cost of private licenses you need."
 
 var Quote = Subcommand{

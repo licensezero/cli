@@ -2,6 +2,7 @@ package subcommands
 
 import "encoding/json"
 import "errors"
+import "flag"
 import "io/ioutil"
 import "os"
 
@@ -10,6 +11,10 @@ const readmeDescription = "Append licensing information to README."
 var README = Subcommand{
 	Description: readmeDescription,
 	Handler: func(args []string, paths Paths) {
+		flagSet := flag.NewFlagSet("readme", flag.ExitOnError)
+		silent := Silent(flagSet)
+		flagSet.Usage = readmeUsage
+		flagSet.Parse(args)
 		var existing string
 		data, err := ioutil.ReadFile("README.md")
 		if err != nil {
@@ -93,6 +98,9 @@ var README = Subcommand{
 			os.Stderr.WriteString("Error writing README.md.\n")
 			os.Exit(1)
 		}
+		if !*silent {
+			os.Stdout.WriteString("Wrote to README.md\n")
+		}
 		os.Exit(0)
 	},
 }
@@ -123,4 +131,14 @@ func readEntries(directory string) ([]string, []string, error) {
 		terms = append(terms, entry.Terms)
 	}
 	return projectIDs, terms, nil
+}
+
+func readmeUsage() {
+	usage := readmeDescription + "\n\n" +
+		"Usage:\n" +
+		"  licensezero readme\n\n" +
+		"Options:\n" +
+		"  --silent  " + silentLine + "\n"
+	os.Stderr.WriteString(usage)
+	os.Exit(1)
 }

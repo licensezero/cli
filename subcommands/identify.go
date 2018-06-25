@@ -13,6 +13,7 @@ var Identify = Subcommand{
 		jurisdiction := flagSet.String("jurisdiction", "", "")
 		name := flagSet.String("name", "", "")
 		email := flagSet.String("email", "", "")
+		silent := Silent(flagSet)
 		flagSet.Usage = identifyUsage
 		flagSet.Parse(args)
 		if *jurisdiction == "" || *name == "" || *email == "" {
@@ -45,9 +46,11 @@ var Identify = Subcommand{
 		if err != nil {
 			os.Stderr.WriteString("Could not write identity file.\n")
 			os.Exit(1)
-		} else {
-			os.Exit(0)
 		}
+		if !*silent {
+			os.Stdout.WriteString("Saved your identification information.\n")
+		}
+		os.Exit(0)
 	},
 }
 
@@ -58,7 +61,8 @@ func identifyUsage() {
 		"Options:\n" +
 		"  --email ADDRESS      Your e-mail address\n" +
 		"  --jurisdiction CODE  Your tax jurisdiction (ISO 3166-2, like \"US-CA\")\n" +
-		"  --name NAME          Your full name.\n"
+		"  --name NAME          Your full name.\n" +
+		"  --silent             " + silentLine
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

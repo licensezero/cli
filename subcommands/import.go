@@ -13,6 +13,7 @@ var Import = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("import", flag.ExitOnError)
 		filePath := flagSet.String("file", "", "")
+		silent := Silent(flagSet)
 		flagSet.Usage = importUsage
 		flagSet.Parse(args)
 		if *filePath == "" {
@@ -51,6 +52,9 @@ var Import = Subcommand{
 				os.Exit(1)
 			}
 		}
+		if !*silent {
+			os.Stdout.WriteString("Imported.\n")
+		}
 		os.Exit(0)
 	},
 }
@@ -60,7 +64,8 @@ func importUsage() {
 		"Usage:\n" +
 		"  licensezero import --file FILE\n\n" +
 		"Options:\n" +
-		"  --file FILE  License or waiver file to import.\n"
+		"  --file FILE  License or waiver file to import.\n" +
+		"  --silent     " + silentLine + "\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

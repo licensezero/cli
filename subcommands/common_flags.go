@@ -25,3 +25,7 @@ func Price(flagSet *flag.FlagSet) *uint {
 func Relicense(flagSet *flag.FlagSet) *uint {
 	return flagSet.Uint("relicense", 0, relicenseLine)
 }
+
+func Silent(flagSet *flag.FlagSet) *bool {
+	return flagSet.Bool("silent", false, silentLine)
+}

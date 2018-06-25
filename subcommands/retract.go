@@ -7,13 +7,12 @@ import "os"
 
 const retractDescription = "Retract project licenses for a project from sale."
 
-// TODO: --quiet for retract
-
 var Retract = Subcommand{
 	Description: retractDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("retract", flag.ExitOnError)
 		projectID := ProjectID(flagSet)
+		silent := Silent(flagSet)
 		flagSet.Usage = retractUsage
 		flagSet.Parse(args)
 		if *projectID == "" {
@@ -29,6 +28,9 @@ var Retract = Subcommand{
 			os.Stderr.WriteString(err.Error() + "\n")
 			os.Exit(1)
 		}
+		if !*silent {
+			os.Stdout.WriteString("Retracted from sale.\n")
+		}
 		os.Exit(0)
 	},
 }
@@ -38,7 +40,8 @@ func retractUsage() {
 		"Usage:\n" +
 		"  licensezero retract --project-id ID\n\n" +
 		"Options:\n" +
-		"  --project-id ID  " + projectIDLine + "\n"
+		"  --project-id ID  " + projectIDLine + "\n" +
+		"  --silent         " + silentLine + "\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

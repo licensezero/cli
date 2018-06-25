@@ -11,6 +11,7 @@ var Token = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("token", flag.ExitOnError)
 		licensorID := flagSet.String("licensor-id", "", "Licensor ID")
+		silent := Silent(flagSet)
 		flagSet.Usage = tokenUsage
 		flagSet.Parse(args)
 		if *licensorID == "" {
@@ -31,9 +32,11 @@ var Token = Subcommand{
 		if err != nil {
 			os.Stderr.WriteString("Could not write licensor file.\n")
 			os.Exit(1)
-		} else {
-			os.Exit(0)
 		}
+		if !*silent {
+			os.Stdout.WriteString("Saved your licensor ID and access token.\n")
+		}
+		os.Exit(0)
 	},
 }
 
@@ -42,7 +45,8 @@ func tokenUsage() {
 		"Usage:\n" +
 		"  licensezero token --licensor-id ID\n\n" +
 		"Options:\n" +
-		"  --licensor-id ID  Licensor ID (UUID).\n"
+		"  --licensor-id ID  Licensor ID (UUID).\n" +
+		"  --silent          " + silentLine + "\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
 }

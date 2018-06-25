@@ -20,6 +20,7 @@ var License = Subcommand{
 		noncommercial := flagSet.Bool("noncommercial", false, "Use noncommercial public license.")
 		reciprocal := flagSet.Bool("reciprocal", false, "Use reciprocal public license.")
 		stack := flagSet.Bool("stack", false, "Stack licensing metadata.")
+		silent := Silent(flagSet)
 		flagSet.Usage = licenseUsage
 		flagSet.Parse(args)
 		if *noncommercial && *reciprocal {
@@ -94,11 +95,17 @@ var License = Subcommand{
 			os.Exit(1)
 		}
 		err = ioutil.WriteFile(package_json, indented.Bytes(), 0644)
+		if !*silent {
+			os.Stdout.WriteString("Added metadata to package.json.\n")
+		}
 		// Append to LICENSE.
 		err = writeLICENSE(&response)
 		if err != nil {
 			os.Stderr.WriteString(err.Error() + "\n")
 			os.Exit(1)
+		}
+		if !*silent {
+			os.Stdout.WriteString("Appended terms to LICENSE.")
 		}
 		os.Exit(0)
 	},
@@ -150,6 +157,7 @@ func licenseUsage() {
 		"  --project-id     " + projectIDLine + "\n" +
 		"  --noncommerical  Use the noncommercial license.\n" +
 		"  --reciprocal     Use the reciprocal license.\n" +
+		"  --silent         " + silentLine + "\n" +
 		"  --stack          Stack multiple project metadata entries.\n"
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
