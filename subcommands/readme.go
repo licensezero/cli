@@ -116,19 +116,24 @@ func readEntries(directory string) ([]string, []string, error) {
 	}
 	var existingMetadata struct {
 		LicenseZero []struct {
-			ProjectID string `json:"projectID"`
-			Terms     string `json:"terms"`
+			License struct {
+				ProjectID string `json:"projectID"`
+				Terms     string `json:"terms"`
+			} `json:"license"`
+			AgentSignature    string `json:"agentSignature"`
+			LicensorSignature string `json:"licensorSignature"`
 		} `json:"licensezero"`
 	}
 	err = json.Unmarshal(data, &existingMetadata)
 	if err != nil {
 		return nil, nil, errors.New("Could not parse package.json metadata.")
 	}
+	// TODO: Validate package.json metadata entries.
 	var projectIDs []string
 	var terms []string
 	for _, entry := range existingMetadata.LicenseZero {
-		projectIDs = append(projectIDs, entry.ProjectID)
-		terms = append(terms, entry.Terms)
+		projectIDs = append(projectIDs, entry.License.ProjectID)
+		terms = append(terms, entry.License.Terms)
 	}
 	return projectIDs, terms, nil
 }
