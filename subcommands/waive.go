@@ -4,7 +4,6 @@ import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "os"
-import "strconv"
 
 const waiveDescription = "Generate a waiver for your project."
 
@@ -28,19 +27,18 @@ var Waive = Subcommand{
 		} else if *beneficiary == "" || *jurisdiction == "" {
 			waiveUsage()
 		} else {
-			projectID := args[0]
 			licensor, err := data.ReadLicensor(paths.Home)
 			if err != nil {
 				os.Stderr.WriteString(licensorHint + "\n")
 				os.Exit(1)
 			}
-			var term string
+			var term interface{}
 			if *forever {
 				term = "forever"
 			} else {
-				term = strconv.Itoa(int(*days))
+				term = *days
 			}
-			bytes, err := api.Waive(licensor, projectID, *beneficiary, *jurisdiction, term)
+			bytes, err := api.Waive(licensor, *projectID, *beneficiary, *jurisdiction, term)
 			if err != nil {
 				os.Stderr.WriteString(err.Error() + "\n")
 				os.Exit(1)

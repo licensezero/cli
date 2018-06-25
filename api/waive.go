@@ -9,18 +9,18 @@ import "net/http"
 import "strconv"
 
 type WaiveRequest struct {
-	Action       string `json:"action"`
-	LicensorID   string `json:"licensorID"`
-	Token        string `json:"token"`
-	ProjectID    string `json:"projectID"`
-	Beneficiary  string `json:"beneficiary"`
-	Jurisdiction string `json:"jurisdiction"`
-	Term         string `json:"term"`
+	Action       string      `json:"action"`
+	LicensorID   string      `json:"licensorID"`
+	Token        string      `json:"token"`
+	ProjectID    string      `json:"projectID"`
+	Beneficiary  string      `json:"beneficiary"`
+	Jurisdiction string      `json:"jurisdiction"`
+	Term         interface{} `json:"term"`
 }
 
-func Waive(licensor *data.Licensor, projectID, beneficiary, jurisdiction, term string) ([]byte, error) {
+func Waive(licensor *data.Licensor, projectID, beneficiary, jurisdiction string, term interface{}) ([]byte, error) {
 	bodyData := WaiveRequest{
-		Action:       "waive",
+		Action:       "waiver",
 		LicensorID:   licensor.LicensorID,
 		Token:        licensor.Token,
 		ProjectID:    projectID,
