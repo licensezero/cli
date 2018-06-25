@@ -4,8 +4,4 @@ _This Go port of the License Zero is under active prerelease development.  Use t
 
 ## Installation
 
-To install a prebuilt binary from GitHub releases:
-
-```bash
-curl https://raw.githubusercontent.com/licensezero/cli/master/install.sh | sh
-```
+See [release on GitHub](https://github.com/licensezero/cli/releases) for binary builds.
