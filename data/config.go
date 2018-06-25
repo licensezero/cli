@@ -4,7 +4,12 @@ import "os"
 import "path"
 
 func configPath(home string) string {
-	return path.Join(home, ".config", "licensezero")
+	fromEnvironment := os.Getenv("LICENSEZERO_CONFIG")
+	if fromEnvironment != "" {
+		return fromEnvironment
+	} else {
+		return path.Join(home, ".config", "licensezero")
+	}
 }
 
 func makeConfigDirectory(home string) error {
