@@ -102,7 +102,7 @@ func WriteWaiver(home string, waiver *WaiverEnvelope) error {
 	if err != nil {
 		return err
 	}
-	err = os.MkdirAll(WaiversPath(home), 0644)
+	err = os.MkdirAll(WaiversPath(home), 0755)
 	if err != nil {
 		return err
 	}

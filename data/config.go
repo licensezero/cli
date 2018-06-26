@@ -14,5 +14,5 @@ func ConfigPath(home string) string {
 
 func makeConfigDirectory(home string) error {
 	path := ConfigPath(home)
-	return os.MkdirAll(path, 0644)
+	return os.MkdirAll(path, 0755)
 }

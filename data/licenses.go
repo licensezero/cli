@@ -81,7 +81,7 @@ func WriteLicense(home string, license *LicenseEnvelope) error {
 	if err != nil {
 		return err
 	}
-	err = os.MkdirAll(LicensesPath(home), 0644)
+	err = os.MkdirAll(LicensesPath(home), 0755)
 	if err != nil {
 		return err
 	}
