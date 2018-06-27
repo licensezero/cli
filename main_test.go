@@ -96,10 +96,6 @@ func TestWhoAmIWithIdentity(t *testing.T) {
 
 func TestImportWaiver(t *testing.T) {
 	InTestDir(t, func() {
-		name := "John Doe"
-		email := "test@example.com"
-		jurisdiction := "US-CA"
-		exec.Command("./licensezero", "identify", "--name", name, "--jurisdiction", jurisdiction, "--email", email, "--silent").Run()
 		importCommand := exec.Command("./licensezero", "import", "--file", "test/waiver.json")
 		var stdout bytes.Buffer
 		importCommand.Stdout = &stdout
@@ -116,10 +112,6 @@ func TestImportWaiver(t *testing.T) {
 
 func TestImportNonexistentWaiver(t *testing.T) {
 	InTestDir(t, func() {
-		name := "John Doe"
-		email := "test@example.com"
-		jurisdiction := "US-CA"
-		exec.Command("./licensezero", "identify", "--name", name, "--jurisdiction", jurisdiction, "--email", email, "--silent").Run()
 		importCommand := exec.Command("./licensezero", "import", "--file", "test/nonexistent.json")
 		var stdout bytes.Buffer
 		importCommand.Stdout = &stdout
