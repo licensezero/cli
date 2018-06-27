@@ -1,38 +1,49 @@
 package data
 
+import "bytes"
 import "encoding/json"
+import "errors"
 import "io/ioutil"
 import "os"
 import "path"
 
 type LicenseEnvelope struct {
-	Manifest  LicenseManifest `json:"license"`
-	ProjectID string          `json:"projectID"`
-	Document  string          `json:"document"`
-	PublicKey string          `json:"publicKey"`
-	Signature string          `json:"signature"`
+	Manifest       LicenseManifest
+	ManifestString string
+	ProjectID      string
+	Document       string
+	PublicKey      string
+	Signature      string
+}
+
+type LicenseFile struct {
+	Manifest  string `json:"manifest"`
+	ProjectID string `json:"projectID"`
+	Document  string `json:"document"`
+	PublicKey string `json:"publicKey"`
+	Signature string `json:"signature"`
 }
 
 type LicenseManifest struct {
-	Form    string `json:"FORM"`
-	Version string `json:"VERSION"`
-	Date    string `json:"date"`
-	OrderID string `json:"orderID"`
-	Project struct {
-		ProjectID   string `json:"projectID"`
-		Homepage    string `json:"homepage"`
-		Description string `json:"description"`
-	}
+	Date     string `json:"date"`
+	Form     string `json:"FORM"`
 	Licensee struct {
 		Name         string `json:"name"`
 		Jurisdiction string `json:"jurisdiction"`
 		EMail        string `json:"email"`
 	}
 	Licensor struct {
-		Name         string `json:"name"`
 		Jurisdiction string `json:"jurisdiction"`
+		Name         string `json:"name"`
 	}
-	Price int `json:"price"`
+	OrderID string `json:"orderID"`
+	Price   int    `json:"price"`
+	Project struct {
+		Description string `json:"description"`
+		Homepage    string `json:"homepage"`
+		ProjectID   string `json:"projectID"`
+	}
+	Version string `json:"VERSION"`
 }
 
 func LicensePath(home string, projectID string) string {
@@ -71,13 +82,35 @@ func ReadLicense(filePath string) (*LicenseEnvelope, error) {
 	if err != nil {
 		return nil, err
 	}
-	var license LicenseEnvelope
-	json.Unmarshal(data, &license)
-	return &license, nil
+	var file LicenseFile
+	err = json.Unmarshal(data, &file)
+	if err != nil {
+		return nil, err
+	}
+	var manifest LicenseManifest
+	err = json.Unmarshal([]byte(file.Manifest), &manifest)
+	if err != nil {
+		return nil, err
+	}
+	return &LicenseEnvelope{
+		Manifest:       manifest,
+		ManifestString: file.Manifest,
+		ProjectID:      file.ProjectID,
+		Document:       file.Document,
+		PublicKey:      file.PublicKey,
+		Signature:      file.Signature,
+	}, nil
 }
 
 func WriteLicense(home string, license *LicenseEnvelope) error {
-	json, err := json.Marshal(license)
+	file := LicenseFile{
+		Manifest:  license.ManifestString,
+		ProjectID: license.ProjectID,
+		Document:  license.Document,
+		PublicKey: license.PublicKey,
+		Signature: license.Signature,
+	}
+	json, err := json.Marshal(file)
 	if err != nil {
 		return err
 	}
@@ -86,4 +119,35 @@ func WriteLicense(home string, license *LicenseEnvelope) error {
 		return err
 	}
 	return ioutil.WriteFile(LicensePath(home, license.ProjectID), json, 0644)
+}
+
+func CheckLicenseSignature(license *LicenseEnvelope, publicKey string) error {
+	serialized, err := json.Marshal(license.Manifest)
+	compacted := bytes.NewBuffer([]byte{})
+	err = json.Compact(compacted, serialized)
+	if err != nil {
+		return errors.New("Could not serialize manifest.")
+	}
+	if license.ProjectID != license.Manifest.Project.ProjectID {
+		return errors.New("Project IDs do not match.")
+	}
+	err = checkSignature(
+		publicKey,
+		license.Signature,
+		[]byte(license.ManifestString+"\n\n"+license.Document),
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func compactLicenseManifest(data *LicenseManifest) (*bytes.Buffer, error) {
+	serialized, err := json.Marshal(data)
+	compacted := bytes.NewBuffer([]byte{})
+	err = json.Compact(compacted, serialized)
+	if err != nil {
+		return nil, errors.New("Could not serialize.")
+	}
+	return compacted, nil
 }

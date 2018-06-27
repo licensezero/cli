@@ -1,5 +1,6 @@
 package data
 
+import "bytes"
 import "encoding/json"
 import "errors"
 import "io/ioutil"
@@ -9,29 +10,40 @@ import "strconv"
 import "time"
 
 type WaiverEnvelope struct {
+	ProjectID      string
+	Manifest       WaiverManifest
+	ManifestString string
+	Document       string
+	Signature      string
+	PublicKey      string
+}
+
+type WaiverFile struct {
 	ProjectID string `json:"projectID"`
-	Manifest  struct {
-		Form        string `json:"FORM"`
-		Version     string `json:"VERSION"`
-		Beneficiary struct {
-			Name         string `json:"name"`
-			Jurisdiction string `json:"jurisdiction"`
-		} `json:"beneficiary"`
-		Date     string `json:"date"`
-		Licensor struct {
-			Name         string `json:"name"`
-			Jurisdiction string `json:"jurisdiction"`
-		} `json:"licensor"`
-		Project struct {
-			ProjectID   string `json:"projectID"`
-			Description string `json:"description"`
-			Homepage    string `json:"homepage"`
-		} `json:"project"`
-		Term string `json:"term"`
-	} `json:"manifest"`
+	Manifest  string `json:"manifest"`
 	Document  string `json:"document"`
 	Signature string `json:"signature"`
 	PublicKey string `json:"publicKey"`
+}
+
+type WaiverManifest struct {
+	Form        string `json:"FORM"`
+	Version     string `json:"VERSION"`
+	Beneficiary struct {
+		Jurisdiction string `json:"jurisdiction"`
+		Name         string `json:"name"`
+	} `json:"beneficiary"`
+	Date     string `json:"date"`
+	Licensor struct {
+		Jurisdiction string `json:"jurisdiction"`
+		Name         string `json:"name"`
+	} `json:"licensor"`
+	Project struct {
+		Description string `json:"description"`
+		Homepage    string `json:"homepage"`
+		ProjectID   string `json:"projectID"`
+	} `json:"project"`
+	Term string `json:"term"`
 }
 
 func WaiversPath(home string) string {
@@ -92,13 +104,35 @@ func ReadWaiver(filePath string) (*WaiverEnvelope, error) {
 	if err != nil {
 		return nil, err
 	}
-	var waiver WaiverEnvelope
-	json.Unmarshal(data, &waiver)
-	return &waiver, nil
+	var file WaiverFile
+	json.Unmarshal(data, &file)
+	if err != nil {
+		return nil, err
+	}
+	var manifest WaiverManifest
+	err = json.Unmarshal([]byte(file.Manifest), &manifest)
+	if err != nil {
+		return nil, err
+	}
+	return &WaiverEnvelope{
+		Manifest:       manifest,
+		ManifestString: file.Manifest,
+		ProjectID:      file.ProjectID,
+		Document:       file.Document,
+		PublicKey:      file.PublicKey,
+		Signature:      file.Signature,
+	}, nil
 }
 
 func WriteWaiver(home string, waiver *WaiverEnvelope) error {
-	json, err := json.Marshal(waiver)
+	file := WaiverFile{
+		Manifest:  waiver.ManifestString,
+		ProjectID: waiver.ProjectID,
+		Document:  waiver.Document,
+		PublicKey: waiver.PublicKey,
+		Signature: waiver.Signature,
+	}
+	json, err := json.Marshal(file)
 	if err != nil {
 		return err
 	}
@@ -107,4 +141,36 @@ func WriteWaiver(home string, waiver *WaiverEnvelope) error {
 		return err
 	}
 	return ioutil.WriteFile(WaiverPath(home, waiver.ProjectID), json, 0644)
+}
+
+func CheckWaiverSignature(waiver *WaiverEnvelope, publicKey string) error {
+	serialized, err := json.Marshal(waiver.Manifest)
+	compacted := bytes.NewBuffer([]byte{})
+	err = json.Compact(compacted, serialized)
+	if err != nil {
+		return errors.New("Could not serialize manifest.")
+	}
+	if waiver.ProjectID != waiver.Manifest.Project.ProjectID {
+		return errors.New("Project IDs do not match.")
+	}
+	err = checkSignature(
+		publicKey,
+		waiver.Signature,
+		[]byte(waiver.ManifestString+"\n\n"+waiver.Document),
+	)
+	if err != nil {
+		panic(err)
+		return err
+	}
+	return nil
+}
+
+func compactWaiverManifest(data *WaiverManifest) (*bytes.Buffer, error) {
+	serialized, err := json.Marshal(data)
+	compacted := bytes.NewBuffer([]byte{})
+	err = json.Compact(compacted, serialized)
+	if err != nil {
+		return nil, errors.New("Could not serialize.")
+	}
+	return compacted, nil
 }

@@ -3,6 +3,7 @@ package subcommands
 import "encoding/json"
 import "flag"
 import "github.com/licensezero/cli/data"
+import "github.com/licensezero/cli/api"
 import "io/ioutil"
 import "os"
 
@@ -22,8 +23,12 @@ var Import = Subcommand{
 			importUsage()
 		}
 		bytes, err := ioutil.ReadFile(*filePath)
+		if err != nil {
+			os.Stderr.WriteString("Could not read file.")
+			os.Exit(1)
+		}
 		var initialParse interface{}
-		err = json.Unmarshal(bytes, initialParse)
+		err = json.Unmarshal(bytes, &initialParse)
 		if err != nil {
 			os.Stderr.WriteString("Invalid JSON\n")
 			os.Exit(1)
@@ -35,7 +40,16 @@ var Import = Subcommand{
 				os.Stderr.WriteString("Error reading license\n")
 				os.Exit(1)
 			}
-			// TODO: Validate licenses.
+			projectResponse, err := api.Project(license.Manifest.Project.ProjectID)
+			if err != nil {
+				os.Stderr.WriteString("Error fetching project developer information.\n")
+				os.Exit(1)
+			}
+			err = data.CheckLicenseSignature(license, projectResponse.Licensor.PublicKey)
+			if err != nil {
+				os.Stderr.WriteString("Invalid license signature.")
+				os.Exit(1)
+			}
 			err = data.WriteLicense(paths.Home, license)
 			if err != nil {
 				os.Stderr.WriteString("Error writing license file.\n")
@@ -47,7 +61,16 @@ var Import = Subcommand{
 				os.Stderr.WriteString("Error reading waiver.\n")
 				os.Exit(1)
 			}
-			// TODO: Validate waivers.
+			projectResponse, err := api.Project(waiver.Manifest.Project.ProjectID)
+			if err != nil {
+				os.Stderr.WriteString("Error fetching project developer information.")
+				os.Exit(1)
+			}
+			err = data.CheckWaiverSignature(waiver, projectResponse.Licensor.PublicKey)
+			if err != nil {
+				os.Stderr.WriteString("Invalid waiver signature.")
+				os.Exit(1)
+			}
 			err = data.WriteWaiver(paths.Home, waiver)
 			if err != nil {
 				os.Stderr.WriteString("Error writing waiver file.\n")

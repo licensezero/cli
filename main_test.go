@@ -94,6 +94,42 @@ func TestWhoAmIWithIdentity(t *testing.T) {
 	})
 }
 
+func TestImportWaiver(t *testing.T) {
+	InTestDir(t, func() {
+		name := "John Doe"
+		email := "test@example.com"
+		jurisdiction := "US-CA"
+		exec.Command("./licensezero", "identify", "--name", name, "--jurisdiction", jurisdiction, "--email", email, "--silent").Run()
+		importCommand := exec.Command("./licensezero", "import", "--file", "test/waiver.json")
+		var stdout bytes.Buffer
+		importCommand.Stdout = &stdout
+		err := importCommand.Run()
+		if err != nil {
+			t.Error(err)
+		}
+		output := string(stdout.Bytes())
+		if !strings.Contains(output, "Imported") {
+			t.Error("does not say imported")
+		}
+	})
+}
+
+func TestImportNonexistentWaiver(t *testing.T) {
+	InTestDir(t, func() {
+		name := "John Doe"
+		email := "test@example.com"
+		jurisdiction := "US-CA"
+		exec.Command("./licensezero", "identify", "--name", name, "--jurisdiction", jurisdiction, "--email", email, "--silent").Run()
+		importCommand := exec.Command("./licensezero", "import", "--file", "test/nonexistent.json")
+		var stdout bytes.Buffer
+		importCommand.Stdout = &stdout
+		err := importCommand.Run()
+		if err == nil {
+			t.Error("does not fail")
+		}
+	})
+}
+
 func InTestDir(t *testing.T, script func()) {
 	directory, err := ioutil.TempDir("/tmp", "licensezero-test")
 	if err != nil {
