@@ -2,6 +2,7 @@ package main
 
 import "bytes"
 import "io/ioutil"
+import "net/http"
 import "os"
 import "os/exec"
 import "strings"
@@ -147,6 +148,27 @@ func TestImportNonexistentLicense(t *testing.T) {
 		if err == nil {
 			t.Error("does not fail")
 		}
+	})
+}
+
+func TestPurchased(t *testing.T) {
+	port := "8080"
+	server := &http.Server{Addr: ":" + port}
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "/test/bundle.json")
+	})
+	go func() {
+		server.ListenAndServe()
+	}()
+	InTestDir(t, func() {
+		purchased := exec.Command("./licensezero", "purchased", "--bundle", "http://localhost:"+port+"/bundle.json")
+		var stdout bytes.Buffer
+		purchased.Stdout = &stdout
+		err := purchased.Run()
+		if err == nil {
+			t.Error("does not fail")
+		}
+		server.Shutdown(nil)
 	})
 }
 

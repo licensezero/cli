@@ -31,7 +31,7 @@ var Purchased = Subcommand{
 			os.Exit(1)
 		}
 		var parsed struct {
-			Licenses []data.LicenseEnvelope `json:"licenses"`
+			Licenses []data.LicenseFile `json:"licenses"`
 		}
 		err = json.Unmarshal(responseBody, &parsed)
 		if err != nil {
@@ -40,14 +40,18 @@ var Purchased = Subcommand{
 		}
 		imported := 0
 		for _, license := range parsed.Licenses {
+			envelope, err := data.LicenseFileToEnvelope(&license)
+			if err != nil {
+				os.Stderr.WriteString("Error parsing license for project ID" + license.ProjectID + ".\n")
+				continue
+			}
 			// TODO: Validate licenses.
-			err = data.WriteLicense(paths.Home, &license)
+			err = data.WriteLicense(paths.Home, envelope)
 			if err != nil {
 				os.Stderr.WriteString("Error writing license for project ID" + license.ProjectID + ".\n")
-				// Continue importing other licenses.
-			} else {
-				imported++
+				continue
 			}
+			imported++
 		}
 		if !*silent {
 			os.Stdout.WriteString("Imported " + strconv.Itoa(imported) + " licenses.\n")

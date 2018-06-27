@@ -77,18 +77,9 @@ func ReadLicenses(home string) ([]LicenseEnvelope, error) {
 	return returned, nil
 }
 
-func ReadLicense(filePath string) (*LicenseEnvelope, error) {
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return nil, err
-	}
-	var file LicenseFile
-	err = json.Unmarshal(data, &file)
-	if err != nil {
-		return nil, err
-	}
+func LicenseFileToEnvelope(file *LicenseFile) (*LicenseEnvelope, error) {
 	var manifest LicenseManifest
-	err = json.Unmarshal([]byte(file.Manifest), &manifest)
+	err := json.Unmarshal([]byte(file.Manifest), &manifest)
 	if err != nil {
 		return nil, err
 	}
@@ -100,6 +91,19 @@ func ReadLicense(filePath string) (*LicenseEnvelope, error) {
 		PublicKey:      file.PublicKey,
 		Signature:      file.Signature,
 	}, nil
+}
+
+func ReadLicense(filePath string) (*LicenseEnvelope, error) {
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+	var file LicenseFile
+	err = json.Unmarshal(data, &file)
+	if err != nil {
+		return nil, err
+	}
+	return LicenseFileToEnvelope(&file)
 }
 
 func WriteLicense(home string, license *LicenseEnvelope) error {
