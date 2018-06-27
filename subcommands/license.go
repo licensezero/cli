@@ -18,17 +18,17 @@ var License = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("license", flag.ExitOnError)
 		projectID := ProjectID(flagSet)
-		noncommercial := flagSet.Bool("noncommercial", false, "Use noncommercial public license.")
-		reciprocal := flagSet.Bool("reciprocal", false, "Use reciprocal public license.")
+		prosperity := flagSet.Bool("prosperity", false, "Use The Prosperity Public License")
+		parity := flagSet.Bool("parity", false, "Use The Parity Public License.")
 		stack := flagSet.Bool("stack", false, "Stack licensing metadata.")
 		silent := Silent(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = licenseUsage
 		flagSet.Parse(args)
-		if *noncommercial && *reciprocal {
+		if *prosperity && *parity {
 			licenseUsage()
 		}
-		if !*noncommercial && !*reciprocal {
+		if !*prosperity && !*parity {
 			licenseUsage()
 		}
 		if *projectID == "" {
@@ -40,11 +40,11 @@ var License = Subcommand{
 			os.Exit(1)
 		}
 		var terms string
-		if *noncommercial {
-			terms = "noncommercial"
+		if *prosperity {
+			terms = "prosperity"
 		}
-		if *reciprocal {
-			terms = "reciprocal"
+		if *parity {
+			terms = "parity"
 		}
 		response, err := api.Public(licensor, *projectID, terms)
 		if err != nil {
@@ -157,14 +157,14 @@ func signatureLines(signature string) string {
 func licenseUsage() {
 	usage := licenseDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero license --project ID (--noncommercial | --reciprocal) [--stack]\n\n" +
+		"  licensezero license --project ID (--parity | --prosperity) [--stack]\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
-			"project":       projectIDLine,
-			"noncommerical": "Use the noncommercial license.",
-			"reciprocal":    "Use the reciprocal license.",
-			"silent":        silentLine,
-			"stack":         "Stack multiple project metadata entries.",
+			"project":    projectIDLine,
+			"prosperity": "Use the Prosperity Public License.",
+			"parity":     "Use The Parity Publice License.",
+			"silent":     silentLine,
+			"stack":      "Stack multiple project metadata entries.",
 		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)

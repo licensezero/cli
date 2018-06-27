@@ -88,11 +88,12 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 		if identity != nil && OwnProject(&result, identity) {
 			continue
 		}
-		if result.Envelope.Manifest.Terms == "noncommercial" && ignoreNC {
+		terms := result.Envelope.Manifest.Terms
+		if (terms == "noncommercial" || terms == "prosperity") && ignoreNC {
 			returned.Ignored = append(returned.Ignored, result)
 			continue
 		}
-		if result.Envelope.Manifest.Terms == "reciprocal" && ignoreR {
+		if (terms == "reciprocal" || terms == "parity") && ignoreR {
 			returned.Ignored = append(returned.Ignored, result)
 			continue
 		}
