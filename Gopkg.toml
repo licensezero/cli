@@ -15,7 +15,7 @@
   name = "github.com/mitchellh/go-homedir"
 
 [[constraint]]
-  branch = "master"
+  version = "1.0.0"
   name = "github.com/yookoala/realpath"
 
 [prune]
