@@ -37,6 +37,7 @@ func ReadNPMProjects(packagePath string) ([]Project, error) {
 			if alreadyHaveProject(returned, envelope.Manifest.ProjectID) {
 				continue
 			}
+      // TODO: Validate package.json entries.
 			anyNewProjects = true
 			project := Project{
 				Type:     "npm",
