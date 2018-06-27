@@ -83,8 +83,8 @@ var Quote = Subcommand{
 			}
 			fmt.Println("  Price: " + currency(project.Pricing.Private))
 			fmt.Printf("\nTotal: %s\n", currency(total))
-			os.Exit(0)
 		}
+		os.Exit(0)
 	},
 }
 
