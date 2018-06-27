@@ -147,11 +147,7 @@ func writeLICENSE(response *api.PublicResponse) error {
 }
 
 func signatureLines(signature string) string {
-	return "" +
-		signature[0:32] + "\n" +
-		signature[32:64] + "\n" +
-		signature[64:96] + "\n" +
-		signature[96:]
+	return signature[0:64] + "\n" + signature[64:]
 }
 
 func licenseUsage() {
