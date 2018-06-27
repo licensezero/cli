@@ -7,8 +7,6 @@ import "github.com/licensezero/cli/inventory"
 import "io/ioutil"
 import "os"
 
-// TODO: licensezero buy --json
-
 const buyDescription = "Buy private licenses you are missing."
 
 var Buy = Subcommand{
