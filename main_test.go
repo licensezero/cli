@@ -130,6 +130,34 @@ func TestImportNonexistentWaiver(t *testing.T) {
 	})
 }
 
+func TestImportLicense(t *testing.T) {
+	InTestDir(t, func() {
+		importCommand := exec.Command("./licensezero", "import", "--file", "test/license.json")
+		var stdout bytes.Buffer
+		importCommand.Stdout = &stdout
+		err := importCommand.Run()
+		if err != nil {
+			t.Error(err)
+		}
+		output := string(stdout.Bytes())
+		if !strings.Contains(output, "Imported") {
+			t.Error("does not say imported")
+		}
+	})
+}
+
+func TestImportNonexistentLicense(t *testing.T) {
+	InTestDir(t, func() {
+		importCommand := exec.Command("./licensezero", "import", "--file", "test/nonexistent.json")
+		var stdout bytes.Buffer
+		importCommand.Stdout = &stdout
+		err := importCommand.Run()
+		if err == nil {
+			t.Error("does not fail")
+		}
+	})
+}
+
 func InTestDir(t *testing.T, script func()) {
 	directory, err := ioutil.TempDir("/tmp", "licensezero-test")
 	if err != nil {
