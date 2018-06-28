@@ -183,10 +183,10 @@ func TestImportNonexistentLicense(t *testing.T) {
 	})
 }
 
-func TestPurchased(t *testing.T) {
+func TestImportBundle(t *testing.T) {
 	InTestDir(t, func() {
 		WithDataServer(func() {
-			command := exec.Command("./licensezero", "purchased", "--bundle", "http://:"+port+"/test/bundle.json")
+			command := exec.Command("./licensezero", "import", "--bundle", "http://:"+port+"/test/bundle.json")
 			var stdout, stderr bytes.Buffer
 			command.Stdout = &stdout
 			command.Stderr = &stderr
@@ -204,10 +204,10 @@ func TestPurchased(t *testing.T) {
 	})
 }
 
-func TestPurchasedBadSignature(t *testing.T) {
+func TestImportBundleBadSignature(t *testing.T) {
 	InTestDir(t, func() {
 		WithDataServer(func() {
-			command := exec.Command("./licensezero", "purchased", "--bundle", "http://:"+port+"/test/bad-bundle.json")
+			command := exec.Command("./licensezero", "import", "--bundle", "http://:"+port+"/test/bad-bundle.json")
 			var stdout, stderr bytes.Buffer
 			command.Stdout = &stdout
 			command.Stderr = &stderr
