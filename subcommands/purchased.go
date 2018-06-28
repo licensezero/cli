@@ -2,6 +2,7 @@ package subcommands
 
 import "encoding/json"
 import "flag"
+import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "net/http"
@@ -45,7 +46,16 @@ var Purchased = Subcommand{
 				os.Stderr.WriteString("Error parsing license for project ID" + license.ProjectID + ".\n")
 				continue
 			}
-			// TODO: Validate licenses.
+			projectID := envelope.Manifest.Project.ProjectID
+			projectResponse, err := api.Project(projectID)
+			if err != nil {
+				os.Stderr.WriteString("Error fetching project developer information for " + projectID + ".\n")
+			}
+			err = data.CheckLicenseSignature(envelope, projectResponse.Licensor.PublicKey)
+			if err != nil {
+				os.Stderr.WriteString("Invalid license signature for project " +projectID + ".\n")
+        continue
+			}
 			err = data.WriteLicense(paths.Home, envelope)
 			if err != nil {
 				os.Stderr.WriteString("Error writing license for project ID" + license.ProjectID + ".\n")

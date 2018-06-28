@@ -152,30 +152,51 @@ func TestImportNonexistentLicense(t *testing.T) {
 }
 
 func TestPurchased(t *testing.T) {
-	port := "8080"
-	server := &http.Server{Addr: ":" + port}
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "/test/bundle.json")
-	})
-	go func() {
-		server.ListenAndServe()
-	}()
 	InTestDir(t, func() {
-		purchased := exec.Command("./licensezero", "purchased", "--bundle", "http://localhost:"+port+"/bundle.json")
-		var stdout bytes.Buffer
-		purchased.Stdout = &stdout
-		err := purchased.Run()
-		if err == nil {
-			t.Error("does not fail")
-		}
-		server.Shutdown(nil)
+		WithDataServer(func() {
+			command := exec.Command("./licensezero", "purchased", "--bundle", "http://:"+port+"/test/bundle.json")
+			var stdout, stderr bytes.Buffer
+			command.Stdout = &stdout
+			command.Stderr = &stderr
+			err := command.Run()
+			if err != nil {
+				t.Error("does not fail")
+			}
+			if string(stderr.Bytes()) != "" {
+				t.Error("error output")
+			}
+			if !strings.Contains(string(stdout.Bytes()), "Imported 1 licenses.") {
+				t.Error("does not report imported")
+			}
+		})
+	})
+}
+
+func TestPurchasedBadSignature(t *testing.T) {
+	InTestDir(t, func() {
+		WithDataServer(func() {
+			command := exec.Command("./licensezero", "purchased", "--bundle", "http://:"+port+"/test/bad-bundle.json")
+			var stdout, stderr bytes.Buffer
+			command.Stdout = &stdout
+			command.Stderr = &stderr
+			err := command.Run()
+			if err != nil {
+				t.Error("does not fail")
+			}
+			if !strings.Contains(string(stdout.Bytes()), "Imported 0 licenses.") {
+				t.Error("does not report imported")
+			}
+			if !strings.Contains(string(stderr.Bytes()), "Invalid license signature") {
+				t.Error("does not report invalid signature")
+			}
+		})
 	})
 }
 
 func TestSponsorValid(t *testing.T) {
 	InTestDir(t, func() {
 		Identify()
-		command := exec.Command("./licensezero", "sponsor", "--project", "070801d5-59f1-46ed-bb38-f5aaaa459fb8")
+		command := exec.Command("./licensezero", "sponsor", "--project", "070801d5-59f1-46ed-bb38-f5aaaa459fb8", "--do-not-open")
 		var stdout bytes.Buffer
 		command.Stdout = &stdout
 		err := command.Run()
@@ -191,7 +212,7 @@ func TestSponsorValid(t *testing.T) {
 
 func TestSponsorWithoutIdentity(t *testing.T) {
 	InTestDir(t, func() {
-		command := exec.Command("./licensezero", "sponsor", "--project", "070801d5-59f1-46ed-bb38-f5aaaa459fb8")
+		command := exec.Command("./licensezero", "sponsor", "--project", "070801d5-59f1-46ed-bb38-f5aaaa459fb8", "--do-not-open")
 		err := command.Run()
 		if err == nil {
 			t.Error("does not error")
@@ -214,4 +235,18 @@ func InTestDir(t *testing.T, script func()) {
 	defer os.RemoveAll(directory)
 	os.Setenv("LICENSEZERO_CONFIG", directory)
 	script()
+}
+
+const port = "8888"
+
+func WithDataServer(script func()) {
+	server := http.Server{
+		Addr:    ":" + port,
+		Handler: http.FileServer(http.Dir(".")),
+	}
+	go func() {
+		server.ListenAndServe()
+	}()
+	script()
+	server.Shutdown(nil)
 }
