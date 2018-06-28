@@ -111,6 +111,22 @@ func TestImportWaiver(t *testing.T) {
 	})
 }
 
+func TestImportBadWaiver(t *testing.T) {
+	InTestDir(t, func() {
+		command := exec.Command("./licensezero", "import", "--file", "test/bad-waiver.json")
+		var stdout, stderr bytes.Buffer
+		command.Stdout = &stdout
+		command.Stderr = &stderr
+		err := command.Run()
+		if err == nil {
+			t.Error("does not fail")
+		}
+		if !strings.Contains(string(stderr.Bytes()), "Invalid waiver signature.") {
+			t.Error("does not report invalid signature")
+		}
+	})
+}
+
 func TestImportNonexistentWaiver(t *testing.T) {
 	InTestDir(t, func() {
 		importCommand := exec.Command("./licensezero", "import", "--file", "test/nonexistent.json")
@@ -135,6 +151,22 @@ func TestImportLicense(t *testing.T) {
 		output := string(stdout.Bytes())
 		if !strings.Contains(output, "Imported") {
 			t.Error("does not say imported")
+		}
+	})
+}
+
+func TestImportBadLicense(t *testing.T) {
+	InTestDir(t, func() {
+		command := exec.Command("./licensezero", "import", "--file", "test/bad-license.json")
+		var stdout, stderr bytes.Buffer
+		command.Stdout = &stdout
+		command.Stderr = &stderr
+		err := command.Run()
+		if err == nil {
+			t.Error("does not fail")
+		}
+		if !strings.Contains(string(stderr.Bytes()), "Invalid license signature.") {
+			t.Error("does not report invalid")
 		}
 	})
 }

@@ -27,14 +27,24 @@ var Import = Subcommand{
 			os.Stderr.WriteString("Could not read file.")
 			os.Exit(1)
 		}
-		var initialParse interface{}
-		err = json.Unmarshal(bytes, &initialParse)
+		var documentPreview struct {
+			Manifest string `json:"manifest"`
+		}
+		err = json.Unmarshal(bytes, &documentPreview)
 		if err != nil {
 			os.Stderr.WriteString("Invalid JSON\n")
 			os.Exit(1)
 		}
-		itemsMap := initialParse.(map[string]interface{})
-		if _, ok := itemsMap["license"]; ok {
+		var manifestPreview struct {
+			Form string `json:"FORM"`
+		}
+		err = json.Unmarshal([]byte(documentPreview.Manifest), &manifestPreview)
+		if err != nil {
+			os.Stderr.WriteString("Invalid manifest JSON\n")
+			os.Exit(1)
+		}
+		os.Stderr.WriteString(manifestPreview.Form + "\n")
+		if manifestPreview.Form == "private license" {
 			license, err := data.ReadLicense(*filePath)
 			if err != nil {
 				os.Stderr.WriteString("Error reading license\n")
