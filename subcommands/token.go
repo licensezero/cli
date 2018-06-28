@@ -33,8 +33,7 @@ var Token = Subcommand{
 		}
 		err := data.WriteLicensor(paths.Home, &newLicensor)
 		if err != nil {
-			os.Stderr.WriteString("Could not write licensor file.\n")
-			os.Exit(1)
+			Fail("Could not write licensor file.")
 		}
 		if !*silent {
 			os.Stdout.WriteString("Saved your licensor ID and access token.\n")
@@ -52,6 +51,5 @@ func tokenUsage() {
 			"licensor ID": "Licensor ID (UUID).",
 			"silent":      silentLine,
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

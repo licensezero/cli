@@ -12,8 +12,7 @@ var WhoAmI = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString("Could not read identity file.\n")
-			os.Exit(1)
+			Fail("Could not read identity file.")
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		fmt.Println("Name: " + identity.Name)

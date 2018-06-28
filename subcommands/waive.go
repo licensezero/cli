@@ -32,8 +32,7 @@ var Waive = Subcommand{
 		} else {
 			licensor, err := data.ReadLicensor(paths.Home)
 			if err != nil {
-				os.Stderr.WriteString(licensorHint + "\n")
-				os.Exit(1)
+				Fail(licensorHint)
 			}
 			var term interface{}
 			if *forever {
@@ -43,8 +42,7 @@ var Waive = Subcommand{
 			}
 			bytes, err := api.Waive(licensor, *projectID, *beneficiary, *jurisdiction, term)
 			if err != nil {
-				os.Stderr.WriteString(err.Error() + "\n")
-				os.Exit(1)
+				Fail(err.Error())
 			}
 			os.Stdout.Write(bytes)
 			os.Exit(0)
@@ -64,6 +62,5 @@ func waiveUsage() {
 			"forever":           "Infinite term.",
 			"jurisdiction CODE": "Beneficiary jurisdiction (ISO 3166-2, like \"US-CA\").",
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

@@ -37,16 +37,14 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		os.Stderr.WriteString("Error reading " + *bundle + ".\n")
-		os.Exit(1)
+		Fail("Error reading " + *bundle + ".")
 	}
 	var parsed struct {
 		Licenses []data.LicenseFile `json:"licenses"`
 	}
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
-		os.Stderr.WriteString("Error parsing license bundle.\n")
-		os.Exit(1)
+		Fail("Error parsing license bundle.")
 	}
 	imported := 0
 	for _, license := range parsed.Licenses {
@@ -59,6 +57,7 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 		projectResponse, err := api.Project(projectID)
 		if err != nil {
 			os.Stderr.WriteString("Error fetching project developer information for " + projectID + ".\n")
+			continue
 		}
 		err = data.CheckLicenseSignature(envelope, projectResponse.Licensor.PublicKey)
 		if err != nil {
@@ -81,66 +80,55 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 func importFile(paths Paths, filePath *string, silent *bool) {
 	bytes, err := ioutil.ReadFile(*filePath)
 	if err != nil {
-		os.Stderr.WriteString("Could not read file.")
-		os.Exit(1)
+		Fail("Could not read file.")
 	}
 	var documentPreview struct {
 		Manifest string `json:"manifest"`
 	}
 	err = json.Unmarshal(bytes, &documentPreview)
 	if err != nil {
-		os.Stderr.WriteString("Invalid JSON\n")
-		os.Exit(1)
+		Fail("Invalid JSON")
 	}
 	var manifestPreview struct {
 		Form string `json:"FORM"`
 	}
 	err = json.Unmarshal([]byte(documentPreview.Manifest), &manifestPreview)
 	if err != nil {
-		os.Stderr.WriteString("Invalid manifest JSON\n")
-		os.Exit(1)
+		Fail("Invalid manifest JSON")
 	}
 	if manifestPreview.Form == "private license" {
 		license, err := data.ReadLicense(*filePath)
 		if err != nil {
-			os.Stderr.WriteString("Error reading license\n")
-			os.Exit(1)
+			Fail("Error reading license.")
 		}
 		projectResponse, err := api.Project(license.Manifest.Project.ProjectID)
 		if err != nil {
-			os.Stderr.WriteString("Error fetching project developer information.\n")
-			os.Exit(1)
+			Fail("Error fetching project developer information.")
 		}
 		err = data.CheckLicenseSignature(license, projectResponse.Licensor.PublicKey)
 		if err != nil {
-			os.Stderr.WriteString("Invalid license signature.")
-			os.Exit(1)
+			Fail("Invalid license signature.")
 		}
 		err = data.WriteLicense(paths.Home, license)
 		if err != nil {
-			os.Stderr.WriteString("Error writing license file.\n")
-			os.Exit(1)
+			Fail("Error writing license file.")
 		}
 	} else {
 		waiver, err := data.ReadWaiver(*filePath)
 		if err != nil {
-			os.Stderr.WriteString("Error reading waiver.\n")
-			os.Exit(1)
+			Fail("Error reading waiver.")
 		}
 		projectResponse, err := api.Project(waiver.Manifest.Project.ProjectID)
 		if err != nil {
-			os.Stderr.WriteString("Error fetching project developer information.")
-			os.Exit(1)
+			Fail("Error fetching project developer information.")
 		}
 		err = data.CheckWaiverSignature(waiver, projectResponse.Licensor.PublicKey)
 		if err != nil {
-			os.Stderr.WriteString("Invalid waiver signature.")
-			os.Exit(1)
+			Fail("Invalid waiver signature.")
 		}
 		err = data.WriteWaiver(paths.Home, waiver)
 		if err != nil {
-			os.Stderr.WriteString("Error writing waiver file.\n")
-			os.Exit(1)
+			Fail("Error writing waiver file.")
 		}
 	}
 	if !*silent {
@@ -159,6 +147,5 @@ func importUsage() {
 			"file FILE":  "License or waiver file to import.",
 			"silent":     silentLine,
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

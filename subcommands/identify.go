@@ -34,21 +34,17 @@ var Identify = Subcommand{
 			}
 		}
 		if !ValidName(*name) {
-			os.Stderr.WriteString("Invalid Name.\n")
-			os.Exit(1)
+			Fail("Invalid Name.")
 		}
 		if !ValidJurisdiction(*jurisdiction) {
-			os.Stderr.WriteString("Invalid Jurisdiction.\n")
-			os.Exit(1)
+			Fail("Invalid Jurisdiction.")
 		}
 		if !ValidEMail(*email) {
-			os.Stderr.WriteString("Invalid E-Mail.\n")
-			os.Exit(1)
+			Fail("Invalid E-Mail.")
 		}
 		err := data.WriteIdentity(paths.Home, &newIdentity)
 		if err != nil {
-			os.Stderr.WriteString("Could not write identity file.\n")
-			os.Exit(1)
+			Fail("Could not write identity file.")
 		}
 		if !*silent {
 			os.Stdout.WriteString("Saved your identification information.\n")
@@ -68,6 +64,5 @@ func identifyUsage() {
 			"name NAME":         "Your full name.",
 			"silent":            silentLine,
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

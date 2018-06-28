@@ -27,12 +27,10 @@ var Reprice = Subcommand{
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(licensorHint + "\n")
-			os.Exit(1)
+			Fail(licensorHint)
 		}
 		if err != nil {
-			os.Stderr.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail(err.Error())
 		}
 		var projectID string
 		if *projectIDFlag != "" {
@@ -40,19 +38,16 @@ var Reprice = Subcommand{
 		} else {
 			projectIDs, _, err := readEntries(paths.CWD)
 			if err != nil {
-				os.Stderr.WriteString("Could not read package.json.\n")
-				os.Exit(1)
+				Fail("Could not read package.json.")
 			}
 			if len(projectIDs) > 0 {
 				os.Stderr.WriteString("package.json has metadata for multiple License Zero projects.\n")
-				os.Stderr.WriteString("Use --project to specify your project ID.")
-				os.Exit(1)
+				Fail("Use --project to specify your project ID.")
 			}
 		}
 		err = api.Reprice(licensor, projectID, *price, *relicense)
 		if err != nil {
-			os.Stderr.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail(err.Error())
 		}
 		if !*silent {
 			os.Stdout.WriteString("Repriced.\n")
@@ -72,6 +67,5 @@ func repriceUsage() {
 			"relicense":  relicenseLine,
 			"silent":     silentLine,
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

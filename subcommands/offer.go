@@ -26,17 +26,14 @@ var Offer = Subcommand{
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(licensorHint + "\n")
-			os.Exit(1)
+			Fail(licensorHint)
 		}
 		if !ConfirmAgencyTerms() {
-			os.Stderr.WriteString(agencyTermsHint + "\n")
-			os.Exit(1)
+			Fail(agencyTermsHint)
 		}
 		projectID, err := api.Offer(licensor, *homepage, *description, *price, *relicense)
 		if err != nil {
-			os.Stderr.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail(err.Error())
 		}
 		location := "https://licensezero.com/projects/" + projectID
 		os.Stdout.WriteString("Project ID: " + projectID + "\n")
@@ -57,6 +54,5 @@ func offerUsage() {
 			"price CENTS":      priceLine,
 			"relicense CENTS":  relicenseLine,
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

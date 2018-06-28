@@ -23,8 +23,7 @@ var Sponsor = Subcommand{
 		}
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(identityHint + "\n")
-			os.Exit(1)
+			Fail(identityHint)
 		}
 		location, err := api.Sponsor(identity, *projectID)
 		if err != nil {
@@ -43,6 +42,5 @@ func sponsorUsage() {
 		flagsList(map[string]string{
 			"project ID": "Project ID (UUID).",
 		})
-	os.Stdout.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

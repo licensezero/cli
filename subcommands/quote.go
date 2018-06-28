@@ -24,8 +24,7 @@ var Quote = Subcommand{
 		flagSet.Parse(args)
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
 		if err != nil {
-			os.Stderr.WriteString("Could not read dependeny tree.\n")
-			os.Exit(1)
+			Fail("Could not read dependeny tree.")
 		}
 		licensable := projects.Licensable
 		licensed := projects.Licensed
@@ -36,8 +35,7 @@ var Quote = Subcommand{
 		if *outputJSON {
 			marshalled, err := json.Marshal(projects)
 			if err != nil {
-				os.Stderr.WriteString("Error serializing output.\n")
-				os.Exit(1)
+				Fail("Error serializing output.")
 			}
 			os.Stdout.WriteString(string(marshalled) + "\n")
 			os.Exit(0)
@@ -58,8 +56,7 @@ var Quote = Subcommand{
 		}
 		response, err := api.Quote(projectIDs)
 		if err != nil {
-			os.Stderr.WriteString("Error requesting quote.\n")
-			os.Exit(1)
+			Fail("Error requesting quote.")
 		}
 		var total uint
 		for _, project := range response.Projects {
@@ -102,8 +99,7 @@ func quoteUsage() {
 			"no-noncommercial": noNoncommercialLine,
 			"no-reciprocal":    noReciprocalLine,
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }
 
 func currency(cents uint) string {

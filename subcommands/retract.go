@@ -23,13 +23,11 @@ var Retract = Subcommand{
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(licensorHint + "\n")
-			os.Exit(1)
+			Fail(licensorHint)
 		}
 		err = api.Retract(licensor, *projectID)
 		if err != nil {
-			os.Stderr.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail(err.Error())
 		}
 		if !*silent {
 			os.Stdout.WriteString("Retracted from sale.\n")
@@ -47,6 +45,5 @@ func retractUsage() {
 			"project ID": projectIDLine,
 			"silent":     silentLine,
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

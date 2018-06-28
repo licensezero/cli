@@ -24,13 +24,11 @@ var Lock = Subcommand{
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(licensorHint + "\n")
-			os.Exit(1)
+			Fail(licensorHint)
 		}
 		err = api.Lock(licensor, *projectID, *unlock)
 		if err != nil {
-			os.Stderr.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail(err.Error())
 		}
 		if !*silent {
 			os.Stdout.WriteString("Locked pricing.\n")

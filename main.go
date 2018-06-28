@@ -33,13 +33,11 @@ var commands = map[string]subcommands.Subcommand{
 func main() {
 	home, homeError := homedir.Dir()
 	if homeError != nil {
-		os.Stderr.WriteString("Could not find home directory.\n")
-		os.Exit(1)
+		subcommands.Fail("Could not find home directory.")
 	}
 	cwd, cwdError := os.Getwd()
 	if cwdError != nil {
-		os.Stderr.WriteString("Could not find working directory.\n")
-		os.Exit(1)
+		subcommands.Fail("Could not find working directory.")
 	}
 	paths := subcommands.Paths{Home: home, CWD: cwd}
 	arguments := os.Args

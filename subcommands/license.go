@@ -36,8 +36,7 @@ var License = Subcommand{
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(licensorHint + "\n")
-			os.Exit(1)
+			Fail(licensorHint)
 		}
 		var terms string
 		if *prosperity {
@@ -48,22 +47,19 @@ var License = Subcommand{
 		}
 		response, err := api.Public(licensor, *projectID, terms)
 		if err != nil {
-			os.Stderr.WriteString("Error sending license information request.\n")
-			os.Exit(1)
+			Fail("Error sending license information request.")
 		}
 		// Add metadata to package.json.
 		newEntry := response.Metadata.LicenseZero
 		package_json := path.Join(paths.CWD, "package.json")
 		data, err := ioutil.ReadFile(package_json)
 		if err != nil {
-			os.Stderr.WriteString("Could not read package.json.\n")
-			os.Exit(1)
+			Fail("Could not read package.json.")
 		}
 		var existingMetadata interface{}
 		err = json.Unmarshal(data, &existingMetadata)
 		if err != nil {
-			os.Stderr.WriteString("Error parsing package.json.\n")
-			os.Exit(1)
+			Fail("Error parsing package.json.")
 		}
 		itemsMap := existingMetadata.(map[string]interface{})
 		var entries []interface{}
@@ -72,17 +68,14 @@ var License = Subcommand{
 				if *stack {
 					entries = append(entries, newEntry)
 				} else {
-					os.Stderr.WriteString("package.json already has License Zero metadata.\nUse --stack to stack metadata.\n")
-					os.Exit(1)
+					Fail("package.json already has License Zero metadata.\nUse --stack to stack metadata.")
 				}
 			} else {
-				os.Stderr.WriteString("package.json has an invalid licensezero property.\n")
-				os.Exit(1)
+				Fail("package.json has an invalid licensezero property.")
 			}
 		} else {
 			if *stack {
-				os.Stderr.WriteString("Cannot stack License Zero metadata. There is no preexisting metadata.\n")
-				os.Exit(1)
+				Fail("Cannot stack License Zero metadata. There is no preexisting metadata.")
 			} else {
 				entries = []interface{}{newEntry}
 			}
@@ -90,14 +83,12 @@ var License = Subcommand{
 		itemsMap["licensezero"] = entries
 		serialized, err := json.Marshal(existingMetadata)
 		if err != nil {
-			os.Stderr.WriteString("Error serializing new JSON\n")
-			os.Exit(1)
+			Fail("Error serializing new JSON.")
 		}
 		indented := bytes.NewBuffer([]byte{})
 		err = json.Indent(indented, serialized, "", "  ")
 		if err != nil {
-			os.Stderr.WriteString("Error indenting new JSON.\n")
-			os.Exit(1)
+			Fail("Error indenting new JSON.")
 		}
 		err = ioutil.WriteFile(package_json, indented.Bytes(), 0644)
 		if !*silent {
@@ -106,8 +97,7 @@ var License = Subcommand{
 		// Append to LICENSE.
 		err = writeLICENSE(&response)
 		if err != nil {
-			os.Stderr.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail(err.Error())
 		}
 		if !*silent {
 			os.Stdout.WriteString("Appended terms to LICENSE.")
@@ -162,6 +152,5 @@ func licenseUsage() {
 			"silent":     silentLine,
 			"stack":      "Stack multiple project metadata entries.",
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

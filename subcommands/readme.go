@@ -24,24 +24,21 @@ var README = Subcommand{
 			if os.IsNotExist(err) {
 				existing = ""
 			} else {
-				os.Stderr.WriteString("Error reading README.md.\n")
-				os.Exit(1)
+				Fail("Error reading README.md.")
 			}
 		} else {
 			existing = string(data)
 		}
 		projectIDs, termsIDs, err := readEntries(paths.CWD)
 		if err != nil {
-			os.Stderr.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail(err.Error())
 		}
 		if len(existing) > 0 {
 			existing = existing + "\n\n"
 		}
 		existing = existing + "# Licensing"
 		if len(projectIDs) == 0 {
-			os.Stderr.WriteString("No License Zero project metadata in package.json.\n")
-			os.Exit(1)
+			Fail("No License Zero project metadata in package.json.")
 		}
 		haveReciprocal := false
 		haveNoncommercial := false
@@ -116,8 +113,7 @@ var README = Subcommand{
 					"are available via [licensezero.com](https://licensezero.com).",
 			)
 		} else {
-			os.Stderr.WriteString("Unrecognized License Zero project terms.\n")
-			os.Exit(1)
+			Fail("Unrecognized License Zero project terms.")
 		}
 		existing = existing + "\n\n" + strings.Join(summaries, "\n\n")
 		existing = existing + "\n\n" + strings.Join(availabilities, "\n\n")
@@ -132,8 +128,7 @@ var README = Subcommand{
 		}
 		err = ioutil.WriteFile("README.md", []byte(existing), 0644)
 		if err != nil {
-			os.Stderr.WriteString("Error writing README.md.\n")
-			os.Exit(1)
+			Fail("Error writing README.md.")
 		}
 		if !*silent {
 			os.Stdout.WriteString("Wrote to README.md\n")
@@ -196,6 +191,5 @@ func readmeUsage() {
 		flagsList(map[string]string{
 			"silent": silentLine,
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

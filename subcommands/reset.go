@@ -12,18 +12,15 @@ var Reset = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(identityHint + "\n")
-			os.Exit(1)
+			Fail(identityHint)
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(licensorHint + "\n")
-			os.Exit(1)
+			Fail(licensorHint)
 		}
 		err = api.Reset(identity, licensor)
 		if err != nil {
-			os.Stderr.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail(err.Error())
 		}
 		os.Stdout.WriteString("Check your e-mail for the reset link.\n")
 		os.Exit(0)

@@ -2,7 +2,6 @@ package subcommands
 
 import "flag"
 import "io/ioutil"
-import "os"
 
 const bugsDescription = "Access the bug tracker for the application."
 
@@ -27,6 +26,5 @@ func bugsUsage() {
 		flagsList(map[string]string{
 			"do-not-open": doNotOpenLine,
 		})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

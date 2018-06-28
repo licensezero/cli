@@ -12,8 +12,7 @@ var Register = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(identityHint + "\n")
-			os.Exit(1)
+			Fail(identityHint)
 		}
 		os.Stdout.WriteString("Name: " + identity.Name + "\n")
 		os.Stdout.WriteString("Jurisdiction: " + identity.Jurisdiction + "\n")
@@ -23,13 +22,11 @@ var Register = Subcommand{
 			os.Exit(1)
 		}
 		if !ConfirmTermsOfService() {
-			os.Stderr.WriteString(termsHint + "\n")
-			os.Exit(1)
+			Fail(termsHint)
 		}
 		err = api.Register(identity)
 		if err != nil {
-			os.Stderr.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail(err.Error())
 		}
 		os.Stdout.WriteString("Follow the Stripe authorization link sent by e-mail.\n")
 		os.Exit(0)
@@ -40,6 +37,5 @@ func registerUsage() {
 	usage := registerDescription + "\n\n" +
 		"Usage:\n" +
 		"  licensezero register\n"
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }

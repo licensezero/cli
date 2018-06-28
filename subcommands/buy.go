@@ -22,13 +22,11 @@ var Buy = Subcommand{
 		flagSet.Parse(args)
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString(identityHint + "\n")
-			os.Exit(1)
+			Fail(identityHint)
 		}
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
 		if err != nil {
-			os.Stderr.WriteString("Could not read dependeny tree.\n")
-			os.Exit(1)
+			Fail("Could not read dependeny tree.")
 		} else {
 			licensable := projects.Licensable
 			unlicensed := projects.Unlicensed
@@ -46,8 +44,7 @@ var Buy = Subcommand{
 			}
 			location, err := api.Buy(identity, projectIDs)
 			if err != nil {
-				os.Stderr.WriteString(err.Error() + "\n")
-				os.Exit(1)
+				Fail(err.Error())
 			}
 			openURLAndExit(location, doNotOpen)
 		}
@@ -66,6 +63,5 @@ func buyUsage() {
 				"do-not-open":      doNotOpenLine,
 				"silent":           silentLine,
 			})
-	os.Stderr.WriteString(usage)
-	os.Exit(1)
+	Fail(usage)
 }
