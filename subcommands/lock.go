@@ -47,7 +47,7 @@ func lockUsage() {
 		flagsList(map[string]string{
 			"project": projectIDLine,
 			"silent":  silentLine,
-			"unlock":  "Unlock date, RFC 3339 5.6 format.",
+			"unlock":  "Unlock date and time, RFC 3339 format.",
 		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)
