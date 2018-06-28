@@ -159,7 +159,6 @@ func CheckWaiverSignature(waiver *WaiverEnvelope, publicKey string) error {
 		[]byte(waiver.ManifestString+"\n\n"+waiver.Document),
 	)
 	if err != nil {
-		panic(err)
 		return err
 	}
 	return nil
