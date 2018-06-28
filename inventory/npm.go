@@ -1,11 +1,11 @@
 package inventory
 
 import "encoding/json"
+import "github.com/yookoala/realpath"
 import "io/ioutil"
 import "os"
 import "path"
 import "strings"
-import "github.com/yookoala/realpath"
 
 type PackageJSONFile struct {
 	Name      string                    `json:"name"`
