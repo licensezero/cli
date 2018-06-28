@@ -19,6 +19,9 @@ var Lock = Subcommand{
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = lockUsage
 		flagSet.Parse(args)
+		if *unlock == "" || *projectID == "" {
+			lockUsage()
+		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
 			os.Stderr.WriteString(licensorHint + "\n")
@@ -44,7 +47,7 @@ func lockUsage() {
 		flagsList(map[string]string{
 			"project": projectIDLine,
 			"silent":  silentLine,
-			"unlock":  "Unlock date.",
+			"unlock":  "Unlock date, RFC 3339 5.6 format.",
 		})
 	os.Stderr.WriteString(usage)
 	os.Exit(1)

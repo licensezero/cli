@@ -13,7 +13,7 @@ type LockRequest struct {
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
 	ProjectID  string `json:"projectID"`
-	Unlock     string `json:"unloack"`
+	Unlock     string `json:"unlock"`
 }
 
 type LockResponse struct {
