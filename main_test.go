@@ -172,6 +172,40 @@ func TestPurchased(t *testing.T) {
 	})
 }
 
+func TestSponsorValid(t *testing.T) {
+	InTestDir(t, func() {
+		Identify()
+		command := exec.Command("./licensezero", "sponsor", "--project", "070801d5-59f1-46ed-bb38-f5aaaa459fb8")
+		var stdout bytes.Buffer
+		command.Stdout = &stdout
+		err := command.Run()
+		if err != nil {
+			t.Error(err)
+		}
+		output := string(stdout.Bytes())
+		if !strings.Contains(output, "https://licensezero.com") {
+			t.Error("does not print URL")
+		}
+	})
+}
+
+func TestSponsorWithoutIdentity(t *testing.T) {
+	InTestDir(t, func() {
+		command := exec.Command("./licensezero", "sponsor", "--project", "070801d5-59f1-46ed-bb38-f5aaaa459fb8")
+		err := command.Run()
+		if err == nil {
+			t.Error("does not error")
+		}
+	})
+}
+
+func Identify() {
+	name := "John Doe"
+	email := "test@example.com"
+	jurisdiction := "US-CA"
+	exec.Command("./licensezero", "identify", "--name", name, "--jurisdiction", jurisdiction, "--email", email, "--silent").Run()
+}
+
 func InTestDir(t *testing.T, script func()) {
 	directory, err := ioutil.TempDir("/tmp", "licensezero-test")
 	if err != nil {
