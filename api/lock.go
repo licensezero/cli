@@ -8,6 +8,8 @@ import "io/ioutil"
 import "net/http"
 import "strconv"
 
+import "fmt"
+
 type LockRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
@@ -32,6 +34,7 @@ func Lock(licensor *data.Licensor, projectID string, unlock string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(string(body))
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
 	defer response.Body.Close()
 	if err != nil {
