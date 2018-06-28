@@ -100,7 +100,6 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		os.Stderr.WriteString("Invalid manifest JSON\n")
 		os.Exit(1)
 	}
-	os.Stderr.WriteString(manifestPreview.Form + "\n")
 	if manifestPreview.Form == "private license" {
 		license, err := data.ReadLicense(*filePath)
 		if err != nil {
