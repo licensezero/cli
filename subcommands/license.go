@@ -81,16 +81,15 @@ var License = Subcommand{
 			}
 		}
 		itemsMap["licensezero"] = entries
-		serialized, err := json.Marshal(existingMetadata)
+		serialized := new(bytes.Buffer)
+		encoder := json.NewEncoder(serialized)
+		encoder.SetEscapeHTML(false)
+		encoder.SetIndent("", "  ")
+		err = encoder.Encode(existingMetadata)
 		if err != nil {
 			Fail("Error serializing new JSON.")
 		}
-		indented := bytes.NewBuffer([]byte{})
-		err = json.Indent(indented, serialized, "", "  ")
-		if err != nil {
-			Fail("Error indenting new JSON.")
-		}
-		err = ioutil.WriteFile(package_json, indented.Bytes(), 0644)
+		err = ioutil.WriteFile(package_json, serialized.Bytes(), 0644)
 		if !*silent {
 			os.Stdout.WriteString("Added metadata to package.json.\n")
 		}
