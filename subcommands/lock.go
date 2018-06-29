@@ -6,7 +6,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "os"
 
-const lockDescription = "Lock project pricing and availability until a given date."
+const lockDescription = "Lock project pricing and availability."
 
 var Lock = Subcommand{
 	Tag:         "seller",
