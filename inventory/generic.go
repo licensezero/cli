@@ -55,6 +55,7 @@ func ReadLicenseZeroFiles(directoryPath string) ([]Project, error) {
 				project.Type = packageInfo.Type
 				project.Name = packageInfo.Name
 				project.Version = packageInfo.Version
+				project.Scope = packageInfo.Scope
 			}
 			returned = append(returned, project)
 		}
@@ -84,6 +85,7 @@ func ReadLicenseZeroFiles(directoryPath string) ([]Project, error) {
 func findPackageInfo(directoryPath string) *Project {
 	approaches := []func(string) *Project{
 		findPythonPackageInfo,
+		findMavenPackageInfo,
 	}
 	for _, approach := range approaches {
 		returned := approach(directoryPath)
