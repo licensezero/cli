@@ -3,6 +3,7 @@ package subcommands
 import "encoding/json"
 import "errors"
 import "flag"
+import "github.com/licensezero/cli/inventory"
 import "io/ioutil"
 import "os"
 import "strings"
@@ -19,6 +20,7 @@ var README = Subcommand{
 		flagSet.Usage = readmeUsage
 		flagSet.Parse(args)
 		var existing string
+		checkForLegacyPackageJSON(paths.CWD)
 		data, err := ioutil.ReadFile("README.md")
 		if err != nil {
 			if os.IsNotExist(err) {
@@ -38,7 +40,7 @@ var README = Subcommand{
 		}
 		existing = existing + "# Licensing"
 		if len(projectIDs) == 0 {
-			Fail("No License Zero project metadata in package.json.")
+			Fail("No License Zero project metadata in licensezero.json.")
 		}
 		haveReciprocal := false
 		haveNoncommercial := false
@@ -151,34 +153,25 @@ func twoOrMore(values []bool) bool {
 }
 
 func readEntries(directory string) ([]string, []string, error) {
-	data, err := ioutil.ReadFile("package.json")
+	data, err := ioutil.ReadFile("licensezero.json")
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, nil, errors.New("Could not read package.json.")
+			return nil, nil, errors.New("Could not read licensezero.json.")
 		} else {
 			return nil, nil, err
 		}
 	}
-	var existingMetadata struct {
-		LicenseZero []struct {
-			License struct {
-				ProjectID string `json:"projectID"`
-				Terms     string `json:"terms"`
-			} `json:"license"`
-			AgentSignature    string `json:"agentSignature"`
-			LicensorSignature string `json:"licensorSignature"`
-		} `json:"licensezero"`
-	}
+	var existingMetadata inventory.LicenseZeroJSONFile
 	err = json.Unmarshal(data, &existingMetadata)
 	if err != nil {
-		return nil, nil, errors.New("Could not parse package.json metadata.")
+		return nil, nil, errors.New("Could not parse licensezero.json metadata.")
 	}
-	// TODO: Validate package.json metadata entries.
+	// TODO: Validate licensezero.json metadata entries.
 	var projectIDs []string
 	var terms []string
-	for _, entry := range existingMetadata.LicenseZero {
-		projectIDs = append(projectIDs, entry.License.ProjectID)
-		terms = append(terms, entry.License.Terms)
+	for _, entry := range existingMetadata.Envelopes {
+		projectIDs = append(projectIDs, entry.Manifest.ProjectID)
+		terms = append(terms, entry.Manifest.Terms)
 	}
 	return projectIDs, terms, nil
 }

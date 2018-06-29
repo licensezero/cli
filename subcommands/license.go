@@ -49,17 +49,18 @@ var License = Subcommand{
 		if err != nil {
 			Fail("Error sending license information request.")
 		}
-		// Add metadata to package.json.
+		checkForLegacyPackageJSON(paths.CWD)
+		// Add metadata to licensezero.json.
 		newEntry := response.Metadata.LicenseZero
-		package_json := path.Join(paths.CWD, "package.json")
-		data, err := ioutil.ReadFile(package_json)
+		licensezero_json := path.Join(paths.CWD, "licensezero.json")
+		data, err := ioutil.ReadFile(licensezero_json)
 		if err != nil {
-			Fail("Could not read package.json.")
+			Fail("Could not read licensezero.json.")
 		}
 		var existingMetadata interface{}
 		err = json.Unmarshal(data, &existingMetadata)
 		if err != nil {
-			Fail("Error parsing package.json.")
+			Fail("Error parsing licensezero.json.")
 		}
 		itemsMap := existingMetadata.(map[string]interface{})
 		var entries []interface{}
@@ -68,10 +69,10 @@ var License = Subcommand{
 				if *stack {
 					entries = append(entries, newEntry)
 				} else {
-					Fail("package.json already has License Zero metadata.\nUse --stack to stack metadata.")
+					Fail("licensezero.json already has License Zero metadata.\nUse --stack to stack metadata.")
 				}
 			} else {
-				Fail("package.json has an invalid licensezero property.")
+				Fail("licensezero.json has an invalid licensezero property.")
 			}
 		} else {
 			if *stack {
@@ -89,9 +90,9 @@ var License = Subcommand{
 		if err != nil {
 			Fail("Error serializing new JSON.")
 		}
-		err = ioutil.WriteFile(package_json, serialized.Bytes(), 0644)
+		err = ioutil.WriteFile(licensezero_json, serialized.Bytes(), 0644)
 		if !*silent {
-			os.Stdout.WriteString("Added metadata to package.json.\n")
+			os.Stdout.WriteString("Added metadata to licensezero.json.\n")
 		}
 		// Append to LICENSE.
 		err = writeLICENSE(&response)
@@ -101,6 +102,7 @@ var License = Subcommand{
 		if !*silent {
 			os.Stdout.WriteString("Appended terms to LICENSE.\n")
 		}
+		// TODO: Write licensezero.json to package.json files, MANIFEST.in, and similar.
 		os.Exit(0)
 	},
 }
@@ -137,6 +139,36 @@ func writeLICENSE(response *api.PublicResponse) error {
 
 func signatureLines(signature string) string {
 	return signature[0:64] + "\n" + signature[64:]
+}
+
+// Earlier versions of `licensezero` wrote License Zero licensing
+// metadata to `licensezero` array properties of `package.json` files
+// for npm projects, rather than to separate `licenserzero.json` files.
+// If we see a `package.json` file with a `licensezero` property, warn
+// the user and instruct them to upgrade.
+func checkForLegacyPackageJSON(directoryPath string) {
+	package_json := path.Join(directoryPath, "package.json")
+	data, err := ioutil.ReadFile(package_json)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return
+		} else {
+			Fail("Error reading package.json.")
+		}
+	}
+	var packageData struct {
+		LegacyMetadata []interface{} `json:"licensezero"`
+	}
+	err = json.Unmarshal(data, &packageData)
+	if len(packageData.LegacyMetadata) != 0 {
+		Fail(
+			"" +
+				"The `licensezero` property in `package.json` is deprecated\n" +
+				"in favor of `licensezero.json`.\n" +
+				"Remove the `licensezero` property from `package.json`\n" +
+				"and run `licensezero license` again.\n",
+		)
+	}
 }
 
 func licenseUsage() {
