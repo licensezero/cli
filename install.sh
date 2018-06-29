@@ -80,8 +80,12 @@ else
   install_path="$PWD"
 fi
 install_path="$install_path/licensezero$executable_suffix"
-if [ -w "$install_path" ]; then
-  mv "$tmp" "$install_path"
+if [ -w "$(dirname "$install_path")" ]; then
+  if [ -f "$install_path" ] && ! [ -w "$install_path" ]; then
+    sudo mv "$tmp" "$install_path"
+  else
+    mv "$tmp" "$install_path"
+  fi
 else
   sudo mv "$tmp" "$install_path"
 fi
