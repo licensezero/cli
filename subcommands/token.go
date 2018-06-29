@@ -5,7 +5,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "os"
 
-const tokenDescription = "Set your licensezero.com licensor ID and access token."
+const tokenDescription = "Save your API access token."
 
 var Token = Subcommand{
 	Tag:         "seller",
