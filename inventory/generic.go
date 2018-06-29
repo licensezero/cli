@@ -68,6 +68,7 @@ func ReadLicenseZeroFiles(directoryPath string) ([]Project, error) {
 
 func findPackageInfo(directoryPath string) *Project {
 	approaches := []func(string) *Project{
+		findNPMPackageInfo,
 		findPythonPackageInfo,
 		findMavenPackageInfo,
 	}
