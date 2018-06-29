@@ -133,12 +133,15 @@ func OwnProject(project *Project, identity *data.Identity) bool {
 func ReadProjects(cwd string) ([]Project, error) {
 	descenders := []func(string) ([]Project, error){
 		ReadNPMProjects,
+		ReadRubyGemsProjects,
 		ReadLicenseZeroFiles,
 	}
 	returned := []Project{}
 	for _, descender := range descenders {
 		projects, err := descender(cwd)
 		if err == nil {
+			// TODO: Check for duplicates.
+			// alreadyHaveProject(returned, envelope.Manifest.ProjectID)
 			returned = append(returned, projects...)
 		}
 	}
