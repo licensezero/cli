@@ -74,6 +74,18 @@ var License = Subcommand{
 			entries := existingMetadata.LicenseZero
 			if len(existingMetadata.LicenseZero) != 0 {
 				if *stack {
+					// Check if project already listed.
+					for _, entry := range entries {
+						if itemsMap, ok := entry.(map[string]interface{}); ok {
+							if license, ok := itemsMap["license"].(map[string]interface{}); ok {
+								if otherID, ok := license["projectID"].(string); ok {
+									if otherID == *projectID {
+										Fail("Project ID " + *projectID + " already appears in licensezero.json.")
+									}
+								}
+							}
+						}
+					}
 					entries = append(existingMetadata.LicenseZero, newEntry)
 				} else {
 					Fail("licensezero.json already has License Zero metadata.\nUse --stack to stack metadata.")
