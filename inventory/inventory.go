@@ -140,9 +140,13 @@ func ReadProjects(cwd string) ([]Project, error) {
 	for _, descender := range descenders {
 		projects, err := descender(cwd)
 		if err == nil {
-			// TODO: Check for duplicates.
-			// alreadyHaveProject(returned, envelope.Manifest.ProjectID)
-			returned = append(returned, projects...)
+			for _, project := range projects {
+				projectID := project.Envelope.Manifest.ProjectID
+				if alreadyHaveProject(returned, projectID) {
+					continue
+				}
+				returned = append(returned, project)
+			}
 		}
 	}
 	return returned, nil
