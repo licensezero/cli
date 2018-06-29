@@ -6,7 +6,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "os"
 
-const waiveDescription = "Generate a waiver for your project."
+const waiveDescription = "Generate a waiver."
 
 var Waive = Subcommand{
 	Tag:         "seller",
