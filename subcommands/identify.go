@@ -8,7 +8,7 @@ import "os"
 const identifyDescription = "Save your personal details for quoting and buying licenses."
 
 var Identify = Subcommand{
-	Tag:         "buyer",
+	Tag:         "misc",
 	Description: identifyDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("identify", flag.ExitOnError)
