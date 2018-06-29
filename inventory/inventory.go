@@ -131,7 +131,18 @@ func OwnProject(project *Project, identity *data.Identity) bool {
 }
 
 func ReadProjects(cwd string) ([]Project, error) {
-	return ReadNPMProjects(cwd)
+	descenders := []func(string) ([]Project, error){
+		ReadNPMProjects,
+		ReadLicenseZeroFiles,
+	}
+	returned := []Project{}
+	for _, descender := range descenders {
+		projects, err := descender(cwd)
+		if err == nil {
+			returned = append(returned, projects...)
+		}
+	}
+	return returned, nil
 }
 
 func isSymlink(entry os.FileInfo) bool {
