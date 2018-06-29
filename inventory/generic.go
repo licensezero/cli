@@ -11,8 +11,6 @@ type LicenseZeroJSONFile struct {
 	Envelopes []ProjectManifestEnvelope `json:"licensezero"`
 }
 
-// TODO: Consider reading setup.py --url and checking against homepage for Python.
-
 func ReadLicenseZeroFiles(directoryPath string) ([]Project, error) {
 	var returned []Project
 	entries, err := readAndStatDir(directoryPath)
