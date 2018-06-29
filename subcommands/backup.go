@@ -5,7 +5,7 @@ import "github.com/licensezero/cli/data"
 import "github.com/mholt/archiver"
 import "os"
 
-const backupDescription = "Create a dated tarball of your License Zero data."
+const backupDescription = "Create a tarball of your data."
 
 var Backup = Subcommand{
 	Tag:         "misc",
