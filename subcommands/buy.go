@@ -7,7 +7,7 @@ import "github.com/licensezero/cli/inventory"
 import "io/ioutil"
 import "os"
 
-const buyDescription = "Buy private licenses you are missing."
+const buyDescription = "Buy missing private licenses."
 
 var Buy = Subcommand{
 	Tag:         "buyer",
