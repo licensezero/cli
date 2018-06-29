@@ -10,7 +10,7 @@ import "io/ioutil"
 import "os"
 import "path"
 
-const licenseDescription = "Write LICENSE and package metadata for your project."
+const licenseDescription = "Write license terms and metadata for your project."
 
 var License = Subcommand{
 	Tag:         "seller",
