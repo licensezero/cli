@@ -89,6 +89,23 @@ var Quote = Subcommand{
 			if project.Retracted {
 				fmt.Println("  Retracted!")
 			}
+			if prior != nil {
+				if prior.Type != "" {
+					fmt.Println("  Type: " + prior.Type)
+				}
+				if prior.Path != "" {
+					fmt.Println("  Path: " + prior.Path)
+				}
+				if prior.Scope != "" {
+					fmt.Println("  Scope: " + prior.Scope)
+				}
+				if prior.Name != "" {
+					fmt.Println("  Name: " + prior.Name)
+				}
+				if prior.Version != "" {
+					fmt.Println("  Version: " + prior.Version)
+				}
+			}
 			fmt.Println("  Price: " + currency(project.Pricing.Private))
 			fmt.Printf("\nTotal: %s\n", currency(total))
 		}
