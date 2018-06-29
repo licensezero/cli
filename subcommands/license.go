@@ -103,6 +103,16 @@ var License = Subcommand{
 			os.Stdout.WriteString("Appended terms to LICENSE.\n")
 		}
 		// TODO: Write licensezero.json to package.json files, MANIFEST.in, and similar.
+		if !*silent {
+			os.Stdout.WriteString(
+				"" +
+					"Make sure to configure your package manager to include licensezero.json\n" +
+					"in your package distribution.\n\n" +
+					"npm:    Add licensezero.json to the files array of your npm package's\n" +
+					"        package.json file, if you have one.\n\n" +
+					"Python: Add licensezero.json to MANIFEST.in.\n",
+			)
+		}
 		os.Exit(0)
 	},
 }
