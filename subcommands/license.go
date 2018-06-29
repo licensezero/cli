@@ -127,7 +127,7 @@ func writeLICENSE(response *api.PublicResponse) error {
 		signatureLines(response.License.LicensorSignature) + "\n\n" +
 		"---\n\n" +
 		"Agent Signature (Ed25519):\n\n" +
-		signatureLines(response.License.AgentSignature)
+		signatureLines(response.License.AgentSignature) + "\n"
 	err = ioutil.WriteFile("LICENSE", []byte(toWrite), 0644)
 	if err != nil {
 		return errors.New("Error writing LICENSE")
