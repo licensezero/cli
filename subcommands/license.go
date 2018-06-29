@@ -51,42 +51,48 @@ var License = Subcommand{
 		}
 		checkForLegacyPackageJSON(paths.CWD)
 		// Add metadata to licensezero.json.
+		type FileStructure struct {
+			Version     string        `json:"version"`
+			LicenseZero []interface{} `json:"licensezero"`
+		}
+		var newMetadata FileStructure
 		newEntry := response.Metadata.LicenseZero
 		licensezero_json := path.Join(paths.CWD, "licensezero.json")
 		data, err := ioutil.ReadFile(licensezero_json)
 		if err != nil {
-			Fail("Could not read licensezero.json.")
-		}
-		var existingMetadata interface{}
-		err = json.Unmarshal(data, &existingMetadata)
-		if err != nil {
-			Fail("Error parsing licensezero.json.")
-		}
-		itemsMap := existingMetadata.(map[string]interface{})
-		var entries []interface{}
-		if _, ok := itemsMap["licensezero"]; ok {
-			if entries, ok := itemsMap["licensezero"].([]interface{}); ok {
+			if os.IsNotExist(err) {
+				newMetadata.LicenseZero = []interface{}{newEntry}
+			} else {
+				Fail("Could not read licensezero.json.")
+			}
+		} else {
+			var existingMetadata FileStructure
+			err = json.Unmarshal(data, &existingMetadata)
+			if err != nil {
+				Fail("Error parsing licensezero.json.")
+			}
+			entries := existingMetadata.LicenseZero
+			if len(existingMetadata.LicenseZero) != 0 {
 				if *stack {
-					entries = append(entries, newEntry)
+					entries = append(existingMetadata.LicenseZero, newEntry)
 				} else {
 					Fail("licensezero.json already has License Zero metadata.\nUse --stack to stack metadata.")
 				}
 			} else {
-				Fail("licensezero.json has an invalid licensezero property.")
+				if *stack {
+					Fail("Cannot stack License Zero metadata. There is no preexisting metadata.")
+				} else {
+					entries = []interface{}{newEntry}
+				}
 			}
-		} else {
-			if *stack {
-				Fail("Cannot stack License Zero metadata. There is no preexisting metadata.")
-			} else {
-				entries = []interface{}{newEntry}
-			}
+			newMetadata.Version = existingMetadata.Version
+			newMetadata.LicenseZero = entries
 		}
-		itemsMap["licensezero"] = entries
 		serialized := new(bytes.Buffer)
 		encoder := json.NewEncoder(serialized)
 		encoder.SetEscapeHTML(false)
 		encoder.SetIndent("", "  ")
-		err = encoder.Encode(existingMetadata)
+		err = encoder.Encode(newMetadata)
 		if err != nil {
 			Fail("Error serializing new JSON.")
 		}
