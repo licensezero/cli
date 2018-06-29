@@ -9,7 +9,7 @@ import "io/ioutil"
 import "os"
 import "strconv"
 
-const quoteDescription = "Quote the cost of private licenses you need."
+const quoteDescription = "Quote missing private licenses."
 
 var Quote = Subcommand{
 	Tag:         "buyer",
