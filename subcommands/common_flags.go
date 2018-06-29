@@ -22,7 +22,7 @@ func Price(flagSet *flag.FlagSet) *uint {
 	return flagSet.Uint("price", 0, priceLine)
 }
 
-func Relicense(flagSet *flag.FlagSet) *uint {
+func RelicenseFlag(flagSet *flag.FlagSet) *uint {
 	return flagSet.Uint("relicense", 0, relicenseLine)
 }
 

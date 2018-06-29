@@ -16,7 +16,7 @@ var Reprice = Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("reprice", flag.ExitOnError)
 		price := Price(flagSet)
-		relicense := Relicense(flagSet)
+		relicense := RelicenseFlag(flagSet)
 		projectIDFlag := ProjectID(flagSet)
 		silent := Silent(flagSet)
 		flagSet.SetOutput(ioutil.Discard)

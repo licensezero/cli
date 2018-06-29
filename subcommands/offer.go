@@ -13,7 +13,7 @@ var Offer = Subcommand{
 	Description: offerDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("offer", flag.ExitOnError)
-		relicense := Relicense(flagSet)
+		relicense := RelicenseFlag(flagSet)
 		homepage := flagSet.String("homepage", "", "")
 		description := flagSet.String("description", "", "")
 		doNotOpen := DoNotOpen(flagSet)
