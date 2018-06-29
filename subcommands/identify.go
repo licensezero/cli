@@ -5,7 +5,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "os"
 
-const identifyDescription = "Save your personal details for quoting and buying licenses."
+const identifyDescription = "Save your identity information."
 
 var Identify = Subcommand{
 	Tag:         "misc",
