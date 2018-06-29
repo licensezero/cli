@@ -6,7 +6,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "os"
 
-const repriceDescription = "Change pricing for your project."
+const repriceDescription = "Change project pricing."
 
 // TODO: Clarify UI for withdrawing relicense offers.
 
