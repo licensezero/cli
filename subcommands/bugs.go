@@ -3,7 +3,7 @@ package subcommands
 import "flag"
 import "io/ioutil"
 
-const bugsDescription = "Access the bug tracker for the application."
+const bugsDescription = "Open the CLI tracker page."
 
 var Bugs = Subcommand{
 	Tag:         "misc",
