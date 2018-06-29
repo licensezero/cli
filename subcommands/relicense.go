@@ -34,21 +34,21 @@ var Relicense = Subcommand{
 		if err != nil {
 			Fail("Error sending license information request.")
 		}
-		// Add metadata to package.json.
-		package_json := path.Join(paths.CWD, "package.json")
-		data, err := ioutil.ReadFile(package_json)
+		// Add metadata to licensezero.json.
+		licnsezero_json := path.Join(paths.CWD, "licensezero.json")
+		data, err := ioutil.ReadFile(licnsezero_json)
 		if err != nil {
-			Fail("Could not read package.json.")
+			Fail("Could not read licensezero.json.")
 		}
 		var existingJSON interface{}
 		var existingMetadata inventory.PackageJSONFile
 		err = json.Unmarshal(data, &existingJSON)
 		if err != nil {
-			Fail("Error parsing package.json.")
+			Fail("Error parsing licensezero.json.")
 		}
 		err = json.Unmarshal(data, &existingMetadata)
 		if err != nil {
-			Fail("Error parsing package.json.")
+			Fail("Error parsing licensezero.json.")
 		}
 		newEntries := []inventory.ProjectManifestEnvelope{}
 		for _, entry := range existingMetadata.Envelopes {
@@ -66,9 +66,9 @@ var Relicense = Subcommand{
 		if err != nil {
 			Fail("Error serializing new JSON.")
 		}
-		err = ioutil.WriteFile(package_json, serialized.Bytes(), 0644)
+		err = ioutil.WriteFile(licnsezero_json, serialized.Bytes(), 0644)
 		if !*silent {
-			os.Stdout.WriteString("Added metadata to package.json.\n")
+			os.Stdout.WriteString("Added metadata to licensezero.json.\n")
 		}
 		// Overwrite LICENSE.
 		err = overwriteLICENSE(&response)

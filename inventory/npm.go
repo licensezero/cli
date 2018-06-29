@@ -112,3 +112,35 @@ func alreadyHaveProject(projects []Project, projectID string) bool {
 }
 
 // TODO: Move package.json writing function into inventory.
+
+func findNPMPackageInfo(directoryPath string) *Project {
+	package_json := path.Join(directoryPath, "package.json")
+	data, err := ioutil.ReadFile(package_json)
+	if err != nil {
+		return nil
+	}
+	var parsed struct {
+		Name    string `json:"name"`
+		Version string `json:"version"`
+	}
+	json.Unmarshal(data, &parsed)
+	if err != nil {
+		return nil
+	}
+	rawName := parsed.Name
+	var name, scope string
+	// If the name looks like @scope/name, parse it.
+	if strings.HasPrefix(rawName, "@") && strings.Index(rawName, "/") != -1 {
+		index := strings.Index(rawName, "/")
+		scope = rawName[1 : index-1]
+		name = rawName[index:]
+	} else {
+		name = rawName
+	}
+	return &Project{
+		Type:    "npm",
+		Name:    name,
+		Scope:   scope,
+		Version: parsed.Version,
+	}
+}

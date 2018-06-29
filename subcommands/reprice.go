@@ -38,10 +38,10 @@ var Reprice = Subcommand{
 		} else {
 			projectIDs, _, err := readEntries(paths.CWD)
 			if err != nil {
-				Fail("Could not read package.json.")
+				Fail("Could not read licensezero.json.")
 			}
 			if len(projectIDs) > 0 {
-				os.Stderr.WriteString("package.json has metadata for multiple License Zero projects.\n")
+				os.Stderr.WriteString("licensezero.json has metadata for multiple License Zero projects.\n")
 				Fail("Use --project to specify your project ID.")
 			}
 		}

@@ -50,6 +50,9 @@ var Quote = Subcommand{
 		fmt.Printf("Ignored: %d\n", len(ignored))
 		fmt.Printf("Unlicensed: %d\n", len(unlicensed))
 		fmt.Printf("Invalid: %d\n", len(invalid))
+		if len(unlicensed) == 0 {
+			os.Exit(0)
+		}
 		var projectIDs []string
 		for _, project := range unlicensed {
 			projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
@@ -60,23 +63,48 @@ var Quote = Subcommand{
 		}
 		var total uint
 		for _, project := range response.Projects {
+			var prior *inventory.Project
+			for _, candidate := range unlicensed {
+				if candidate.Envelope.Manifest.ProjectID == project.ProjectID {
+					prior = &candidate
+					break
+				}
+			}
 			total += project.Pricing.Private
 			fmt.Println("\n- Project: " + project.ProjectID)
 			fmt.Println("  Description: " + project.Description)
 			fmt.Println("  Repository: " + project.Repository)
-			for _, prior := range unlicensed {
-				if prior.Envelope.Manifest.ProjectID == project.ProjectID {
-					if prior.Envelope.Manifest.Terms == "noncommercial" {
-						fmt.Println("  Terms: Noncommercial " + prior.Version)
-					} else if prior.Envelope.Manifest.Terms == "reciprocal" {
-						fmt.Println("  Terms: Reciprocal " + prior.Version)
-					}
-					break
+			if prior != nil {
+				if prior.Envelope.Manifest.Terms == "noncommercial" {
+					fmt.Println("  Terms: Noncommercial")
+				} else if prior.Envelope.Manifest.Terms == "reciprocal" {
+					fmt.Println("  Terms: Reciprocal")
+				} else if prior.Envelope.Manifest.Terms == "parity" {
+					fmt.Println("  Terms: Parity")
+				} else if prior.Envelope.Manifest.Terms == "prosperity" {
+					fmt.Println("  Terms: Prosperity")
 				}
 			}
 			fmt.Println("  Licensor: " + project.Licensor.Name + " [" + project.Licensor.Jurisdiction + "]")
 			if project.Retracted {
 				fmt.Println("  Retracted!")
+			}
+			if prior != nil {
+				if prior.Type != "" {
+					fmt.Println("  Type: " + prior.Type)
+				}
+				if prior.Path != "" {
+					fmt.Println("  Path: " + prior.Path)
+				}
+				if prior.Scope != "" {
+					fmt.Println("  Scope: " + prior.Scope)
+				}
+				if prior.Name != "" {
+					fmt.Println("  Name: " + prior.Name)
+				}
+				if prior.Version != "" {
+					fmt.Println("  Version: " + prior.Version)
+				}
 			}
 			fmt.Println("  Price: " + currency(project.Pricing.Private))
 			fmt.Printf("\nTotal: %s\n", currency(total))
