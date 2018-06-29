@@ -23,57 +23,46 @@ func ReadLicenseZeroFiles(directoryPath string) ([]Project, error) {
 			return nil, err
 		}
 	}
-	processProject := func(directory string) error {
-		json_file := path.Join(directory, "licensezero.json")
-		data, err := ioutil.ReadFile(json_file)
-		if err != nil {
-			return err
-		}
-		var parsed LicenseZeroJSONFile
-		json.Unmarshal(data, &parsed)
-		anyNewProjects := false
-		for _, envelope := range parsed.Envelopes {
-			if alreadyHaveProject(returned, envelope.Manifest.ProjectID) {
-				continue
-			}
-			anyNewProjects = true
-			project := Project{
-				Path:     directory,
-				Envelope: envelope,
-			}
-			realDirectory, err := realpath.Realpath(directory)
+	for _, entry := range entries {
+		name := entry.Name()
+		if name == "licensezero.json" {
+			json_file := path.Join(directoryPath, "licensezero.json")
+			data, err := ioutil.ReadFile(json_file)
 			if err != nil {
-				project.Path = realDirectory
-			} else {
-				project.Path = directory
+				return nil, err
 			}
-			packageInfo := findPackageInfo(directory)
-			if packageInfo != nil {
-				project.Type = packageInfo.Type
-				project.Name = packageInfo.Name
-				project.Version = packageInfo.Version
-				project.Scope = packageInfo.Scope
+			var parsed LicenseZeroJSONFile
+			json.Unmarshal(data, &parsed)
+			for _, envelope := range parsed.Envelopes {
+				if alreadyHaveProject(returned, envelope.Manifest.ProjectID) {
+					continue
+				}
+				project := Project{
+					Path:     directoryPath,
+					Envelope: envelope,
+				}
+				realDirectory, err := realpath.Realpath(directoryPath)
+				if err != nil {
+					project.Path = realDirectory
+				} else {
+					project.Path = directoryPath
+				}
+				packageInfo := findPackageInfo(directoryPath)
+				if packageInfo != nil {
+					project.Type = packageInfo.Type
+					project.Name = packageInfo.Name
+					project.Version = packageInfo.Version
+					project.Scope = packageInfo.Scope
+				}
+				returned = append(returned, project)
 			}
-			returned = append(returned, project)
-		}
-		if anyNewProjects {
-			below, recursionError := ReadNPMProjects(directory)
-			if recursionError != nil {
-				return recursionError
+		} else if entry.IsDir() {
+			directory := path.Join(directoryPath, name)
+			below, err := ReadLicenseZeroFiles(directory)
+			if err != nil {
+				return nil, err
 			}
 			returned = append(returned, below...)
-		}
-		return nil
-	}
-	for _, entry := range entries {
-		if !entry.IsDir() {
-			continue
-		}
-		name := entry.Name()
-		directory := path.Join(directoryPath, name)
-		err := processProject(directory)
-		if err != nil {
-			return nil, err
 		}
 	}
 	return returned, nil
