@@ -75,7 +75,7 @@ elif [ -d "$HOME/bin" ]; then
 elif [ -d "/usr/local/bin" ]; then
   install_path="/usr/local/bin"
 else
-  echo "Could determine where to install the command line interface." >/dev/stderr
+  echo "Could not determine where to install the command line interface." >/dev/stderr
   echo "Downloading to the current directory." >/dev/stderr
   install_path="$PWD"
 fi
