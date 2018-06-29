@@ -6,7 +6,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "os"
 
-const sponsorDescription = "Sponsor relicensing of a project onto Charity terms."
+const sponsorDescription = "Sponsor relicensing of a project."
 
 var Sponsor = Subcommand{
 	Tag:         "buyer",
