@@ -6,7 +6,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "os"
 
-const offerDescription = "Offer private licenses for sale through licensezero.com."
+const offerDescription = "Offer private licenses for sale."
 
 var Offer = Subcommand{
 	Tag:         "seller",
