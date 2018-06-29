@@ -9,7 +9,7 @@ import "net/http"
 import "os"
 import "strconv"
 
-const importDescription = "Import a private licenses and waivers."
+const importDescription = "Import private licenses and waivers."
 
 var Import = Subcommand{
 	Tag:         "buyer",
