@@ -63,18 +63,26 @@ var Quote = Subcommand{
 		}
 		var total uint
 		for _, project := range response.Projects {
+			var prior *inventory.Project
+			for _, candidate := range unlicensed {
+				if candidate.Envelope.Manifest.ProjectID == project.ProjectID {
+					prior = &candidate
+					break
+				}
+			}
 			total += project.Pricing.Private
 			fmt.Println("\n- Project: " + project.ProjectID)
 			fmt.Println("  Description: " + project.Description)
 			fmt.Println("  Repository: " + project.Repository)
-			for _, prior := range unlicensed {
-				if prior.Envelope.Manifest.ProjectID == project.ProjectID {
-					if prior.Envelope.Manifest.Terms == "noncommercial" {
-						fmt.Println("  Terms: Noncommercial " + prior.Version)
-					} else if prior.Envelope.Manifest.Terms == "reciprocal" {
-						fmt.Println("  Terms: Reciprocal " + prior.Version)
-					}
-					break
+			if prior != nil {
+				if prior.Envelope.Manifest.Terms == "noncommercial" {
+					fmt.Println("  Terms: Noncommercial")
+				} else if prior.Envelope.Manifest.Terms == "reciprocal" {
+					fmt.Println("  Terms: Reciprocal")
+				} else if prior.Envelope.Manifest.Terms == "parity" {
+					fmt.Println("  Terms: Parity")
+				} else if prior.Envelope.Manifest.Terms == "prosperity" {
+					fmt.Println("  Terms: Prosperity")
 				}
 			}
 			fmt.Println("  Licensor: " + project.Licensor.Name + " [" + project.Licensor.Jurisdiction + "]")
