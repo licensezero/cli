@@ -6,7 +6,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "os"
 
-const retractDescription = "Retract project licenses for a project from sale."
+const retractDescription = "Stop offering private licenses for sale."
 
 var Retract = Subcommand{
 	Tag:         "seller",
