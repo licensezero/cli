@@ -100,7 +100,7 @@ var License = Subcommand{
 			Fail(err.Error())
 		}
 		if !*silent {
-			os.Stdout.WriteString("Appended terms to LICENSE.")
+			os.Stdout.WriteString("Appended terms to LICENSE.\n")
 		}
 		os.Exit(0)
 	},
