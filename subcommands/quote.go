@@ -50,6 +50,9 @@ var Quote = Subcommand{
 		fmt.Printf("Ignored: %d\n", len(ignored))
 		fmt.Printf("Unlicensed: %d\n", len(unlicensed))
 		fmt.Printf("Invalid: %d\n", len(invalid))
+		if len(unlicensed) == 0 {
+			os.Exit(0)
+		}
 		var projectIDs []string
 		for _, project := range unlicensed {
 			projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
