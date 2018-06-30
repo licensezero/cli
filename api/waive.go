@@ -45,6 +45,19 @@ func Waive(licensor *data.Licensor, projectID, beneficiary, jurisdiction string,
 	if response.StatusCode != 200 {
 		return nil, errors.New("Server responded " + strconv.Itoa(response.StatusCode))
 	}
-	// TODO: Fix waiver response parsing.
-	return ioutil.ReadAll(response.Body)
+	responseBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	var parsed struct {
+		Error interface{} `json:"error"`
+	}
+	err = json.Unmarshal(responseBody, &parsed)
+	if err != nil {
+		return nil, err
+	}
+	if message, ok := parsed.Error.(string); ok {
+		return nil, errors.New(message)
+	}
+	return responseBody, nil
 }
