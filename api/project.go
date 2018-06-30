@@ -27,10 +27,10 @@ func Project(projectID string) (*LicensorInformation, error) {
 		return nil, errors.New("error encoding agent key request body")
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
 	if err != nil {
 		return nil, errors.New("error sending request")
 	}
+	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, errors.New("error reading agent key response body")

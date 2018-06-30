@@ -34,10 +34,10 @@ func Sponsor(identity *data.Identity, projectID string) (string, error) {
 		return "", errors.New("could not construct sponsor request")
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
 	if err != nil {
 		return "", errors.New("error sending request")
 	}
+	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return "", errors.New("invalid server response")

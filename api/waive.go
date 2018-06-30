@@ -38,10 +38,10 @@ func Waive(licensor *data.Licensor, projectID, beneficiary, jurisdiction string,
 		return nil, errors.New("error serializing request body")
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
 	if err != nil {
 		return nil, errors.New("error sending request")
 	}
+	defer response.Body.Close()
 	if response.StatusCode != 200 {
 		return nil, errors.New("Server responded " + strconv.Itoa(response.StatusCode))
 	}

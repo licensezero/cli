@@ -37,10 +37,10 @@ func Reprice(licensor *data.Licensor, projectID string, private, relicense uint)
 		return err
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
 	if err != nil {
 		return errors.New("error sending request")
 	}
+	defer response.Body.Close()
 	if response.StatusCode != 200 {
 		return errors.New("Server responded " + strconv.Itoa(response.StatusCode))
 	}

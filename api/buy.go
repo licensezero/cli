@@ -36,10 +36,10 @@ func Buy(identity *data.Identity, projectIDs []string) (string, error) {
 		return "", errors.New("could not construct quote request")
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
 	if err != nil {
 		return "", errors.New("error sending request")
 	}
+	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return "", errors.New("invalid server response")

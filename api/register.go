@@ -38,10 +38,10 @@ func Register(identity *data.Identity) error {
 		return errors.New("could not construct register request")
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
 	if err != nil {
 		return errors.New("error sending request")
 	}
+	defer response.Body.Close()
 	if response.StatusCode != 200 {
 		return errors.New("Server responded " + strconv.Itoa(response.StatusCode))
 	}

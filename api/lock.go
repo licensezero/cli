@@ -37,13 +37,13 @@ func Lock(licensor *data.Licensor, projectID string, unlock string) error {
 	}
 	fmt.Println(string(body))
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
 	if err != nil {
 		return err
 	}
 	if response.StatusCode != 200 {
 		return errors.New("Server responded " + strconv.Itoa(response.StatusCode))
 	}
+	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
