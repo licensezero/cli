@@ -35,6 +35,9 @@ var Import = Subcommand{
 
 func importBundle(paths Paths, bundle *string, silent *bool) {
 	response, err := http.Get(*bundle)
+	if err != nil {
+		Fail("Error getting bundle.")
+	}
 	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {

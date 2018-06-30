@@ -188,6 +188,9 @@ func checkForLegacyPackageJSON(directoryPath string) {
 		LegacyMetadata []interface{} `json:"licensezero"`
 	}
 	err = json.Unmarshal(data, &packageData)
+	if err != nil {
+		Fail("Error parsing package.json.")
+	}
 	if len(packageData.LegacyMetadata) != 0 {
 		Fail(
 			"" +

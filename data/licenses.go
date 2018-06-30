@@ -134,10 +134,13 @@ func WriteLicense(home string, license *LicenseEnvelope) error {
 // CheckLicenseSignature verifies the signatures to a liecnse envelope.
 func CheckLicenseSignature(license *LicenseEnvelope, publicKey string) error {
 	serialized, err := json.Marshal(license.Manifest)
+	if err != nil {
+		return errors.New("could not serialize license manifest")
+	}
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
-		return errors.New("could not serialize manifest")
+		return errors.New("could not compact license manifest")
 	}
 	if license.ProjectID != license.Manifest.Project.ProjectID {
 		return errors.New("project IDs do not match")
@@ -155,10 +158,13 @@ func CheckLicenseSignature(license *LicenseEnvelope, publicKey string) error {
 
 func compactLicenseManifest(data *LicenseManifest) (*bytes.Buffer, error) {
 	serialized, err := json.Marshal(data)
+	if err != nil {
+		return nil, errors.New("could not serialize license manifest")
+	}
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
-		return nil, errors.New("could not serialize")
+		return nil, errors.New("could not compact license manifest")
 	}
 	return compacted, nil
 }

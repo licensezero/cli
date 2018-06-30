@@ -46,6 +46,9 @@ func Quote(projectIDs []string) ([]QuoteProject, error) {
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
 	defer response.Body.Close()
+	if err != nil {
+		return nil, errors.New("error sending request")
+	}
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, err

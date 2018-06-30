@@ -150,10 +150,13 @@ func WriteWaiver(home string, waiver *WaiverEnvelope) error {
 // CheckWaiverSignature verifies the signatures to a waiver.
 func CheckWaiverSignature(waiver *WaiverEnvelope, publicKey string) error {
 	serialized, err := json.Marshal(waiver.Manifest)
+	if err != nil {
+		return errors.New("coiuld not serialize waiver manifest")
+	}
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
-		return errors.New("could not serialize manifest")
+		return errors.New("could not compact waiver manifest")
 	}
 	if waiver.ProjectID != waiver.Manifest.Project.ProjectID {
 		return errors.New("project IDs do not match")
@@ -171,10 +174,13 @@ func CheckWaiverSignature(waiver *WaiverEnvelope, publicKey string) error {
 
 func compactWaiverManifest(data *WaiverManifest) (*bytes.Buffer, error) {
 	serialized, err := json.Marshal(data)
+	if err != nil {
+		return nil, errors.New("could not serialize waiver manifest")
+	}
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
-		return nil, errors.New("could not serialize")
+		return nil, errors.New("could not compact waiver manifest")
 	}
 	return compacted, nil
 }

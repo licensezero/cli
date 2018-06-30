@@ -37,6 +37,9 @@ func Buy(identity *data.Identity, projectIDs []string) (string, error) {
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
 	defer response.Body.Close()
+	if err != nil {
+		return "", errors.New("error sending request")
+	}
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return "", errors.New("invalid server response")

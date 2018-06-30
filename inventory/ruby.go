@@ -22,7 +22,7 @@ func readRubyGemsProjects(packagePath string) ([]Project, error) {
 	lines := strings.Split(showAllOutput, "\n")
 	var returned []Project
 	// Parse each line of output for Gem name and version.
-	re, err := regexp.Compile(`^\s+\*\s+([^(]+) \((.+)\)$`)
+	re, _ := regexp.Compile(`^\s+\*\s+([^(]+) \((.+)\)$`)
 	for _, line := range lines {
 		result := re.FindStringSubmatch(line)
 		if len(result) == 0 {
@@ -32,6 +32,9 @@ func readRubyGemsProjects(packagePath string) ([]Project, error) {
 		version := result[2]
 		// Run `bundle show $name` to find the Gem's local path.
 		gemPath, err := getRubyGemPathFromBundler(name)
+		if err != nil {
+			continue
+		}
 		// Try to read a licensezero.json file there.
 		jsonFile := path.Join(gemPath, "licensezero.json")
 		data, err := ioutil.ReadFile(jsonFile)

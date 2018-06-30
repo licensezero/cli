@@ -86,20 +86,8 @@ var Relicense = Subcommand{
 }
 
 func overwriteLICENSE(response *api.PublicResponse) error {
-	var toWrite string
-	existing, err := ioutil.ReadFile("LICENSE")
-	if err != nil {
-		if os.IsNotExist(err) {
-			toWrite = ""
-		}
-		return errors.New("could not open LICENSE")
-	}
-	toWrite = string(existing)
 	// TODO: Check LICENSE for other licenses.
-	if len(toWrite) != 0 {
-		toWrite = toWrite + "\n\n"
-	}
-	toWrite = "" +
+	toWrite := "" +
 		response.License.Document + "\n\n" +
 		"---\n\n" +
 		"Licensor Signature (Ed25519):\n\n" +
@@ -107,7 +95,7 @@ func overwriteLICENSE(response *api.PublicResponse) error {
 		"---\n\n" +
 		"Agent Signature (Ed25519):\n\n" +
 		signatureLines(response.License.AgentSignature) + "\n"
-	err = ioutil.WriteFile("LICENSE", []byte(toWrite), 0644)
+	err := ioutil.WriteFile("LICENSE", []byte(toWrite), 0644)
 	if err != nil {
 		return errors.New("Error writing LICENSE")
 	}

@@ -33,6 +33,9 @@ func Retract(licensor *data.Licensor, projectID string) error {
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
 	defer response.Body.Close()
+	if err != nil {
+		return errors.New("error sending request")
+	}
 	if response.StatusCode != 200 {
 		return errors.New("Server responded " + strconv.Itoa(response.StatusCode))
 	}
