@@ -27,12 +27,12 @@ var Buy = Subcommand{
 		}
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
 		if err != nil {
-			Fail("Could not read dependeny tree.")
+			Fail("Could not read dependency tree.")
 		} else {
 			licensable := projects.Licensable
 			unlicensed := projects.Unlicensed
 			if len(licensable) == 0 {
-				os.Stdout.WriteString("No License Zero depedencies found.\n")
+				os.Stdout.WriteString("No License Zero dependencies found.\n")
 				os.Exit(0)
 			}
 			if len(unlicensed) == 0 {
