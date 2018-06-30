@@ -9,6 +9,8 @@ import "path"
 import "regexp"
 import "strings"
 
+// TODO: Run bundle show --paths if order guaranteed same.
+
 func readRubyGemsProjects(packagePath string) ([]Project, error) {
 	// Run `bundle show` in the working directory to list dependencies.
 	showAll := exec.Command("bundle", "show")
