@@ -8,18 +8,19 @@ import "io/ioutil"
 import "net/http"
 import "strconv"
 
-type ResetRequest struct {
+type resetRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	EMail      string `json:"email"`
 }
 
-type ResetResponse struct {
+type resetResponse struct {
 	Error interface{} `json:"error"`
 }
 
+// Reset sends reset API requests.
 func Reset(identity *data.Identity, licensor *data.Licensor) error {
-	bodyData := ResetRequest{
+	bodyData := resetRequest{
 		Action:     "reset",
 		LicensorID: licensor.LicensorID,
 		EMail:      identity.EMail,
@@ -37,7 +38,7 @@ func Reset(identity *data.Identity, licensor *data.Licensor) error {
 	if err != nil {
 		return err
 	}
-	var parsed ResetResponse
+	var parsed resetResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return err

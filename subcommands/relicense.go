@@ -13,13 +13,16 @@ import "path"
 
 const relicenseDescription = "Relicense on Charity terms."
 
+// TODO: Automatically retract?
+
+// Relicense updates LICENSE and metadata with Charity terms.
 var Relicense = Subcommand{
 	Tag:         "seller",
 	Description: relicenseDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("relicense", flag.ExitOnError)
-		projectID := ProjectID(flagSet)
-		silent := Silent(flagSet)
+		projectID := projectIDFlag(flagSet)
+		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = relicenseUsage
 		flagSet.Parse(args)
@@ -35,13 +38,13 @@ var Relicense = Subcommand{
 			Fail("Error sending license information request.")
 		}
 		// Add metadata to licensezero.json.
-		licnsezero_json := path.Join(paths.CWD, "licensezero.json")
-		data, err := ioutil.ReadFile(licnsezero_json)
+		licensezeroJSON := path.Join(paths.CWD, "licensezero.json")
+		data, err := ioutil.ReadFile(licensezeroJSON)
 		if err != nil {
 			Fail("Could not read licensezero.json.")
 		}
 		var existingJSON interface{}
-		var existingMetadata inventory.PackageJSONFile
+		var existingMetadata inventory.LicenseZeroJSONFile
 		err = json.Unmarshal(data, &existingJSON)
 		if err != nil {
 			Fail("Error parsing licensezero.json.")
@@ -66,7 +69,7 @@ var Relicense = Subcommand{
 		if err != nil {
 			Fail("Error serializing new JSON.")
 		}
-		err = ioutil.WriteFile(licnsezero_json, serialized.Bytes(), 0644)
+		err = ioutil.WriteFile(licensezeroJSON, serialized.Bytes(), 0644)
 		if !*silent {
 			os.Stdout.WriteString("Added metadata to licensezero.json.\n")
 		}
@@ -88,12 +91,10 @@ func overwriteLICENSE(response *api.PublicResponse) error {
 	if err != nil {
 		if os.IsNotExist(err) {
 			toWrite = ""
-		} else {
-			return errors.New("Could not open LICENSE.")
 		}
-	} else {
-		toWrite = string(existing)
+		return errors.New("could not open LICENSE")
 	}
+	toWrite = string(existing)
 	// TODO: Check LICENSE for other licenses.
 	if len(toWrite) != 0 {
 		toWrite = toWrite + "\n\n"

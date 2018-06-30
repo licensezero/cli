@@ -6,7 +6,8 @@ import "github.com/mitchellh/go-homedir"
 import "os"
 import "sort"
 
-var Rev string // Set via ldflags.
+// Rev represents the current build revision.  Set via ldflags.
+var Rev string
 
 var commands = map[string]subcommands.Subcommand{
 	"backup":    subcommands.Backup,
@@ -84,7 +85,7 @@ func listSubcommands(header string, list map[string]subcommands.Subcommand) {
 	os.Stdout.WriteString("\n  " + header + ":\n\n")
 	longestSubcommand := 0
 	var names []string
-	for name, _ := range list {
+	for name := range list {
 		length := len(name) + 1
 		if length > longestSubcommand {
 			longestSubcommand = length

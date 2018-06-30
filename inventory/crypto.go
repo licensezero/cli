@@ -6,11 +6,12 @@ import "encoding/json"
 import "errors"
 import "golang.org/x/crypto/ed25519"
 
-type AgentSignaturePaackage struct {
+type agentSignaturePackage struct {
 	Manifest          ProjectManifest `json:"license"`
 	LicensorSignature string          `json:"licensorSignature"`
 }
 
+// CheckMetadata verifies signatures to package metadata.
 func CheckMetadata(project *Project, licensorKeyHex string, agentKeyHex string) error {
 	serialized, err := json.Marshal(project.Envelope.Manifest)
 	compacted := bytes.NewBuffer([]byte{})
@@ -27,7 +28,7 @@ func CheckMetadata(project *Project, licensorKeyHex string, agentKeyHex string) 
 	if err != nil {
 		return err
 	}
-	serialized, err = json.Marshal(AgentSignaturePaackage{
+	serialized, err = json.Marshal(agentSignaturePackage{
 		Manifest:          project.Envelope.Manifest,
 		LicensorSignature: project.Envelope.LicensorSignature,
 	})

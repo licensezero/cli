@@ -3,13 +3,13 @@ package data
 import "os"
 import "path"
 
+// ConfigPath computes the path of the CLI's configuration directory.
 func ConfigPath(home string) string {
 	fromEnvironment := os.Getenv("LICENSEZERO_CONFIG")
 	if fromEnvironment != "" {
 		return fromEnvironment
-	} else {
-		return path.Join(home, ".config", "licensezero")
 	}
+	return path.Join(home, ".config", "licensezero")
 }
 
 func makeConfigDirectory(home string) error {

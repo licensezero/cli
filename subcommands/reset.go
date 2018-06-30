@@ -6,6 +6,7 @@ import "os"
 
 const resetDescription = "Reset your API access token."
 
+// Reset requests a new access token.
 var Reset = Subcommand{
 	Tag:         "seller",
 	Description: resetDescription,

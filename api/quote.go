@@ -6,16 +6,12 @@ import "errors"
 import "io/ioutil"
 import "net/http"
 
-type QuoteRequest struct {
+type quoteRequest struct {
 	Action   string   `json:"action"`
 	Projects []string `json:"projects"`
 }
 
-type QuoteResponse struct {
-	Error    interface{}    `json:"error"`
-	Projects []QuoteProject `json:"projects"`
-}
-
+// QuoteProject describes the data the API projects on quoted projects.
 type QuoteProject struct {
 	Licensor    LicensorInformation `json:"licensor"`
 	ProjectID   string              `json:"projectID"`
@@ -25,39 +21,45 @@ type QuoteProject struct {
 	Retracted   bool                `json:"retracted"`
 }
 
+// LicensorInformation describes API data about a licensor.
 type LicensorInformation struct {
 	Name         string
 	Jurisdiction string
 	PublicKey    string
 }
 
+// Pricing describes private license pricing data.
 type Pricing struct {
 	Private   uint `json:"private"`
 	Relicense uint `json:"relicense,omitempty"`
 }
 
-func Quote(projectIDs []string) (QuoteResponse, error) {
-	bodyData := QuoteRequest{
+// Quote sends a quote API request.
+func Quote(projectIDs []string) ([]QuoteProject, error) {
+	bodyData := quoteRequest{
 		Action:   "quote",
 		Projects: projectIDs,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {
-		return QuoteResponse{}, err
+		return nil, err
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
 	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return QuoteResponse{}, err
+		return nil, err
 	}
-	var parsed QuoteResponse
+	var parsed struct {
+		Error    interface{}    `json:"error"`
+		Projects []QuoteProject `json:"projects"`
+	}
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
-		return QuoteResponse{}, err
+		return nil, err
 	}
 	if message, ok := parsed.Error.(string); ok {
-		return QuoteResponse{}, errors.New(message)
+		return nil, errors.New(message)
 	}
-	return parsed, nil
+	return parsed.Projects, nil
 }

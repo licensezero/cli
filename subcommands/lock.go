@@ -8,14 +8,15 @@ import "os"
 
 const lockDescription = "Lock project pricing and availability."
 
+// Lock fixes pricing and availability.
 var Lock = Subcommand{
 	Tag:         "seller",
 	Description: lockDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("lock", flag.ExitOnError)
-		projectID := ProjectID(flagSet)
+		projectID := projectIDFlag(flagSet)
 		unlock := flagSet.String("unlock", "", "")
-		silent := Silent(flagSet)
+		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = lockUsage
 		flagSet.Parse(args)

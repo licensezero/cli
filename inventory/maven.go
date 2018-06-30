@@ -4,19 +4,19 @@ import "encoding/xml"
 import "io/ioutil"
 import "path"
 
-type POM struct {
+type pom struct {
 	GroupID    string `xml:"groupId"`
 	ArtifactID string `xml:"artifactId"`
 	Version    string `xml:"version"`
 }
 
 func findMavenPackageInfo(directoryPath string) *Project {
-	pom_xml := path.Join(directoryPath, "pom.xml")
-	data, err := ioutil.ReadFile(pom_xml)
+	pomFile := path.Join(directoryPath, "pom.xml")
+	data, err := ioutil.ReadFile(pomFile)
 	if err != nil {
 		return nil
 	}
-	var parsed POM
+	var parsed pom
 	xml.Unmarshal(data, &parsed)
 	if err != nil {
 		return nil

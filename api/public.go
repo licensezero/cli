@@ -7,7 +7,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "net/http"
 
-type PublicRequest struct {
+type publicRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
@@ -15,6 +15,7 @@ type PublicRequest struct {
 	Terms      string `json:"terms"`
 }
 
+// PublicResponse contains API instructions for adding public licensing information.
 type PublicResponse struct {
 	Error    interface{} `json:"error"`
 	Metadata struct {
@@ -28,8 +29,9 @@ type PublicResponse struct {
 	} `json:"license"`
 }
 
+// Public sends a public API request.
 func Public(licensor *data.Licensor, projectID string, terms string) (PublicResponse, error) {
-	bodyData := PublicRequest{
+	bodyData := publicRequest{
 		Action:     "public",
 		ProjectID:  projectID,
 		Terms:      terms,

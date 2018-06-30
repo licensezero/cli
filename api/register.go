@@ -8,10 +8,11 @@ import "io/ioutil"
 import "net/http"
 import "strconv"
 
+// TermsReference includes the text required in terms of service agreement statements to the API.
 const TermsReference = "the terms of service at https://licensezero.com/terms/service"
 const termsOfServiceStatement = "I agree to " + TermsReference + "."
 
-type RegisterRequest struct {
+type registerRequest struct {
 	Action       string `json:"action"`
 	Name         string `json:"name"`
 	Jurisdiction string `json:"jurisdiction"`
@@ -19,12 +20,13 @@ type RegisterRequest struct {
 	Terms        string `json:"terms"`
 }
 
-type RegisterResponse struct {
+type registerResponse struct {
 	Error interface{} `json:"error"`
 }
 
+// Register sends a register API request.
 func Register(identity *data.Identity) error {
-	bodyData := RegisterRequest{
+	bodyData := registerRequest{
 		Action:       "register",
 		Name:         identity.Name,
 		Jurisdiction: identity.Jurisdiction,
@@ -44,7 +46,7 @@ func Register(identity *data.Identity) error {
 	if err != nil {
 		return err
 	}
-	var parsed RegisterResponse
+	var parsed registerResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return err

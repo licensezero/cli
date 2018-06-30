@@ -5,6 +5,7 @@ import "github.com/licensezero/cli/data"
 import "os"
 import "path"
 
+// Project describes a License Zero project in inventory.
 type Project struct {
 	Type     string                  `json:"type"`
 	Path     string                  `json:"path"`
@@ -14,12 +15,14 @@ type Project struct {
 	Envelope ProjectManifestEnvelope `json:"envelope"`
 }
 
+// ProjectManifestEnvelope describes a signed project manifest.
 type ProjectManifestEnvelope struct {
 	LicensorSignature string          `json:"licensorSignature"`
 	AgentSignature    string          `json:"agentSignature"`
 	Manifest          ProjectManifest `json:"license"`
 }
 
+// ProjectManifest describes project data from licensezero.json.
 type ProjectManifest struct {
 	// Note: These declaration must appear in the order so as to
 	// serialize in the correct order for signature verification.
@@ -32,6 +35,7 @@ type ProjectManifest struct {
 	Version      string `json:"version"`
 }
 
+// Projects describes the categorization of projects in inventory.
 type Projects struct {
 	Licensable []Project `json:"licensable"`
 	Licensed   []Project `json:"licensed"`
@@ -41,6 +45,7 @@ type Projects struct {
 	Invalid    []Project `json:"invalid"`
 }
 
+// Inventory finds License Zero projects included or referenced in a working tree.
 func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects, error) {
 	identity, _ := data.ReadIdentity(home)
 	var licenses []data.LicenseEnvelope
@@ -55,7 +60,7 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 			waivers = readWaivers
 		}
 	}
-	projects, err := ReadProjects(cwd)
+	projects, err := readProjects(cwd)
 	if err != nil {
 		return nil, err
 	}
@@ -65,27 +70,27 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 	}
 	var returned Projects
 	for _, result := range projects {
-		projectResponse, err := api.Project(result.Envelope.Manifest.ProjectID)
+		licensor, err := api.Project(result.Envelope.Manifest.ProjectID)
 		if err != nil {
 			returned.Invalid = append(returned.Invalid, result)
 			continue
 		}
-		err = CheckMetadata(&result, projectResponse.Licensor.PublicKey, agentPublicKey)
+		err = CheckMetadata(&result, licensor.PublicKey, agentPublicKey)
 		if err != nil {
 			returned.Invalid = append(returned.Invalid, result)
 			continue
 		} else {
 			returned.Licensable = append(returned.Licensable, result)
 		}
-		if HaveLicense(&result, licenses, identity) {
+		if haveLicense(&result, licenses, identity) {
 			returned.Licensed = append(returned.Licensed, result)
 			continue
 		}
-		if HaveWaiver(&result, waivers, identity) {
+		if haveWaiver(&result, waivers, identity) {
 			returned.Waived = append(returned.Waived, result)
 			continue
 		}
-		if identity != nil && OwnProject(&result, identity) {
+		if identity != nil && ownProject(&result, identity) {
 			continue
 		}
 		terms := result.Envelope.Manifest.Terms
@@ -102,7 +107,7 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 	return &returned, nil
 }
 
-func HaveLicense(project *Project, licenses []data.LicenseEnvelope, identity *data.Identity) bool {
+func haveLicense(project *Project, licenses []data.LicenseEnvelope, identity *data.Identity) bool {
 	for _, license := range licenses {
 		if license.ProjectID == project.Envelope.Manifest.ProjectID &&
 			license.Manifest.Licensee.Name == identity.Name &&
@@ -114,7 +119,7 @@ func HaveLicense(project *Project, licenses []data.LicenseEnvelope, identity *da
 	return false
 }
 
-func HaveWaiver(project *Project, waivers []data.WaiverEnvelope, identity *data.Identity) bool {
+func haveWaiver(project *Project, waivers []data.WaiverEnvelope, identity *data.Identity) bool {
 	for _, waiver := range waivers {
 		if waiver.ProjectID == project.Envelope.Manifest.ProjectID &&
 			waiver.Manifest.Beneficiary.Name == identity.Name &&
@@ -125,16 +130,16 @@ func HaveWaiver(project *Project, waivers []data.WaiverEnvelope, identity *data.
 	return false
 }
 
-func OwnProject(project *Project, identity *data.Identity) bool {
+func ownProject(project *Project, identity *data.Identity) bool {
 	return project.Envelope.Manifest.Name == identity.Name &&
 		project.Envelope.Manifest.Jurisdiction == identity.Jurisdiction
 }
 
-func ReadProjects(cwd string) ([]Project, error) {
+func readProjects(cwd string) ([]Project, error) {
 	descenders := []func(string) ([]Project, error){
-		ReadNPMProjects,
-		ReadRubyGemsProjects,
-		ReadLicenseZeroFiles,
+		readNPMProjects,
+		readRubyGemsProjects,
+		readLicenseZeroFiles,
 	}
 	returned := []Project{}
 	for _, descender := range descenders {

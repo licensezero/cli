@@ -10,7 +10,7 @@ import "strconv"
 
 import "fmt"
 
-type LockRequest struct {
+type lockRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
@@ -18,12 +18,13 @@ type LockRequest struct {
 	Unlock     string `json:"unlock"`
 }
 
-type LockResponse struct {
+type lockResponse struct {
 	Error interface{} `json:"error"`
 }
 
+// Lock sends a lock API request.
 func Lock(licensor *data.Licensor, projectID string, unlock string) error {
-	bodyData := LockRequest{
+	bodyData := lockRequest{
 		Action:     "lock",
 		ProjectID:  projectID,
 		Unlock:     unlock,
@@ -47,7 +48,7 @@ func Lock(licensor *data.Licensor, projectID string, unlock string) error {
 	if err != nil {
 		return err
 	}
-	var parsed LockResponse
+	var parsed lockResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return err

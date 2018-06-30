@@ -4,6 +4,7 @@ import "os"
 
 const versionDescription = "Print version."
 
+// Version prints the CLI version.
 var Version = Subcommand{
 	Tag:         "misc",
 	Description: versionDescription,

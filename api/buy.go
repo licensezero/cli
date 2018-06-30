@@ -7,7 +7,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "net/http"
 
-type BuyRequest struct {
+type buyRequest struct {
 	Action       string   `json:"action"`
 	Projects     []string `json:"projects"`
 	Name         string   `json:"licensee"`
@@ -16,13 +16,14 @@ type BuyRequest struct {
 	Person       string   `json:"person"`
 }
 
-type BuyResponse struct {
+type buyResponse struct {
 	Error    interface{} `json:"error"`
 	Location string      `json:"location"`
 }
 
+// Buy sends a buy API request.
 func Buy(identity *data.Identity, projectIDs []string) (string, error) {
-	bodyData := BuyRequest{
+	bodyData := buyRequest{
 		Action:       "order",
 		Projects:     projectIDs,
 		Name:         identity.Name,
@@ -40,7 +41,7 @@ func Buy(identity *data.Identity, projectIDs []string) (string, error) {
 	if err != nil {
 		return "", errors.New("invalid server response")
 	}
-	var parsed BuyResponse
+	var parsed buyResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return "", err

@@ -8,13 +8,14 @@ import "os"
 
 const retractDescription = "Stop offering private licenses for sale."
 
+// Retract pulls a project from sale.
 var Retract = Subcommand{
 	Tag:         "seller",
 	Description: retractDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("retract", flag.ExitOnError)
-		projectID := ProjectID(flagSet)
-		silent := Silent(flagSet)
+		projectID := projectIDFlag(flagSet)
+		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = retractUsage
 		flagSet.Parse(args)

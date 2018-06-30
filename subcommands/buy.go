@@ -9,14 +9,15 @@ import "os"
 
 const buyDescription = "Buy missing private licenses."
 
+// Buy opens a buy page on licensezero.com.
 var Buy = Subcommand{
 	Tag:         "buyer",
 	Description: buyDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("buy", flag.ExitOnError)
-		doNotOpen := DoNotOpen(flagSet)
-		noNoncommercial := NoNoncommercial(flagSet)
-		noReciprocal := NoReciprocal(flagSet)
+		doNotOpen := doNotOpenFlag(flagSet)
+		noNoncommercial := noNoncommercialFlag(flagSet)
+		noReciprocal := noReciprocalFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = buyUsage
 		flagSet.Parse(args)

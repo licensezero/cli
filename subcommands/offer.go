@@ -8,16 +8,17 @@ import "os"
 
 const offerDescription = "Offer private licenses for sale."
 
+// Offer creates a project and offers private licenses for sale.
 var Offer = Subcommand{
 	Tag:         "seller",
 	Description: offerDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("offer", flag.ExitOnError)
-		relicense := RelicenseFlag(flagSet)
+		relicense := relicenseFlag(flagSet)
 		homepage := flagSet.String("homepage", "", "")
 		description := flagSet.String("description", "", "")
-		doNotOpen := DoNotOpen(flagSet)
-		price := Price(flagSet)
+		doNotOpen := doNotOpenFlag(flagSet)
+		price := priceFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = offerUsage
 		flagSet.Parse(args)
@@ -28,7 +29,7 @@ var Offer = Subcommand{
 		if err != nil {
 			Fail(licensorHint)
 		}
-		if !ConfirmAgencyTerms() {
+		if !confirmAgencyTerms() {
 			Fail(agencyTermsHint)
 		}
 		projectID, err := api.Offer(licensor, *homepage, *description, *price, *relicense)

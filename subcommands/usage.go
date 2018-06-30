@@ -7,7 +7,7 @@ func flagsList(mapping map[string]string) string {
 	returned := ""
 	var flags []string
 	var longest int
-	for key, _ := range mapping {
+	for key := range mapping {
 		flags = append(flags, key)
 		length := len(key) + 2
 		if length > longest {

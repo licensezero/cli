@@ -7,6 +7,7 @@ import "os"
 
 const identifyDescription = "Save your identity information."
 
+// Identify saves user identification information.
 var Identify = Subcommand{
 	Tag:         "misc",
 	Description: identifyDescription,
@@ -15,7 +16,7 @@ var Identify = Subcommand{
 		jurisdiction := flagSet.String("jurisdiction", "", "")
 		name := flagSet.String("name", "", "")
 		email := flagSet.String("email", "", "")
-		silent := Silent(flagSet)
+		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = identifyUsage
 		flagSet.Parse(args)
@@ -29,17 +30,17 @@ var Identify = Subcommand{
 		}
 		existingIdentity, _ := data.ReadIdentity(paths.Home)
 		if existingIdentity != nil && *existingIdentity != newIdentity {
-			if !Confirm("Overwrite existing identity?") {
+			if !confirm("Overwrite existing identity?") {
 				os.Exit(0)
 			}
 		}
-		if !ValidName(*name) {
+		if !validName(*name) {
 			Fail("Invalid Name.")
 		}
-		if !ValidJurisdiction(*jurisdiction) {
+		if !validJurisdiction(*jurisdiction) {
 			Fail("Invalid Jurisdiction.")
 		}
-		if !ValidEMail(*email) {
+		if !validEMail(*email) {
 			Fail("Invalid E-Mail.")
 		}
 		err := data.WriteIdentity(paths.Home, &newIdentity)

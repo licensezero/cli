@@ -6,17 +6,18 @@ import "errors"
 import "io/ioutil"
 import "net/http"
 
-type KeyRequest struct {
+type keyRequest struct {
 	Action string `json:"action"`
 }
 
-type KeyResponse struct {
+type keyResponse struct {
 	Error interface{} `json:"error"`
 	Key   string      `json:"key"`
 }
 
+// FetchAgentPublicKey fetches the public Ed25519 signing key for licensezero.com.
 func FetchAgentPublicKey() (string, error) {
-	bodyData := KeyRequest{Action: "key"}
+	bodyData := keyRequest{Action: "key"}
 	body, err := json.Marshal(bodyData)
 	if err != nil {
 		return "", errors.New("error encoding agent key request body")
@@ -27,7 +28,7 @@ func FetchAgentPublicKey() (string, error) {
 	if err != nil {
 		return "", errors.New("error reading agent key response body")
 	}
-	var parsed KeyResponse
+	var parsed keyResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return "", errors.New("error parsing agent key response body")

@@ -7,10 +7,11 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "net/http"
 
+// AgencyReference includes the text required in agency terms agreement statements to the API.
 const AgencyReference = "the agency terms at https://licensezero.com/terms/agency"
 const agencyStatement = "I agree to " + AgencyReference + "."
 
-type OfferRequest struct {
+type offerRequest struct {
 	Action      string  `json:"action"`
 	LicensorID  string  `json:"licensorID"`
 	Token       string  `json:"token"`
@@ -20,13 +21,14 @@ type OfferRequest struct {
 	Terms       string  `json:"terms"`
 }
 
-type OfferResponse struct {
+type offerResponse struct {
 	Error     interface{} `json:"error"`
 	ProjectID string      `json:"projectID"`
 }
 
+// Offer sends an offer API request.
 func Offer(licensor *data.Licensor, homepage, description string, private, relicense uint) (string, error) {
-	bodyData := OfferRequest{
+	bodyData := offerRequest{
 		Action:      "offer",
 		LicensorID:  licensor.LicensorID,
 		Token:       licensor.Token,
@@ -48,7 +50,7 @@ func Offer(licensor *data.Licensor, homepage, description string, private, relic
 	if err != nil {
 		return "", err
 	}
-	var parsed OfferResponse
+	var parsed offerResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return "", err

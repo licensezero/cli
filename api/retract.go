@@ -8,19 +8,20 @@ import "io/ioutil"
 import "net/http"
 import "strconv"
 
-type RetractRequest struct {
+type retractRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
 	ProjectID  string `json:"projectID"`
 }
 
-type RetractResponse struct {
+type retractResponse struct {
 	Error interface{} `json:"error"`
 }
 
+// Retract sends retract API requests.
 func Retract(licensor *data.Licensor, projectID string) error {
-	bodyData := RetractRequest{
+	bodyData := retractRequest{
 		Action:     "retract",
 		LicensorID: licensor.LicensorID,
 		Token:      licensor.Token,
@@ -39,7 +40,7 @@ func Retract(licensor *data.Licensor, projectID string) error {
 	if err != nil {
 		return err
 	}
-	var parsed RegisterResponse
+	var parsed retractResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return err

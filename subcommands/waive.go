@@ -8,6 +8,7 @@ import "os"
 
 const waiveDescription = "Generate a waiver."
 
+// Waive generates a signed waiver.
 var Waive = Subcommand{
 	Tag:         "seller",
 	Description: waiveDescription,
@@ -17,7 +18,7 @@ var Waive = Subcommand{
 		days := flagSet.Uint("days", 0, "Days.")
 		forever := flagSet.Bool("forever", false, "Forever.")
 		beneficiary := flagSet.String("beneficiary", "", "Beneficiary legal name.")
-		projectID := ProjectID(flagSet)
+		projectID := projectIDFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = waiveUsage
 		flagSet.Parse(args)

@@ -8,7 +8,7 @@ import "io/ioutil"
 import "net/http"
 import "strconv"
 
-type RepriceRequest struct {
+type repriceRequest struct {
 	Action     string  `json:"action"`
 	LicensorID string  `json:"licensorID"`
 	Token      string  `json:"token"`
@@ -16,12 +16,13 @@ type RepriceRequest struct {
 	Pricing    Pricing `json:"pricing"`
 }
 
-type RepriceResponse struct {
+type repriceResponse struct {
 	Error interface{} `json:"error"`
 }
 
+// Reprice sends reprice API requests.
 func Reprice(licensor *data.Licensor, projectID string, private, relicense uint) error {
-	bodyData := RepriceRequest{
+	bodyData := repriceRequest{
 		Action:     "reprice",
 		LicensorID: licensor.LicensorID,
 		ProjectID:  projectID,
@@ -44,7 +45,7 @@ func Reprice(licensor *data.Licensor, projectID string, private, relicense uint)
 	if err != nil {
 		return err
 	}
-	var parsed RepriceResponse
+	var parsed repriceResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return err

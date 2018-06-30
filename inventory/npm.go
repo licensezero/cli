@@ -7,30 +7,29 @@ import "os"
 import "path"
 import "strings"
 
-type PackageJSONFile struct {
+type packageJSONFile struct {
 	Name      string                    `json:"name"`
 	Version   string                    `json:"version"`
 	Envelopes []ProjectManifestEnvelope `json:"licensezero"`
 }
 
-func ReadNPMProjects(packagePath string) ([]Project, error) {
+func readNPMProjects(packagePath string) ([]Project, error) {
 	var returned []Project
-	node_modules := path.Join(packagePath, "node_modules")
-	entries, err := readAndStatDir(node_modules)
+	nodeModules := path.Join(packagePath, "node_modules")
+	entries, err := readAndStatDir(nodeModules)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return []Project{}, nil
-		} else {
-			return nil, err
 		}
+		return nil, err
 	}
 	processProject := func(directory string, scope *string) error {
-		package_json := path.Join(directory, "package.json")
-		data, err := ioutil.ReadFile(package_json)
+		packageJSON := path.Join(directory, "package.json")
+		data, err := ioutil.ReadFile(packageJSON)
 		if err != nil {
 			return err
 		}
-		var parsed PackageJSONFile
+		var parsed packageJSONFile
 		json.Unmarshal(data, &parsed)
 		anyNewProjects := false
 		for _, envelope := range parsed.Envelopes {
@@ -57,7 +56,7 @@ func ReadNPMProjects(packagePath string) ([]Project, error) {
 			returned = append(returned, project)
 		}
 		if anyNewProjects {
-			below, recursionError := ReadNPMProjects(directory)
+			below, recursionError := readNPMProjects(directory)
 			if recursionError != nil {
 				return recursionError
 			}
@@ -72,7 +71,7 @@ func ReadNPMProjects(packagePath string) ([]Project, error) {
 		name := entry.Name()
 		if strings.HasPrefix(name, "@") { // ./node_modules/@scope/package
 			scope := name[1:]
-			scopePath := path.Join(node_modules, name)
+			scopePath := path.Join(nodeModules, name)
 			scopeEntries, err := readAndStatDir(scopePath)
 			if err != nil {
 				if os.IsNotExist(err) {
@@ -85,14 +84,14 @@ func ReadNPMProjects(packagePath string) ([]Project, error) {
 				if !scopeEntry.IsDir() {
 					continue
 				}
-				directory := path.Join(node_modules, name, scopeEntry.Name())
+				directory := path.Join(nodeModules, name, scopeEntry.Name())
 				err := processProject(directory, &scope)
 				if err != nil {
 					return nil, err
 				}
 			}
 		} else { // ./node_modules/package/
-			directory := path.Join(node_modules, name)
+			directory := path.Join(nodeModules, name)
 			err := processProject(directory, nil)
 			if err != nil {
 				return nil, err
@@ -114,8 +113,8 @@ func alreadyHaveProject(projects []Project, projectID string) bool {
 // TODO: Move package.json writing function into inventory.
 
 func findNPMPackageInfo(directoryPath string) *Project {
-	package_json := path.Join(directoryPath, "package.json")
-	data, err := ioutil.ReadFile(package_json)
+	packageJSON := path.Join(directoryPath, "package.json")
+	data, err := ioutil.ReadFile(packageJSON)
 	if err != nil {
 		return nil
 	}

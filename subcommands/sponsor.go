@@ -8,13 +8,14 @@ import "os"
 
 const sponsorDescription = "Sponsor relicensing of a project."
 
+// Sponsor starts a project sponsorship transaction.
 var Sponsor = Subcommand{
 	Tag:         "buyer",
 	Description: sponsorDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("sponsor", flag.ExitOnError)
-		doNotOpen := DoNotOpen(flagSet)
-		projectID := ProjectID(flagSet)
+		doNotOpen := doNotOpenFlag(flagSet)
+		projectID := projectIDFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = sponsorUsage
 		flagSet.Parse(args)

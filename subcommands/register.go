@@ -6,6 +6,7 @@ import "os"
 
 const registerDescription = "Register to sell private licenses."
 
+// Register a user to sell private licenses.
 var Register = Subcommand{
 	Tag:         "seller",
 	Description: registerDescription,
@@ -17,11 +18,11 @@ var Register = Subcommand{
 		os.Stdout.WriteString("Name: " + identity.Name + "\n")
 		os.Stdout.WriteString("Jurisdiction: " + identity.Jurisdiction + "\n")
 		os.Stdout.WriteString("E-Mail: " + identity.EMail + "\n")
-		if !Confirm("Is this information correct?") {
+		if !confirm("Is this information correct?") {
 			os.Stdout.WriteString("Exiting.\n")
 			os.Exit(1)
 		}
-		if !ConfirmTermsOfService() {
+		if !confirmTermsOfService() {
 			Fail(termsHint)
 		}
 		err = api.Register(identity)

@@ -10,12 +10,15 @@ import "strings"
 
 const readmeDescription = "Append licensing information to README."
 
+// TODO: Detect README.txt, README, &c.
+
+// README appends licensing information to README.
 var README = Subcommand{
 	Tag:         "seller",
 	Description: readmeDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("readme", flag.ExitOnError)
-		silent := Silent(flagSet)
+		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = readmeUsage
 		flagSet.Parse(args)
@@ -156,15 +159,14 @@ func readEntries(directory string) ([]string, []string, error) {
 	data, err := ioutil.ReadFile("licensezero.json")
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, nil, errors.New("Could not read licensezero.json.")
-		} else {
-			return nil, nil, err
+			return nil, nil, errors.New("could not read licensezero.json")
 		}
+		return nil, nil, err
 	}
 	var existingMetadata inventory.LicenseZeroJSONFile
 	err = json.Unmarshal(data, &existingMetadata)
 	if err != nil {
-		return nil, nil, errors.New("Could not parse licensezero.json metadata.")
+		return nil, nil, errors.New("could not parse licensezero.json metadata")
 	}
 	// TODO: Validate licensezero.json metadata entries.
 	var projectIDs []string

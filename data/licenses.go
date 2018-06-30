@@ -7,6 +7,7 @@ import "io/ioutil"
 import "os"
 import "path"
 
+// LicenseEnvelope describes fully parsed licensezero.json metadata about a project.
 type LicenseEnvelope struct {
 	Manifest       LicenseManifest
 	ManifestString string
@@ -16,6 +17,7 @@ type LicenseEnvelope struct {
 	Signature      string
 }
 
+// LicenseFile describes partially parsed licensezero.json metadata about a project.
 type LicenseFile struct {
 	Manifest  string `json:"manifest"`
 	ProjectID string `json:"projectID"`
@@ -24,6 +26,7 @@ type LicenseFile struct {
 	Signature string `json:"signature"`
 }
 
+// LicenseManifest describes signed licensezero.json metadata about a project.
 type LicenseManifest struct {
 	Date     string `json:"date"`
 	Form     string `json:"FORM"`
@@ -46,23 +49,23 @@ type LicenseManifest struct {
 	Version string `json:"VERSION"`
 }
 
-func LicensePath(home string, projectID string) string {
-	return path.Join(LicensesPath(home), projectID+".json")
+func licensePath(home string, projectID string) string {
+	return path.Join(licensesPath(home), projectID+".json")
 }
 
-func LicensesPath(home string) string {
+func licensesPath(home string) string {
 	return path.Join(ConfigPath(home), "licenses")
 }
 
+// ReadLicenses reads all saved licenses from the CLI configuration directory.
 func ReadLicenses(home string) ([]LicenseEnvelope, error) {
 	directoryPath := path.Join(ConfigPath(home), "licenses")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {
 			return []LicenseEnvelope{}, nil
-		} else {
-			return nil, directoryReadError
 		}
+		return nil, directoryReadError
 	}
 	var returned []LicenseEnvelope
 	for _, entry := range entries {
@@ -77,6 +80,7 @@ func ReadLicenses(home string) ([]LicenseEnvelope, error) {
 	return returned, nil
 }
 
+// LicenseFileToEnvelope fully parses license file data.
 func LicenseFileToEnvelope(file *LicenseFile) (*LicenseEnvelope, error) {
 	var manifest LicenseManifest
 	err := json.Unmarshal([]byte(file.Manifest), &manifest)
@@ -93,6 +97,7 @@ func LicenseFileToEnvelope(file *LicenseFile) (*LicenseEnvelope, error) {
 	}, nil
 }
 
+// ReadLicense reads a license file from disk.
 func ReadLicense(filePath string) (*LicenseEnvelope, error) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -106,6 +111,7 @@ func ReadLicense(filePath string) (*LicenseEnvelope, error) {
 	return LicenseFileToEnvelope(&file)
 }
 
+// WriteLicense writes a license file to the CLI configuration directory.
 func WriteLicense(home string, license *LicenseEnvelope) error {
 	file := LicenseFile{
 		Manifest:  license.ManifestString,
@@ -118,22 +124,23 @@ func WriteLicense(home string, license *LicenseEnvelope) error {
 	if err != nil {
 		return err
 	}
-	err = os.MkdirAll(LicensesPath(home), 0755)
+	err = os.MkdirAll(licensesPath(home), 0755)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(LicensePath(home, license.ProjectID), json, 0644)
+	return ioutil.WriteFile(licensePath(home, license.ProjectID), json, 0644)
 }
 
+// CheckLicenseSignature verifies the signatures to a liecnse envelope.
 func CheckLicenseSignature(license *LicenseEnvelope, publicKey string) error {
 	serialized, err := json.Marshal(license.Manifest)
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
-		return errors.New("Could not serialize manifest.")
+		return errors.New("could not serialize manifest")
 	}
 	if license.ProjectID != license.Manifest.Project.ProjectID {
-		return errors.New("Project IDs do not match.")
+		return errors.New("project IDs do not match")
 	}
 	err = checkSignature(
 		publicKey,
@@ -151,7 +158,7 @@ func compactLicenseManifest(data *LicenseManifest) (*bytes.Buffer, error) {
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
-		return nil, errors.New("Could not serialize.")
+		return nil, errors.New("could not serialize")
 	}
 	return compacted, nil
 }

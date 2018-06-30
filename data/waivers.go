@@ -9,6 +9,7 @@ import "path"
 import "strconv"
 import "time"
 
+// WaiverEnvelope describes a fully parsed waiver file.
 type WaiverEnvelope struct {
 	ProjectID      string
 	Manifest       WaiverManifest
@@ -18,6 +19,7 @@ type WaiverEnvelope struct {
 	PublicKey      string
 }
 
+// WaiverFile describes a partially parsed waiver file.
 type WaiverFile struct {
 	ProjectID string `json:"projectID"`
 	Manifest  string `json:"manifest"`
@@ -26,6 +28,7 @@ type WaiverFile struct {
 	PublicKey string `json:"publicKey"`
 }
 
+// WaiverManifest describes signed waiver data.
 type WaiverManifest struct {
 	Form        string `json:"FORM"`
 	Version     string `json:"VERSION"`
@@ -46,23 +49,23 @@ type WaiverManifest struct {
 	Term string `json:"term"`
 }
 
-func WaiversPath(home string) string {
+func waiversPath(home string) string {
 	return path.Join(ConfigPath(home), "waivers")
 }
 
-func WaiverPath(home string, projectID string) string {
-	return path.Join(WaiversPath(home), projectID+".json")
+func waiverPath(home string, projectID string) string {
+	return path.Join(waiversPath(home), projectID+".json")
 }
 
+// ReadWaivers reads all waivers from the configuration directory.
 func ReadWaivers(home string) ([]WaiverEnvelope, error) {
-	directoryPath := WaiversPath(home)
+	directoryPath := waiversPath(home)
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {
 			return []WaiverEnvelope{}, nil
-		} else {
-			return nil, directoryReadError
 		}
+		return nil, directoryReadError
 	}
 	var returned []WaiverEnvelope
 	for _, entry := range entries {
@@ -72,7 +75,7 @@ func ReadWaivers(home string) ([]WaiverEnvelope, error) {
 		if err != nil {
 			return nil, err
 		}
-		unexpired, _ := Unexpired(waiver)
+		unexpired, _ := checkUnexpired(waiver)
 		if unexpired {
 			returned = append(returned, *waiver)
 		}
@@ -80,25 +83,25 @@ func ReadWaivers(home string) ([]WaiverEnvelope, error) {
 	return returned, nil
 }
 
-func Unexpired(waiver *WaiverEnvelope) (bool, error) {
+func checkUnexpired(waiver *WaiverEnvelope) (bool, error) {
 	termString := waiver.Manifest.Term
 	if termString == "forever" {
 		return true, nil
-	} else {
-		days, err := strconv.Atoi(termString)
-		if err != nil {
-			return false, errors.New("could not parse term")
-		}
-		expiration, err := time.Parse(time.RFC3339, waiver.Manifest.Date)
-		if err != nil {
-			return false, err
-		}
-		expiration.AddDate(0, 0, days)
-		return expiration.After(time.Now()), nil
 	}
+	days, err := strconv.Atoi(termString)
+	if err != nil {
+		return false, errors.New("could not parse term")
+	}
+	expiration, err := time.Parse(time.RFC3339, waiver.Manifest.Date)
+	if err != nil {
+		return false, err
+	}
+	expiration.AddDate(0, 0, days)
+	return expiration.After(time.Now()), nil
 	return true, nil
 }
 
+// ReadWaiver reads a waiver file.
 func ReadWaiver(filePath string) (*WaiverEnvelope, error) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -124,6 +127,7 @@ func ReadWaiver(filePath string) (*WaiverEnvelope, error) {
 	}, nil
 }
 
+// WriteWaiver writes a waiver to the configuration directory
 func WriteWaiver(home string, waiver *WaiverEnvelope) error {
 	file := WaiverFile{
 		Manifest:  waiver.ManifestString,
@@ -136,22 +140,23 @@ func WriteWaiver(home string, waiver *WaiverEnvelope) error {
 	if err != nil {
 		return err
 	}
-	err = os.MkdirAll(WaiversPath(home), 0755)
+	err = os.MkdirAll(waiversPath(home), 0755)
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(WaiverPath(home, waiver.ProjectID), json, 0644)
+	return ioutil.WriteFile(waiverPath(home, waiver.ProjectID), json, 0644)
 }
 
+// CheckWaiverSignature verifies the signatures to a waiver.
 func CheckWaiverSignature(waiver *WaiverEnvelope, publicKey string) error {
 	serialized, err := json.Marshal(waiver.Manifest)
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
-		return errors.New("Could not serialize manifest.")
+		return errors.New("could not serialize manifest")
 	}
 	if waiver.ProjectID != waiver.Manifest.Project.ProjectID {
-		return errors.New("Project IDs do not match.")
+		return errors.New("project IDs do not match")
 	}
 	err = checkSignature(
 		publicKey,
@@ -169,7 +174,7 @@ func compactWaiverManifest(data *WaiverManifest) (*bytes.Buffer, error) {
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
-		return nil, errors.New("Could not serialize.")
+		return nil, errors.New("could not serialize")
 	}
 	return compacted, nil
 }

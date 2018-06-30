@@ -7,7 +7,7 @@ import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "net/http"
 
-type SponsorRequest struct {
+type sponsorRequest struct {
 	Action       string `json:"action"`
 	ProjectID    string `json:"projectID"`
 	Sponsor      string `json:"sponsor"`
@@ -15,13 +15,14 @@ type SponsorRequest struct {
 	EMail        string `json:"email"`
 }
 
-type SponsorResponse struct {
+type sponsorResponse struct {
 	Error    interface{} `json:"error"`
 	Location string      `json:"location"`
 }
 
+// Sponsor sends sponsor API requests.
 func Sponsor(identity *data.Identity, projectID string) (string, error) {
-	bodyData := SponsorRequest{
+	bodyData := sponsorRequest{
 		Action:       "sponsor",
 		ProjectID:    projectID,
 		Sponsor:      identity.Name,
@@ -38,7 +39,7 @@ func Sponsor(identity *data.Identity, projectID string) (string, error) {
 	if err != nil {
 		return "", errors.New("invalid server response")
 	}
-	var parsed SponsorResponse
+	var parsed sponsorResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return "", err

@@ -6,38 +6,39 @@ import "errors"
 import "io/ioutil"
 import "net/http"
 
-type ProjectRequest struct {
+type projectRequest struct {
 	Action    string `json:"action"`
 	ProjectID string `json:"projectID"`
 }
 
-type ProjectResponse struct {
+type projectResponse struct {
 	Error    interface{}         `json:"error"`
 	Licensor LicensorInformation `json:"licensor"`
 }
 
-func Project(projectID string) (ProjectResponse, error) {
-	bodyData := ProjectRequest{
+// Project sends a project API request.
+func Project(projectID string) (*LicensorInformation, error) {
+	bodyData := projectRequest{
 		Action:    "project",
 		ProjectID: projectID,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {
-		return ProjectResponse{}, errors.New("error encoding agent key request body")
+		return nil, errors.New("error encoding agent key request body")
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
 	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return ProjectResponse{}, errors.New("error reading agent key response body")
+		return nil, errors.New("error reading agent key response body")
 	}
-	var parsed ProjectResponse
+	var parsed projectResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
-		return ProjectResponse{}, errors.New("error parsing agent key response body")
+		return nil, errors.New("error parsing agent key response body")
 	}
 	if message, ok := parsed.Error.(string); ok {
-		return ProjectResponse{}, errors.New(message)
+		return nil, errors.New(message)
 	}
-	return parsed, nil
+	return &parsed.Licensor, nil
 }

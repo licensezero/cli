@@ -12,16 +12,17 @@ import "path"
 
 const licenseDescription = "Write license terms and metadata."
 
+// License writes LICENSE and licensezero.json.
 var License = Subcommand{
 	Tag:         "seller",
 	Description: licenseDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("license", flag.ExitOnError)
-		projectID := ProjectID(flagSet)
+		projectID := projectIDFlag(flagSet)
 		prosperity := flagSet.Bool("prosperity", false, "Use The Prosperity Public License")
 		parity := flagSet.Bool("parity", false, "Use The Parity Public License.")
 		stack := flagSet.Bool("stack", false, "Stack licensing metadata.")
-		silent := Silent(flagSet)
+		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = licenseUsage
 		flagSet.Parse(args)
@@ -57,8 +58,8 @@ var License = Subcommand{
 		}
 		var newMetadata FileStructure
 		newEntry := response.Metadata.LicenseZero
-		licensezero_json := path.Join(paths.CWD, "licensezero.json")
-		data, err := ioutil.ReadFile(licensezero_json)
+		licensezeroJSON := path.Join(paths.CWD, "licensezero.json")
+		data, err := ioutil.ReadFile(licensezeroJSON)
 		if err != nil {
 			if os.IsNotExist(err) {
 				newMetadata.LicenseZero = []interface{}{newEntry}
@@ -108,7 +109,7 @@ var License = Subcommand{
 		if err != nil {
 			Fail("Error serializing new JSON.")
 		}
-		err = ioutil.WriteFile(licensezero_json, serialized.Bytes(), 0644)
+		err = ioutil.WriteFile(licensezeroJSON, serialized.Bytes(), 0644)
 		if !*silent {
 			os.Stdout.WriteString("Added metadata to licensezero.json.\n")
 		}
@@ -142,7 +143,7 @@ func writeLICENSE(response *api.PublicResponse) error {
 		if os.IsNotExist(err) {
 			toWrite = ""
 		} else {
-			return errors.New("Could not open LICENSE.")
+			return errors.New("could not open LICENSE")
 		}
 	} else {
 		toWrite = string(existing)
@@ -175,14 +176,13 @@ func signatureLines(signature string) string {
 // If we see a `package.json` file with a `licensezero` property, warn
 // the user and instruct them to upgrade.
 func checkForLegacyPackageJSON(directoryPath string) {
-	package_json := path.Join(directoryPath, "package.json")
-	data, err := ioutil.ReadFile(package_json)
+	packageJSON := path.Join(directoryPath, "package.json")
+	data, err := ioutil.ReadFile(packageJSON)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return
-		} else {
-			Fail("Error reading package.json.")
 		}
+		Fail("Error reading package.json.")
 	}
 	var packageData struct {
 		LegacyMetadata []interface{} `json:"licensezero"`

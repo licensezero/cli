@@ -9,7 +9,7 @@ import "path"
 import "regexp"
 import "strings"
 
-func ReadRubyGemsProjects(packagePath string) ([]Project, error) {
+func readRubyGemsProjects(packagePath string) ([]Project, error) {
 	// Run `bundle show` in the working directory to list dependencies.
 	showAll := exec.Command("bundle", "show")
 	var stdout bytes.Buffer
@@ -33,8 +33,8 @@ func ReadRubyGemsProjects(packagePath string) ([]Project, error) {
 		// Run `bundle show $name` to find the Gem's local path.
 		gemPath, err := getRubyGemPathFromBundler(name)
 		// Try to read a licensezero.json file there.
-		json_file := path.Join(gemPath, "licensezero.json")
-		data, err := ioutil.ReadFile(json_file)
+		jsonFile := path.Join(gemPath, "licensezero.json")
+		data, err := ioutil.ReadFile(jsonFile)
 		if err != nil {
 			continue
 		}

@@ -11,13 +11,14 @@ import "strconv"
 
 const quoteDescription = "Quote missing private licenses."
 
+// Quote generates a quote for missing private licenses.
 var Quote = Subcommand{
 	Tag:         "buyer",
 	Description: quoteDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
-		noNoncommercial := NoNoncommercial(flagSet)
-		noReciprocal := NoReciprocal(flagSet)
+		noNoncommercial := noNoncommercialFlag(flagSet)
+		noReciprocal := noReciprocalFlag(flagSet)
 		outputJSON := flagSet.Bool("json", false, "")
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = quoteUsage
@@ -62,7 +63,7 @@ var Quote = Subcommand{
 			Fail("Error requesting quote.")
 		}
 		var total uint
-		for _, project := range response.Projects {
+		for _, project := range response {
 			var prior *inventory.Project
 			for _, candidate := range unlicensed {
 				if candidate.Envelope.Manifest.ProjectID == project.ProjectID {
@@ -134,11 +135,9 @@ func currency(cents uint) string {
 	if cents < 100 {
 		if cents < 10 {
 			return "$0.0" + strconv.Itoa(int(cents))
-		} else {
-			return "$0." + strconv.Itoa(int(cents))
 		}
-	} else {
-		asString := fmt.Sprintf("%d", cents)
-		return "$" + asString[:len(asString)-2] + "." + asString[len(asString)-2:]
+		return "$0." + strconv.Itoa(int(cents))
 	}
+	asString := fmt.Sprintf("%d", cents)
+	return "$" + asString[:len(asString)-2] + "." + asString[len(asString)-2:]
 }

@@ -6,26 +6,26 @@ import "io/ioutil"
 import "os"
 import "path"
 
+// LicenseZeroJSONFile describes the contents of licensezero.json.
 type LicenseZeroJSONFile struct {
 	Version   string                    `json:"version"`
 	Envelopes []ProjectManifestEnvelope `json:"licensezero"`
 }
 
-func ReadLicenseZeroFiles(directoryPath string) ([]Project, error) {
+func readLicenseZeroFiles(directoryPath string) ([]Project, error) {
 	var returned []Project
 	entries, err := readAndStatDir(directoryPath)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return []Project{}, nil
-		} else {
-			return nil, err
 		}
+		return nil, err
 	}
 	for _, entry := range entries {
 		name := entry.Name()
 		if name == "licensezero.json" {
-			json_file := path.Join(directoryPath, "licensezero.json")
-			data, err := ioutil.ReadFile(json_file)
+			jsonFile := path.Join(directoryPath, "licensezero.json")
+			data, err := ioutil.ReadFile(jsonFile)
 			if err != nil {
 				return nil, err
 			}
@@ -56,7 +56,7 @@ func ReadLicenseZeroFiles(directoryPath string) ([]Project, error) {
 			}
 		} else if entry.IsDir() {
 			directory := path.Join(directoryPath, name)
-			below, err := ReadLicenseZeroFiles(directory)
+			below, err := readLicenseZeroFiles(directory)
 			if err != nil {
 				return nil, err
 			}

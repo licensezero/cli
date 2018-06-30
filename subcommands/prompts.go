@@ -6,7 +6,7 @@ import "golang.org/x/crypto/ssh/terminal"
 import "strings"
 import "syscall"
 
-func Confirm(prompt string) bool {
+func confirm(prompt string) bool {
 	var response string
 	fmt.Printf("%s (y/n): ", prompt)
 	_, err := fmt.Scan(&response)
@@ -19,11 +19,11 @@ func Confirm(prompt string) bool {
 	} else if response == "n" {
 		return false
 	} else {
-		return Confirm(prompt)
+		return confirm(prompt)
 	}
 }
 
-func SecretPrompt(prompt string) string {
+func secretPrompt(prompt string) string {
 	fmt.Printf(prompt)
 	data, err := terminal.ReadPassword(int(syscall.Stderr))
 	if err != nil {
@@ -36,12 +36,12 @@ func SecretPrompt(prompt string) string {
 
 const termsPrompt = "Do you agree to " + api.TermsReference + "?"
 
-func ConfirmTermsOfService() bool {
-	return Confirm(termsPrompt)
+func confirmTermsOfService() bool {
+	return confirm(termsPrompt)
 }
 
 const agencyPrompt = "Do you agree to " + api.AgencyReference + "?"
 
-func ConfirmAgencyTerms() bool {
-	return Confirm(agencyPrompt)
+func confirmAgencyTerms() bool {
+	return confirm(agencyPrompt)
 }

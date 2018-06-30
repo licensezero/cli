@@ -11,6 +11,7 @@ import "strconv"
 
 const importDescription = "Import private licenses and waivers."
 
+// Import saves licenses and waivers to the config directory.
 var Import = Subcommand{
 	Tag:         "buyer",
 	Description: importDescription,
@@ -18,7 +19,7 @@ var Import = Subcommand{
 		flagSet := flag.NewFlagSet("import", flag.ExitOnError)
 		filePath := flagSet.String("file", "", "")
 		bundle := flagSet.String("bundle", "", "")
-		silent := Silent(flagSet)
+		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = importUsage
 		flagSet.Parse(args)
@@ -54,12 +55,12 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 			continue
 		}
 		projectID := envelope.Manifest.Project.ProjectID
-		projectResponse, err := api.Project(projectID)
+		licensor, err := api.Project(projectID)
 		if err != nil {
 			os.Stderr.WriteString("Error fetching project developer information for " + projectID + ".\n")
 			continue
 		}
-		err = data.CheckLicenseSignature(envelope, projectResponse.Licensor.PublicKey)
+		err = data.CheckLicenseSignature(envelope, licensor.PublicKey)
 		if err != nil {
 			os.Stderr.WriteString("Invalid license signature for project " + projectID + ".\n")
 			continue
@@ -101,11 +102,11 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		if err != nil {
 			Fail("Error reading license.")
 		}
-		projectResponse, err := api.Project(license.Manifest.Project.ProjectID)
+		licensor, err := api.Project(license.Manifest.Project.ProjectID)
 		if err != nil {
 			Fail("Error fetching project developer information.")
 		}
-		err = data.CheckLicenseSignature(license, projectResponse.Licensor.PublicKey)
+		err = data.CheckLicenseSignature(license, licensor.PublicKey)
 		if err != nil {
 			Fail("Invalid license signature.")
 		}
@@ -118,11 +119,11 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		if err != nil {
 			Fail("Error reading waiver.")
 		}
-		projectResponse, err := api.Project(waiver.Manifest.Project.ProjectID)
+		licensor, err := api.Project(waiver.Manifest.Project.ProjectID)
 		if err != nil {
 			Fail("Error fetching project developer information.")
 		}
-		err = data.CheckWaiverSignature(waiver, projectResponse.Licensor.PublicKey)
+		err = data.CheckWaiverSignature(waiver, licensor.PublicKey)
 		if err != nil {
 			Fail("Invalid waiver signature.")
 		}
