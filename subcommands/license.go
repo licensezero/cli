@@ -114,7 +114,7 @@ var License = Subcommand{
 			os.Stdout.WriteString("Added metadata to licensezero.json.\n")
 		}
 		// Append to LICENSE.
-		err = writeLICENSE(&response)
+		err = writeLICENSE(response)
 		if err != nil {
 			Fail(err.Error())
 		}

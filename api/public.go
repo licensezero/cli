@@ -29,10 +29,8 @@ type PublicResponse struct {
 	} `json:"license"`
 }
 
-// TODO: Return a reference.
-
 // Public sends a public API request.
-func Public(licensor *data.Licensor, projectID string, terms string) (PublicResponse, error) {
+func Public(licensor *data.Licensor, projectID string, terms string) (*PublicResponse, error) {
 	bodyData := publicRequest{
 		Action:     "public",
 		ProjectID:  projectID,
@@ -42,24 +40,24 @@ func Public(licensor *data.Licensor, projectID string, terms string) (PublicResp
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {
-		return PublicResponse{}, err
+		return nil, err
 	}
 	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
 	defer response.Body.Close()
 	if err != nil {
-		return PublicResponse{}, errors.New("error sending request")
+		return nil, errors.New("error sending request")
 	}
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return PublicResponse{}, err
+		return nil, err
 	}
 	var parsed PublicResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
-		return PublicResponse{}, err
+		return nil, err
 	}
 	if message, ok := parsed.Error.(string); ok {
-		return PublicResponse{}, errors.New(message)
+		return nil, errors.New(message)
 	}
-	return parsed, nil
+	return &parsed, nil
 }

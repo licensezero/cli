@@ -74,7 +74,7 @@ var Relicense = Subcommand{
 			os.Stdout.WriteString("Added metadata to licensezero.json.\n")
 		}
 		// Overwrite LICENSE.
-		err = overwriteLICENSE(&response)
+		err = overwriteLICENSE(response)
 		if err != nil {
 			Fail(err.Error())
 		}
