@@ -9,34 +9,36 @@ import "path"
 import "regexp"
 import "strings"
 
-// TODO: Run bundle show --paths if order guaranteed same.
-
 func readRubyGemsProjects(packagePath string) ([]Project, error) {
 	// Run `bundle show` in the working directory to list dependencies.
-	showAll := exec.Command("bundle", "show")
-	var stdout bytes.Buffer
-	showAll.Stdout = &stdout
-	err := showAll.Run()
+	showNamesAndVersions := exec.Command("bundle", "show")
+	var first bytes.Buffer
+	showNamesAndVersions.Stdout = &first
+	err := showNamesAndVersions.Run()
 	if err != nil {
 		return nil, err
 	}
-	showAllOutput := string(stdout.Bytes())
-	lines := strings.Split(showAllOutput, "\n")
+	namesAndVersions := strings.Split(string(first.Bytes()), "\n")
+	// Run `bundle show --paths` to list dependencies' paths.
+	showPaths := exec.Command("bundle", "show", "--paths")
+	var second bytes.Buffer
+	showPaths.Stdout = &second
+	err = showPaths.Run()
+	if err != nil {
+		return nil, err
+	}
+	paths := strings.Split(string(second.Bytes()), "\n")
 	var returned []Project
-	// Parse each line of output for Gem name and version.
+	// Parse each line of output.
 	re, _ := regexp.Compile(`^\s+\*\s+([^(]+) \((.+)\)$`)
-	for _, line := range lines {
+	for i, line := range namesAndVersions[1:] {
 		result := re.FindStringSubmatch(line)
 		if len(result) == 0 {
 			continue
 		}
 		name := result[1]
 		version := result[2]
-		// Run `bundle show $name` to find the Gem's local path.
-		gemPath, err := getRubyGemPathFromBundler(name)
-		if err != nil {
-			continue
-		}
+		gemPath := paths[i]
 		// Try to read a licensezero.json file there.
 		jsonFile := path.Join(gemPath, "licensezero.json")
 		data, err := ioutil.ReadFile(jsonFile)
@@ -66,15 +68,4 @@ func readRubyGemsProjects(packagePath string) ([]Project, error) {
 		}
 	}
 	return returned, nil
-}
-
-func getRubyGemPathFromBundler(name string) (string, error) {
-	showGem := exec.Command("bundle", "show", name)
-	var stdout bytes.Buffer
-	showGem.Stdout = &stdout
-	err := showGem.Run()
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(stdout.Bytes())), nil
 }
