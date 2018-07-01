@@ -71,6 +71,7 @@ func findPackageInfo(directoryPath string) *Project {
 		findNPMPackageInfo,
 		findPythonPackageInfo,
 		findMavenPackageInfo,
+		findComposerPackageInfo,
 	}
 	for _, approach := range approaches {
 		returned := approach(directoryPath)
