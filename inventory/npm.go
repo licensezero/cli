@@ -120,7 +120,7 @@ func findNPMPackageInfo(directoryPath string) *Project {
 		Name    string `json:"name"`
 		Version string `json:"version"`
 	}
-	json.Unmarshal(data, &parsed)
+	err = json.Unmarshal(data, &parsed)
 	if err != nil {
 		return nil
 	}
