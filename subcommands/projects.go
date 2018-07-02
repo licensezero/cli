@@ -39,14 +39,14 @@ var Projects = Subcommand{
 			}
 		}
 		if *outputJSON {
-			marshalled, err := json.Marshal(projects)
+			marshalled, err := json.Marshal(filtered)
 			if err != nil {
 				Fail("Error serializing output.")
 			}
 			os.Stdout.WriteString(string(marshalled) + "\n")
 			os.Exit(0)
 		}
-		for i, project := range projects {
+		for i, project := range filtered {
 			if i != 0 {
 				os.Stdout.WriteString("\n")
 			}
