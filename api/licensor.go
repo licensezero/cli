@@ -11,6 +11,7 @@ type licensorRequest struct {
 	LicensorID string `json:"licensorID"`
 }
 
+// ProjectInformation describes information on a project from an API Licensor request.
 type ProjectInformation struct {
 	ProjectID string `json:"projectID"`
 	Offered   string `json:"offered"`
