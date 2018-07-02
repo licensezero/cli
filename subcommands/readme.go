@@ -10,8 +10,6 @@ import "strings"
 
 const readmeDescription = "Append licensing information to README."
 
-// TODO: Detect README.txt, README, &c.
-
 // README appends licensing information to README.
 var README = Subcommand{
 	Tag:         "seller",
@@ -168,7 +166,6 @@ func readEntries(directory string) ([]string, []string, error) {
 	if err != nil {
 		return nil, nil, errors.New("could not parse licensezero.json metadata")
 	}
-	// TODO: Validate licensezero.json metadata entries.
 	var projectIDs []string
 	var terms []string
 	for _, entry := range existingMetadata.Envelopes {

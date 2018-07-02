@@ -8,8 +8,6 @@ import "os"
 
 const repriceDescription = "Change project pricing."
 
-// TODO: Clarify UI for withdrawing relicense offers.
-
 // Reprice changes project pricing.
 var Reprice = Subcommand{
 	Tag:         "seller",

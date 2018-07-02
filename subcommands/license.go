@@ -121,7 +121,6 @@ var License = Subcommand{
 		if !*silent {
 			os.Stdout.WriteString("Appended terms to LICENSE.\n")
 		}
-		// TODO: Write licensezero.json to package.json files, MANIFEST.in, and similar.
 		if !*silent {
 			os.Stdout.WriteString(
 				"" +

@@ -13,8 +13,6 @@ import "path"
 
 const relicenseDescription = "Relicense on Charity terms."
 
-// TODO: Automatically retract?
-
 // Relicense updates LICENSE and metadata with Charity terms.
 var Relicense = Subcommand{
 	Tag:         "seller",
@@ -86,7 +84,6 @@ var Relicense = Subcommand{
 }
 
 func overwriteLICENSE(response *api.PublicResponse) error {
-	// TODO: Check LICENSE for other licenses.
 	toWrite := "" +
 		response.License.Document + "\n\n" +
 		"---\n\n" +
