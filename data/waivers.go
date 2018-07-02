@@ -98,7 +98,6 @@ func checkUnexpired(waiver *WaiverEnvelope) (bool, error) {
 	}
 	expiration.AddDate(0, 0, days)
 	return expiration.After(time.Now()), nil
-	return true, nil
 }
 
 // ReadWaiver reads a waiver file.
