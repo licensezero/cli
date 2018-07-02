@@ -48,7 +48,7 @@ var License = Subcommand{
 		}
 		response, err := api.Public(licensor, *projectID, terms)
 		if err != nil {
-			Fail("Error sending license information request.")
+			Fail("Error sending license information request: " + err.Error())
 		}
 		checkForLegacyPackageJSON(paths.CWD)
 		// Add metadata to licensezero.json.

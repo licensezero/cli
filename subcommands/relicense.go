@@ -33,7 +33,7 @@ var Relicense = Subcommand{
 		}
 		response, err := api.Public(licensor, *projectID, "charity")
 		if err != nil {
-			Fail("Error sending license information request.")
+			Fail("Error sending license information request: " + err.Error())
 		}
 		// Add metadata to licensezero.json.
 		licensezeroJSON := path.Join(paths.CWD, "licensezero.json")

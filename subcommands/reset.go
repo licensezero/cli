@@ -21,7 +21,7 @@ var Reset = Subcommand{
 		}
 		err = api.Reset(identity, licensor)
 		if err != nil {
-			Fail(err.Error())
+			Fail("Error sending reset request: " + err.Error())
 		}
 		os.Stdout.WriteString("Check your e-mail for the reset link.\n")
 		os.Exit(0)

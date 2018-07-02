@@ -34,7 +34,7 @@ var Offer = Subcommand{
 		}
 		projectID, err := api.Offer(licensor, *homepage, *description, *price, *relicense)
 		if err != nil {
-			Fail(err.Error())
+			Fail("Error sending offer request: " + err.Error())
 		}
 		location := "https://licensezero.com/projects/" + projectID
 		os.Stdout.WriteString("Project ID: " + projectID + "\n")

@@ -28,7 +28,7 @@ var Retract = Subcommand{
 		}
 		err = api.Retract(licensor, *projectID)
 		if err != nil {
-			Fail(err.Error())
+			Fail("Error sending retract request: " + err.Error())
 		}
 		if !*silent {
 			os.Stdout.WriteString("Retracted from sale.\n")

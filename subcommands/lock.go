@@ -29,7 +29,7 @@ var Lock = Subcommand{
 		}
 		err = api.Lock(licensor, *projectID, *unlock)
 		if err != nil {
-			Fail(err.Error())
+			Fail("Error sending lock request: " + err.Error())
 		}
 		if !*silent {
 			os.Stdout.WriteString("Locked pricing.\n")

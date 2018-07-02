@@ -60,7 +60,7 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 		projectID := envelope.Manifest.Project.ProjectID
 		licensor, err := api.Project(projectID)
 		if err != nil {
-			os.Stderr.WriteString("Error fetching project developer information for " + projectID + ".\n")
+			os.Stderr.WriteString("Error fetching project developer information for " + projectID + ": " + err.Error() + "\n")
 			continue
 		}
 		err = data.CheckLicenseSignature(envelope, licensor.PublicKey)
@@ -107,7 +107,7 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		}
 		licensor, err := api.Project(license.Manifest.Project.ProjectID)
 		if err != nil {
-			Fail("Error fetching project developer information.")
+			Fail("Error fetching project developer information: " + err.Error())
 		}
 		err = data.CheckLicenseSignature(license, licensor.PublicKey)
 		if err != nil {
@@ -124,7 +124,7 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		}
 		licensor, err := api.Project(waiver.Manifest.Project.ProjectID)
 		if err != nil {
-			Fail("Error fetching project developer information.")
+			Fail("Error fetching project developer information: " + err.Error())
 		}
 		err = data.CheckWaiverSignature(waiver, licensor.PublicKey)
 		if err != nil {

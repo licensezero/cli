@@ -45,7 +45,7 @@ var Buy = Subcommand{
 			}
 			location, err := api.Buy(identity, projectIDs)
 			if err != nil {
-				Fail(err.Error())
+				Fail("Error sending buy request: " + err.Error())
 			}
 			openURLAndExit(location, doNotOpen)
 		}

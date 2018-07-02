@@ -26,8 +26,7 @@ var Projects = Subcommand{
 		}
 		_, projects, err := api.Licensor(licensor.LicensorID)
 		if err != nil {
-			panic(err)
-			Fail("Could not fetch licensor information.")
+			Fail("Could not fetch licensor information: " + err.Error())
 		}
 		var filtered []api.ProjectInformation
 		if *retracted {

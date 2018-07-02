@@ -27,7 +27,7 @@ var Register = Subcommand{
 		}
 		err = api.Register(identity)
 		if err != nil {
-			Fail(err.Error())
+			Fail("Error sending register request: " + err.Error())
 		}
 		os.Stdout.WriteString("Follow the Stripe authorization link sent by e-mail.\n")
 		os.Exit(0)

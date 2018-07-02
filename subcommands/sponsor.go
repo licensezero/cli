@@ -4,7 +4,6 @@ import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
 import "io/ioutil"
-import "os"
 
 const sponsorDescription = "Sponsor relicensing of a project."
 
@@ -28,8 +27,7 @@ var Sponsor = Subcommand{
 		}
 		location, err := api.Sponsor(identity, *projectID)
 		if err != nil {
-			os.Stdout.WriteString(err.Error() + "\n")
-			os.Exit(1)
+			Fail("Error sending sponsor request: " + err.Error())
 		}
 		openURLAndExit(location, doNotOpen)
 	},

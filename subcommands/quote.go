@@ -60,7 +60,7 @@ var Quote = Subcommand{
 		}
 		response, err := api.Quote(projectIDs)
 		if err != nil {
-			Fail("Error requesting quote.")
+			Fail("Error requesting quote: " + err.Error())
 		}
 		var total uint
 		for _, project := range response {

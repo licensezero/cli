@@ -46,7 +46,7 @@ var Reprice = Subcommand{
 		}
 		err = api.Reprice(licensor, projectID, *price, *relicense)
 		if err != nil {
-			Fail(err.Error())
+			Fail("Error sending reprice request:" + err.Error())
 		}
 		if !*silent {
 			os.Stdout.WriteString("Repriced.\n")
