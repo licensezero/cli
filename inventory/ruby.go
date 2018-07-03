@@ -1,17 +1,14 @@
 package inventory
 
 import "bytes"
-import "encoding/json"
-import "github.com/yookoala/realpath"
-import "io/ioutil"
 import "os/exec"
-import "path"
 import "regexp"
 import "strings"
 
 func readRubyGemsProjects(packagePath string) ([]Project, error) {
 	// Run `bundle show` in the working directory to list dependencies.
 	showNamesAndVersions := exec.Command("bundle", "show")
+	showNamesAndVersions.Dir = packagePath
 	var first bytes.Buffer
 	showNamesAndVersions.Stdout = &first
 	err := showNamesAndVersions.Run()
@@ -40,30 +37,17 @@ func readRubyGemsProjects(packagePath string) ([]Project, error) {
 		version := result[2]
 		gemPath := paths[i]
 		// Try to read a licensezero.json file there.
-		jsonFile := path.Join(gemPath, "licensezero.json")
-		data, err := ioutil.ReadFile(jsonFile)
+		projects, err := readLicenseZeroJSON(gemPath)
 		if err != nil {
 			continue
 		}
-		var parsed LicenseZeroJSONFile
-		json.Unmarshal(data, &parsed)
-		for _, envelope := range parsed.Envelopes {
-			if alreadyHaveProject(returned, envelope.Manifest.ProjectID) {
+		for _, project := range projects {
+			if alreadyHaveProject(returned, project.Envelope.Manifest.ProjectID) {
 				continue
 			}
-			project := Project{
-				Path:     gemPath,
-				Envelope: envelope,
-				Type:     "rubygem",
-				Name:     name,
-				Version:  version,
-			}
-			realDirectory, err := realpath.Realpath(gemPath)
-			if err != nil {
-				project.Path = realDirectory
-			} else {
-				project.Path = gemPath
-			}
+			project.Type = "rubygem"
+			project.Name = name
+			project.Version = version
 			returned = append(returned, project)
 		}
 	}

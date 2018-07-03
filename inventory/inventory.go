@@ -139,7 +139,8 @@ func readProjects(cwd string) ([]Project, error) {
 	descenders := []func(string) ([]Project, error){
 		readNPMProjects,
 		readRubyGemsProjects,
-		readLicenseZeroFiles,
+		readGoDeps,
+		recurseLicenseZeroFiles,
 	}
 	returned := []Project{}
 	for _, descender := range descenders {

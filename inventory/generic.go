@@ -12,7 +12,7 @@ type LicenseZeroJSONFile struct {
 	Envelopes []ProjectManifestEnvelope `json:"licensezero"`
 }
 
-func readLicenseZeroFiles(directoryPath string) ([]Project, error) {
+func recurseLicenseZeroFiles(directoryPath string) ([]Project, error) {
 	var returned []Project
 	entries, err := readAndStatDir(directoryPath)
 	if err != nil {
@@ -24,26 +24,13 @@ func readLicenseZeroFiles(directoryPath string) ([]Project, error) {
 	for _, entry := range entries {
 		name := entry.Name()
 		if name == "licensezero.json" {
-			jsonFile := path.Join(directoryPath, "licensezero.json")
-			data, err := ioutil.ReadFile(jsonFile)
+			projects, err := readLicenseZeroJSON(directoryPath)
 			if err != nil {
 				return nil, err
 			}
-			var parsed LicenseZeroJSONFile
-			json.Unmarshal(data, &parsed)
-			for _, envelope := range parsed.Envelopes {
-				if alreadyHaveProject(returned, envelope.Manifest.ProjectID) {
+			for _, project := range projects {
+				if alreadyHaveProject(returned, project.Envelope.Manifest.ProjectID) {
 					continue
-				}
-				project := Project{
-					Path:     directoryPath,
-					Envelope: envelope,
-				}
-				realDirectory, err := realpath.Realpath(directoryPath)
-				if err != nil {
-					project.Path = realDirectory
-				} else {
-					project.Path = directoryPath
 				}
 				packageInfo := findPackageInfo(directoryPath)
 				if packageInfo != nil {
@@ -56,7 +43,7 @@ func readLicenseZeroFiles(directoryPath string) ([]Project, error) {
 			}
 		} else if entry.IsDir() {
 			directory := path.Join(directoryPath, name)
-			below, err := readLicenseZeroFiles(directory)
+			below, err := recurseLicenseZeroFiles(directory)
 			if err != nil {
 				return nil, err
 			}
@@ -80,4 +67,29 @@ func findPackageInfo(directoryPath string) *Project {
 		}
 	}
 	return nil
+}
+
+func readLicenseZeroJSON(directoryPath string) ([]Project, error) {
+	var returned []Project
+	jsonFile := path.Join(directoryPath, "licensezero.json")
+	data, err := ioutil.ReadFile(jsonFile)
+	if err != nil {
+		return nil, err
+	}
+	var parsed LicenseZeroJSONFile
+	json.Unmarshal(data, &parsed)
+	for _, envelope := range parsed.Envelopes {
+		project := Project{
+			Path:     directoryPath,
+			Envelope: envelope,
+		}
+		realDirectory, err := realpath.Realpath(directoryPath)
+		if err != nil {
+			project.Path = realDirectory
+		} else {
+			project.Path = directoryPath
+		}
+		returned = append(returned, project)
+	}
+	return returned, nil
 }
