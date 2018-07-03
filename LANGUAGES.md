@@ -11,11 +11,8 @@ For packages installed at the system or user level, like [RubyGems](#rubygems), 
 
 ## <a id="go">Go</a>
 
-_Rudimentary Support_
-
-- Finds dependencies by recursing the working directory.
-- Does _not_ read name or version.
-- Does _not_ identify packages as Go packages.
+- Finds dependencies by running `go list -f '{{ join .Deps "\n" }}'`.
+- Finds dependency names, paths, and standard-library status by running `go list -f "$TEMPLATE" $name`.
 - See <https://github.com/licensezero/cli/issues/10>
 
 ## <a id="maven">Maven</a>
