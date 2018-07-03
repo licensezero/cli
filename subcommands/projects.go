@@ -10,7 +10,7 @@ import "os"
 const projectsDescription = "List your projects."
 
 // Projects prints the licensor's projects.
-var Projects = Subcommand{
+var Projects = &Subcommand{
 	Tag:         "misc",
 	Description: projectsDescription,
 	Handler: func(args []string, paths Paths) {

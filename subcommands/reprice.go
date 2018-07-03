@@ -9,7 +9,7 @@ import "os"
 const repriceDescription = "Change project pricing."
 
 // Reprice changes project pricing.
-var Reprice = Subcommand{
+var Reprice = &Subcommand{
 	Tag:         "seller",
 	Description: repriceDescription,
 	Handler: func(args []string, paths Paths) {

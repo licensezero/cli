@@ -7,7 +7,7 @@ import "os"
 const whoAmIDescription = "Show your identity information."
 
 // WhoAmI prints identity information.
-var WhoAmI = Subcommand{
+var WhoAmI = &Subcommand{
 	Tag:         "misc",
 	Description: whoAmIDescription,
 	Handler: func(args []string, paths Paths) {

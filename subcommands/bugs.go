@@ -6,7 +6,7 @@ import "io/ioutil"
 const bugsDescription = "Open the CLI bug tracker page."
 
 // Bugs opens the CLI tracker bug tracker page.
-var Bugs = Subcommand{
+var Bugs = &Subcommand{
 	Tag:         "misc",
 	Description: bugsDescription,
 	Handler: func(args []string, paths Paths) {

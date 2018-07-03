@@ -9,7 +9,7 @@ import "os"
 const offerDescription = "Offer private licenses for sale."
 
 // Offer creates a project and offers private licenses for sale.
-var Offer = Subcommand{
+var Offer = &Subcommand{
 	Tag:         "seller",
 	Description: offerDescription,
 	Handler: func(args []string, paths Paths) {

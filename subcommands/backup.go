@@ -8,7 +8,7 @@ import "os"
 const backupDescription = "Create a tarball of your data."
 
 // Backup writes a tarball of configuration files to the current directory.
-var Backup = Subcommand{
+var Backup = &Subcommand{
 	Tag:         "misc",
 	Description: backupDescription,
 	Handler: func(args []string, paths Paths) {

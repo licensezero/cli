@@ -13,7 +13,7 @@ import "path"
 const licenseDescription = "Write license terms and metadata."
 
 // License writes LICENSE and licensezero.json.
-var License = Subcommand{
+var License = &Subcommand{
 	Tag:         "seller",
 	Description: licenseDescription,
 	Handler: func(args []string, paths Paths) {

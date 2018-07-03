@@ -5,7 +5,7 @@ import "os"
 const versionDescription = "Print version."
 
 // Version prints the CLI version.
-var Version = Subcommand{
+var Version = &Subcommand{
 	Tag:         "misc",
 	Description: versionDescription,
 	Handler: func(args []string, paths Paths) {

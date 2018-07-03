@@ -12,7 +12,7 @@ import "strconv"
 const quoteDescription = "Quote missing private licenses."
 
 // Quote generates a quote for missing private licenses.
-var Quote = Subcommand{
+var Quote = &Subcommand{
 	Tag:         "buyer",
 	Description: quoteDescription,
 	Handler: func(args []string, paths Paths) {

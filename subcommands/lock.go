@@ -9,7 +9,7 @@ import "os"
 const lockDescription = "Lock project pricing and availability."
 
 // Lock fixes pricing and availability.
-var Lock = Subcommand{
+var Lock = &Subcommand{
 	Tag:         "seller",
 	Description: lockDescription,
 	Handler: func(args []string, paths Paths) {

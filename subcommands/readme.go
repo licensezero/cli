@@ -11,7 +11,7 @@ import "strings"
 const readmeDescription = "Append licensing information to README."
 
 // README appends licensing information to README.
-var README = Subcommand{
+var README = &Subcommand{
 	Tag:         "seller",
 	Description: readmeDescription,
 	Handler: func(args []string, paths Paths) {

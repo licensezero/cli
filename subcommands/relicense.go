@@ -14,7 +14,7 @@ import "path"
 const relicenseDescription = "Relicense on Charity terms."
 
 // Relicense updates LICENSE and metadata with Charity terms.
-var Relicense = Subcommand{
+var Relicense = &Subcommand{
 	Tag:         "seller",
 	Description: relicenseDescription,
 	Handler: func(args []string, paths Paths) {

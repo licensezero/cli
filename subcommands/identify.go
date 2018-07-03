@@ -8,7 +8,7 @@ import "os"
 const identifyDescription = "Save your identity information."
 
 // Identify saves user identification information.
-var Identify = Subcommand{
+var Identify = &Subcommand{
 	Tag:         "misc",
 	Description: identifyDescription,
 	Handler: func(args []string, paths Paths) {

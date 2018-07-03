@@ -9,7 +9,7 @@ import "os"
 const retractDescription = "Stop offering private licenses for sale."
 
 // Retract pulls a project from sale.
-var Retract = Subcommand{
+var Retract = &Subcommand{
 	Tag:         "seller",
 	Description: retractDescription,
 	Handler: func(args []string, paths Paths) {

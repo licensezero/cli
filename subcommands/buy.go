@@ -10,7 +10,7 @@ import "os"
 const buyDescription = "Buy missing private licenses."
 
 // Buy opens a buy page on licensezero.com.
-var Buy = Subcommand{
+var Buy = &Subcommand{
 	Tag:         "buyer",
 	Description: buyDescription,
 	Handler: func(args []string, paths Paths) {

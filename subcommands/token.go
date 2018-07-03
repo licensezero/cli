@@ -8,7 +8,7 @@ import "os"
 const tokenDescription = "Save your API access token."
 
 // Token saves licensor IDs and API tokens.
-var Token = Subcommand{
+var Token = &Subcommand{
 	Tag:         "seller",
 	Description: tokenDescription,
 	Handler: func(args []string, paths Paths) {

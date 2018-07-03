@@ -8,7 +8,7 @@ import "io/ioutil"
 const sponsorDescription = "Sponsor relicensing of a project."
 
 // Sponsor starts a project sponsorship transaction.
-var Sponsor = Subcommand{
+var Sponsor = &Subcommand{
 	Tag:         "buyer",
 	Description: sponsorDescription,
 	Handler: func(args []string, paths Paths) {

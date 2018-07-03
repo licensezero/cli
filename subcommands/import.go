@@ -12,7 +12,7 @@ import "strconv"
 const importDescription = "Import private licenses and waivers."
 
 // Import saves licenses and waivers to the config directory.
-var Import = Subcommand{
+var Import = &Subcommand{
 	Tag:         "buyer",
 	Description: importDescription,
 	Handler: func(args []string, paths Paths) {

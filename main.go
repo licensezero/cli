@@ -9,7 +9,7 @@ import "sort"
 // Rev represents the current build revision.  Set via ldflags.
 var Rev string
 
-var commands = map[string]subcommands.Subcommand{
+var commands = map[string]*subcommands.Subcommand{
 	"backup":    subcommands.Backup,
 	"buy":       subcommands.Buy,
 	"bugs":      subcommands.Bugs,
@@ -64,9 +64,9 @@ func main() {
 
 func showUsage() {
 	os.Stdout.WriteString("Manage License Zero projects and dependencies.\n\nSubcommands:\n")
-	buyer := map[string]subcommands.Subcommand{}
-	seller := map[string]subcommands.Subcommand{}
-	misc := map[string]subcommands.Subcommand{}
+	buyer := map[string]*subcommands.Subcommand{}
+	seller := map[string]*subcommands.Subcommand{}
+	misc := map[string]*subcommands.Subcommand{}
 	for key, value := range commands {
 		switch value.Tag {
 		case "buyer":
@@ -82,7 +82,7 @@ func showUsage() {
 	listSubcommands("Miscellaneous", misc)
 }
 
-func listSubcommands(header string, list map[string]subcommands.Subcommand) {
+func listSubcommands(header string, list map[string]*subcommands.Subcommand) {
 	os.Stdout.WriteString("\n  " + header + ":\n\n")
 	longestSubcommand := 0
 	var names []string

@@ -9,7 +9,7 @@ import "os"
 const waiveDescription = "Generate a waiver."
 
 // Waive generates a signed waiver.
-var Waive = Subcommand{
+var Waive = &Subcommand{
 	Tag:         "seller",
 	Description: waiveDescription,
 	Handler: func(args []string, paths Paths) {
