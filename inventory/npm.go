@@ -24,14 +24,11 @@ func readNPMProjects(packagePath string) ([]Project, error) {
 		return nil, err
 	}
 	processProject := func(directory string, scope *string) error {
-		packageJSON := path.Join(directory, "package.json")
-		data, err := ioutil.ReadFile(packageJSON)
+		anyNewProjects := false
+		parsed, err := readPackageJSON(directory)
 		if err != nil {
 			return err
 		}
-		var parsed packageJSONFile
-		json.Unmarshal(data, &parsed)
-		anyNewProjects := false
 		for _, envelope := range parsed.Envelopes {
 			if alreadyHaveProject(returned, envelope.Manifest.ProjectID) {
 				continue
@@ -99,6 +96,20 @@ func readNPMProjects(packagePath string) ([]Project, error) {
 		}
 	}
 	return returned, nil
+}
+
+func readPackageJSON(directory string) (*packageJSONFile, error) {
+	packageJSON := path.Join(directory, "package.json")
+	data, err := ioutil.ReadFile(packageJSON)
+	if err != nil {
+		return nil, err
+	}
+	var parsed packageJSONFile
+	json.Unmarshal(data, &parsed)
+	if err != nil {
+		return nil, err
+	}
+	return &parsed, nil
 }
 
 func alreadyHaveProject(projects []Project, projectID string) bool {
