@@ -19,11 +19,15 @@ var Quote = &Subcommand{
 		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
 		noNoncommercial := noNoncommercialFlag(flagSet)
 		noReciprocal := noReciprocalFlag(flagSet)
+		noParity := noParityFlag(flagSet)
+		noProsperity := noProsperityFlag(flagSet)
 		outputJSON := flagSet.Bool("json", false, "")
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = quoteUsage
 		flagSet.Parse(args)
-		projects, err := inventory.Inventory(paths.Home, paths.CWD, *noNoncommercial, *noReciprocal)
+		suppressNoncommercial := *noNoncommercial || *noProsperity
+		suppressReciprocal := *noReciprocal || *noParity
+		projects, err := inventory.Inventory(paths.Home, paths.CWD, suppressNoncommercial, suppressReciprocal)
 		if err != nil {
 			Fail("Could not read dependeny tree.")
 		}

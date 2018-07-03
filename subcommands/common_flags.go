@@ -6,6 +6,14 @@ func doNotOpenFlag(flagSet *flag.FlagSet) *bool {
 	return flagSet.Bool("do-not-open", false, "Do not open checkout page.")
 }
 
+func noParityFlag(flagSet *flag.FlagSet) *bool {
+	return flagSet.Bool("no-parity", false, noReciprocalLine)
+}
+
+func noProsperityFlag(flagSet *flag.FlagSet) *bool {
+	return flagSet.Bool("no-prosperity", false, noNoncommercialLine)
+}
+
 func noNoncommercialFlag(flagSet *flag.FlagSet) *bool {
 	return flagSet.Bool("no-noncommercial", false, noNoncommercialLine)
 }
