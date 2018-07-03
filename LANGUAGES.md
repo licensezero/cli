@@ -2,7 +2,9 @@
 
 `licensezero quote` and `licensezero buy` share the same subroutine for creating an inventory of packages with License Zero metadata.  At its most basic level, the subroutine recurses the current working directory, parsing and verifying every `licensezero.json` file it finds.  When it finds a `licensezero.json` file, it looks in the same directory for files that indicate a particular kind of package, like `package.json` or `setup.py`, and attempts to extract package name, package scope (user or group), and package version.
 
-For packages installed at the system or user level, like [RubyGems](#rubygems), the subroutine shells out to language-specific development tools to list dependencies, and tries to find their paths.
+For packages installed at the system or user level, like [RubyGems](#rubygems) and [Go](#go) packages, the subroutine shells out to language-specific development tools to list dependencies, and tries to find their paths.
+
+The relevant source files are in [`./inventory`](./inventory).
 
 ## <a id="composer">Composer</a>
 
