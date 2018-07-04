@@ -2,6 +2,7 @@ package subcommands
 
 import "flag"
 import "github.com/licensezero/cli/inventory"
+import "github.com/licensezero/cli/readme"
 import "io/ioutil"
 import "os"
 import "strings"
@@ -20,13 +21,9 @@ var README = &Subcommand{
 		flagSet.Parse(args)
 		var existing string
 		checkForLegacyPackageJSON(paths.CWD)
-		data, err := ioutil.ReadFile("README.md")
+		readmeName, data, err := readme.ReadREADME(paths.CWD)
 		if err != nil {
-			if os.IsNotExist(err) {
-				existing = ""
-			} else {
-				Fail("Error reading README.md.")
-			}
+			Fail("Error: " + err.Error())
 		} else {
 			existing = string(data)
 		}
@@ -127,12 +124,12 @@ var README = &Subcommand{
 				"(" + projectLink + ")"
 			existing = existing + "\n\n" + badge
 		}
-		err = ioutil.WriteFile("README.md", []byte(existing), 0644)
+		err = ioutil.WriteFile(readmeName, []byte(existing), 0644)
 		if err != nil {
-			Fail("Error writing README.md.")
+			Fail("Error writing " + readmeName + ".")
 		}
 		if !*silent {
-			os.Stdout.WriteString("Wrote to README.md\n")
+			os.Stdout.WriteString("Wrote to " + readmeName + ".\n")
 		}
 		os.Exit(0)
 	},
