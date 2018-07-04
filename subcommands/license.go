@@ -117,6 +117,9 @@ var License = &Subcommand{
 			Fail("Error serializing new JSON.")
 		}
 		err = ioutil.WriteFile(licensezeroJSON, serialized.Bytes(), 0644)
+		if err != nil {
+			Fail("Error writing licensezero.json")
+		}
 		if !*silent {
 			os.Stdout.WriteString("Added metadata to licensezero.json.\n")
 		}
