@@ -68,6 +68,8 @@ fi
 chmod +x "$tmp"
 if [ ! -z "$BINDIR" ]; then
   install_path="$BINDIR"
+elif [ ! -z "$PREFIX" ]; then
+  install_path="$PREFIX/bin"
 elif [ -d "$HOME/.local/bin" ]; then
   install_path="$HOME/.local/bin"
 elif [ -d "$HOME/local/bin" ]; then
