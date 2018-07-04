@@ -16,20 +16,20 @@ var Reprice = &Subcommand{
 		flagSet := flag.NewFlagSet("reprice", flag.ExitOnError)
 		price := priceFlag(flagSet)
 		relicense := relicenseFlag(flagSet)
-		projectIDFlag := projectIDFlag(flagSet)
-		justIDFlag := idFlag(flagSet)
+		projectID := projectIDFlag(flagSet)
+		id := idFlag(flagSet)
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = repriceUsage
 		flagSet.Parse(args)
-		if *price == 0 || (*projectIDFlag == "" && *justIDFlag == "") {
+		if *price == 0 || (*projectID == "" && *id == "") {
 			repriceUsage()
 		}
-		if *projectIDFlag != "" && *justIDFlag != "" {
+		if *projectID != "" && *id != "" {
 			repriceUsage()
 		}
-		if *projectIDFlag != "" {
-			*justIDFlag = *projectIDFlag
+		if *projectID != "" {
+			*id = *projectID
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
@@ -38,20 +38,7 @@ var Reprice = &Subcommand{
 		if err != nil {
 			Fail(err.Error())
 		}
-		var id string
-		if *justIDFlag != "" {
-			id = *projectIDFlag
-		} else {
-			projectIDs, _, err := readEntries(paths.CWD)
-			if err != nil {
-				Fail("Could not read licensezero.json.")
-			}
-			if len(projectIDs) > 0 {
-				os.Stderr.WriteString("licensezero.json has metadata for multiple License Zero projects.\n")
-				Fail("Use --id to specify your project ID.")
-			}
-		}
-		err = api.Reprice(licensor, id, *price, *relicense)
+		err = api.Reprice(licensor, *id, *price, *relicense)
 		if err != nil {
 			Fail("Error sending reprice request:" + err.Error())
 		}
