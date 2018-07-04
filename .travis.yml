@@ -5,6 +5,7 @@ sudo: false
 env:
   - DEP_VERSION="0.4.1"
 before_install:
+  - curl -sL https://licensezero.com/install.sh | sh
   - curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o $GOPATH/bin/dep
   - chmod +x $GOPATH/bin/dep
   - go get github.com/mitchellh/gox
@@ -12,6 +13,7 @@ install: dep ensure
 script:
   - make
   - make test
+  - $HOME/bin/licensezero quote
 before_deploy: make build
 deploy:
   provider: releases
