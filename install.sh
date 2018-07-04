@@ -66,7 +66,9 @@ fi
 
 # Install Executable
 chmod +x "$tmp"
-if [ -d "$HOME/.local/bin" ]; then
+if [ ! -z "$BINDIR" ]; then
+  install_path="$BINDIR"
+elif [ -d "$HOME/.local/bin" ]; then
   install_path="$HOME/.local/bin"
 elif [ -d "$HOME/local/bin" ]; then
   install_path="$HOME/local/bin"
