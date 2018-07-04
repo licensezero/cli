@@ -16,6 +16,7 @@ var commands = map[string]*subcommands.Subcommand{
 	"identify":  subcommands.Identify,
 	"import":    subcommands.Import,
 	"license":   subcommands.License,
+	"latest":    subcommands.Latest,
 	"lock":      subcommands.Lock,
 	"offer":     subcommands.Offer,
 	"quote":     subcommands.Quote,
@@ -47,7 +48,7 @@ func main() {
 	if len(arguments) > 1 {
 		subcommand := os.Args[1]
 		if value, ok := commands[subcommand]; ok {
-			if subcommand == "version" {
+			if subcommand == "version" || subcommand == "latest" {
 				value.Handler([]string{Rev}, paths)
 			} else {
 				value.Handler(os.Args[2:], paths)
