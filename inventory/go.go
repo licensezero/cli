@@ -28,7 +28,7 @@ func readGoDeps(packagePath string) ([]Project, error) {
 			continue
 		}
 		// Try to read licensezero.json in the package's path.
-		projects, err := readLicenseZeroJSON(info.Dir)
+		projects, err := ReadLicenseZeroJSON(info.Dir)
 		if err != nil {
 			continue
 		}

@@ -37,7 +37,7 @@ func readRubyGemsProjects(packagePath string) ([]Project, error) {
 		version := result[2]
 		gemPath := paths[i]
 		// Try to read a licensezero.json file there.
-		projects, err := readLicenseZeroJSON(gemPath)
+		projects, err := ReadLicenseZeroJSON(gemPath)
 		if err != nil {
 			continue
 		}

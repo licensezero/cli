@@ -24,7 +24,7 @@ func recurseLicenseZeroFiles(directoryPath string) ([]Project, error) {
 	for _, entry := range entries {
 		name := entry.Name()
 		if name == "licensezero.json" {
-			projects, err := readLicenseZeroJSON(directoryPath)
+			projects, err := ReadLicenseZeroJSON(directoryPath)
 			if err != nil {
 				return nil, err
 			}
@@ -69,7 +69,8 @@ func findPackageInfo(directoryPath string) *Project {
 	return nil
 }
 
-func readLicenseZeroJSON(directoryPath string) ([]Project, error) {
+// ReadLicenseZeroJSON read metadata from licensezero.json.
+func ReadLicenseZeroJSON(directoryPath string) ([]Project, error) {
 	var returned []Project
 	jsonFile := path.Join(directoryPath, "licensezero.json")
 	data, err := ioutil.ReadFile(jsonFile)

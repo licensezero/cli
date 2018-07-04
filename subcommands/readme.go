@@ -1,7 +1,5 @@
 package subcommands
 
-import "encoding/json"
-import "errors"
 import "flag"
 import "github.com/licensezero/cli/inventory"
 import "io/ioutil"
@@ -154,23 +152,15 @@ func twoOrMore(values []bool) bool {
 }
 
 func readEntries(directory string) ([]string, []string, error) {
-	data, err := ioutil.ReadFile("licensezero.json")
+	projects, err := inventory.ReadLicenseZeroJSON(directory)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, nil, errors.New("could not read licensezero.json")
-		}
 		return nil, nil, err
-	}
-	var existingMetadata inventory.LicenseZeroJSONFile
-	err = json.Unmarshal(data, &existingMetadata)
-	if err != nil {
-		return nil, nil, errors.New("could not parse licensezero.json metadata")
 	}
 	var projectIDs []string
 	var terms []string
-	for _, entry := range existingMetadata.Envelopes {
-		projectIDs = append(projectIDs, entry.Manifest.ProjectID)
-		terms = append(terms, entry.Manifest.Terms)
+	for _, project := range projects {
+		projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
+		terms = append(terms, project.Envelope.Manifest.Terms)
 	}
 	return projectIDs, terms, nil
 }
