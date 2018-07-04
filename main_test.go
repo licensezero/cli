@@ -228,7 +228,7 @@ func TestImportBundleBadSignature(t *testing.T) {
 func TestSponsorValid(t *testing.T) {
 	InTestDir(t, func() {
 		Identify()
-		command := exec.Command("./licensezero", "sponsor", "--project", "070801d5-59f1-46ed-bb38-f5aaaa459fb8", "--do-not-open")
+		command := exec.Command("./licensezero", "sponsor", "--id", "070801d5-59f1-46ed-bb38-f5aaaa459fb8", "--do-not-open")
 		var stdout bytes.Buffer
 		command.Stdout = &stdout
 		err := command.Run()
@@ -244,7 +244,7 @@ func TestSponsorValid(t *testing.T) {
 
 func TestSponsorWithoutIdentity(t *testing.T) {
 	InTestDir(t, func() {
-		command := exec.Command("./licensezero", "sponsor", "--project", "070801d5-59f1-46ed-bb38-f5aaaa459fb8", "--do-not-open")
+		command := exec.Command("./licensezero", "sponsor", "--id", "070801d5-59f1-46ed-bb38-f5aaaa459fb8", "--do-not-open")
 		err := command.Run()
 		if err == nil {
 			t.Error("does not error")

@@ -15,18 +15,25 @@ var Retract = &Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("retract", flag.ExitOnError)
 		projectID := projectIDFlag(flagSet)
+		id := idFlag(flagSet)
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = retractUsage
 		flagSet.Parse(args)
-		if *projectID == "" {
+		if *projectID == "" && *id == "" {
 			retractUsage()
+		}
+		if *projectID != "" && *id != "" {
+			retractUsage()
+		}
+		if *projectID != "" {
+			*id = *projectID
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
 			Fail(licensorHint)
 		}
-		err = api.Retract(licensor, *projectID)
+		err = api.Retract(licensor, *id)
 		if err != nil {
 			Fail("Error sending retract request: " + err.Error())
 		}
@@ -40,11 +47,11 @@ var Retract = &Subcommand{
 func retractUsage() {
 	usage := retractDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero retract --project ID\n\n" +
+		"  licensezero retract --id ID\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
-			"project ID": projectIDLine,
-			"silent":     silentLine,
+			"id ID":  idLine,
+			"silent": silentLine,
 		})
 	Fail(usage)
 }

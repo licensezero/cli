@@ -12,6 +12,8 @@ const relicenseLine = "Cost to relicense on Charity terms, in US cents."
 
 const projectIDLine = "Project ID (UUID)."
 
+const idLine = "License Zero ID (UUID)."
+
 const licensorHint = "Create a licensor identity with `licensezero register`."
 
 const identityHint = "Create a licensor identity with `licensezero identify`."

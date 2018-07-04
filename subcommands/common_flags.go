@@ -22,6 +22,10 @@ func noReciprocalFlag(flagSet *flag.FlagSet) *bool {
 	return flagSet.Bool("no-reciprocal", false, noReciprocalLine)
 }
 
+func idFlag(flagSet *flag.FlagSet) *string {
+	return flagSet.String("id", "", idLine)
+}
+
 func projectIDFlag(flagSet *flag.FlagSet) *string {
 	return flagSet.String("project", "", projectIDLine)
 }

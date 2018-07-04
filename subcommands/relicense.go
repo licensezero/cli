@@ -20,18 +20,25 @@ var Relicense = &Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("relicense", flag.ExitOnError)
 		projectID := projectIDFlag(flagSet)
+		id := idFlag(flagSet)
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = relicenseUsage
 		flagSet.Parse(args)
-		if *projectID == "" {
+		if *projectID == "" && *id == "" {
 			relicenseUsage()
+		}
+		if *projectID != "" && *id != "" {
+			relicenseUsage()
+		}
+		if *projectID != "" {
+			*id = *projectID
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
 			Fail(licensorHint)
 		}
-		response, err := api.Public(licensor, *projectID, "charity")
+		response, err := api.Public(licensor, *id, "charity")
 		if err != nil {
 			Fail("Error sending license information request: " + err.Error())
 		}
@@ -53,7 +60,7 @@ var Relicense = &Subcommand{
 		}
 		newEntries := []inventory.ProjectManifestEnvelope{}
 		for _, entry := range existingMetadata.Envelopes {
-			if entry.Manifest.ProjectID != *projectID {
+			if entry.Manifest.ProjectID != *id {
 				newEntries = append(newEntries, entry)
 			}
 		}
@@ -102,12 +109,12 @@ func overwriteLICENSE(response *api.PublicResponse) error {
 func relicenseUsage() {
 	usage := relicenseDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero relicense --project ID [--stack]\n\n" +
+		"  licensezero relicense --id ID [--stack]\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
-			"project": projectIDLine,
-			"silent":  silentLine,
-			"stack":   "Stack multiple project metadata entries.",
+			"id ID":  idLine,
+			"silent": silentLine,
+			"stack":  "Stack multiple project metadata entries.",
 		})
 	Fail(usage)
 }

@@ -19,6 +19,7 @@ var License = &Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("license", flag.ExitOnError)
 		projectID := projectIDFlag(flagSet)
+		id := idFlag(flagSet)
 		prosperity := flagSet.Bool("prosperity", false, "Use The Prosperity Public License")
 		parity := flagSet.Bool("parity", false, "Use The Parity Public License.")
 		stack := flagSet.Bool("stack", false, "Stack licensing metadata.")
@@ -32,8 +33,14 @@ var License = &Subcommand{
 		if !*prosperity && !*parity {
 			licenseUsage()
 		}
-		if *projectID == "" {
+		if *projectID == "" && *id == "" {
 			licenseUsage()
+		}
+		if *projectID != "" && *id != "" {
+			licenseUsage()
+		}
+		if *projectID != "" {
+			*id = *projectID
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
@@ -46,7 +53,7 @@ var License = &Subcommand{
 		if *parity {
 			terms = "parity"
 		}
-		response, err := api.Public(licensor, *projectID, terms)
+		response, err := api.Public(licensor, *id, terms)
 		if err != nil {
 			Fail("Error sending license information request: " + err.Error())
 		}
@@ -80,8 +87,8 @@ var License = &Subcommand{
 						if itemsMap, ok := entry.(map[string]interface{}); ok {
 							if license, ok := itemsMap["license"].(map[string]interface{}); ok {
 								if otherID, ok := license["projectID"].(string); ok {
-									if otherID == *projectID {
-										Fail("Project ID " + *projectID + " already appears in licensezero.json.")
+									if otherID == *id {
+										Fail("Project ID " + *id + " already appears in licensezero.json.")
 									}
 								}
 							}
@@ -204,10 +211,10 @@ func checkForLegacyPackageJSON(directoryPath string) {
 func licenseUsage() {
 	usage := licenseDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero license --project ID (--parity | --prosperity) [--stack]\n\n" +
+		"  licensezero license --id ID (--parity | --prosperity) [--stack]\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
-			"project":    projectIDLine,
+			"id ID":      idLine,
 			"prosperity": "Use the Prosperity Public License.",
 			"parity":     "Use The Parity Publice License.",
 			"silent":     silentLine,

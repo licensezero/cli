@@ -17,12 +17,19 @@ var Reprice = &Subcommand{
 		price := priceFlag(flagSet)
 		relicense := relicenseFlag(flagSet)
 		projectIDFlag := projectIDFlag(flagSet)
+		justIDFlag := idFlag(flagSet)
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = repriceUsage
 		flagSet.Parse(args)
-		if *price == 0 || *projectIDFlag == "" {
+		if *price == 0 || (*projectIDFlag == "" && *justIDFlag == "") {
 			repriceUsage()
+		}
+		if *projectIDFlag != "" && *justIDFlag != "" {
+			repriceUsage()
+		}
+		if *projectIDFlag != "" {
+			*justIDFlag = *projectIDFlag
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
@@ -31,9 +38,9 @@ var Reprice = &Subcommand{
 		if err != nil {
 			Fail(err.Error())
 		}
-		var projectID string
-		if *projectIDFlag != "" {
-			projectID = *projectIDFlag
+		var id string
+		if *justIDFlag != "" {
+			id = *projectIDFlag
 		} else {
 			projectIDs, _, err := readEntries(paths.CWD)
 			if err != nil {
@@ -41,10 +48,10 @@ var Reprice = &Subcommand{
 			}
 			if len(projectIDs) > 0 {
 				os.Stderr.WriteString("licensezero.json has metadata for multiple License Zero projects.\n")
-				Fail("Use --project to specify your project ID.")
+				Fail("Use --id to specify your project ID.")
 			}
 		}
-		err = api.Reprice(licensor, projectID, *price, *relicense)
+		err = api.Reprice(licensor, id, *price, *relicense)
 		if err != nil {
 			Fail("Error sending reprice request:" + err.Error())
 		}
@@ -58,13 +65,13 @@ var Reprice = &Subcommand{
 func repriceUsage() {
 	usage := repriceDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero reprice --project ID --price CENTS [--relicense CENTS]\n\n" +
+		"  licensezero reprice --id ID --price CENTS [--relicense CENTS]\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
-			"price":      priceLine,
-			"project ID": "Project ID (UUID).",
-			"relicense":  relicenseLine,
-			"silent":     silentLine,
+			"price CENTS":     priceLine,
+			"id ID":           idLine,
+			"relicense CENTS": relicenseLine,
+			"silent":          silentLine,
 		})
 	Fail(usage)
 }
