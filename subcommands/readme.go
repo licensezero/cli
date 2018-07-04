@@ -126,7 +126,7 @@ var README = &Subcommand{
 				"[" +
 				"![licensezero.com pricing](" + projectLink + "/badge.svg)" +
 				"]" +
-				"[" + projectLink + "]"
+				"(" + projectLink + ")"
 			existing = existing + "\n\n" + badge
 		}
 		err = ioutil.WriteFile("README.md", []byte(existing), 0644)
