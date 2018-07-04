@@ -32,6 +32,16 @@ var Latest = &Subcommand{
 		if running == current {
 			os.Exit(0)
 		} else {
+			response, err := http.Get("https://licensezero.com/one-line-install.sh")
+			if err != nil {
+				os.Exit(1)
+			}
+			defer response.Body.Close()
+			responseBody, err := ioutil.ReadAll(response.Body)
+			if err != nil {
+				os.Exit(1)
+			}
+			os.Stdout.WriteString("Install: " + string(responseBody) + "\n")
 			os.Exit(1)
 		}
 	},
