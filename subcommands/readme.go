@@ -96,7 +96,7 @@ var README = &Subcommand{
 				summaries,
 				licenseScope+
 					"is free to use in open source under the terms of "+
-					"[Parity Public License](./LICENSE).",
+					"the [Parity Public License](./LICENSE).",
 			)
 			availabilities = append(
 				availabilities,
@@ -108,7 +108,7 @@ var README = &Subcommand{
 				summaries,
 				licenseScope+
 					"is free to use for commercial purposes for a trial period under the terms of "+
-					"[The Prosperity Public License](./LICENSE).",
+					"the [Prosperity Public License](./LICENSE).",
 			)
 			availabilities = append(
 				availabilities,
