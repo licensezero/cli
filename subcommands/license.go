@@ -6,6 +6,7 @@ import "errors"
 import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "github.com/licensezero/cli/license"
 import "github.com/licensezero/cli/manifests"
 import "io/ioutil"
 import "os"
@@ -125,12 +126,12 @@ var License = &Subcommand{
 			os.Stdout.WriteString("Added metadata to licensezero.json.\n")
 		}
 		// Append to LICENSE.
-		err = writeLICENSE(response)
+		fileName, err := writeLICENSE(paths.CWD, response)
 		if err != nil {
 			Fail(err.Error())
 		}
 		if !*silent {
-			os.Stdout.WriteString("Appended terms to LICENSE.\n")
+			os.Stdout.WriteString("Appended terms to " + fileName + ".\n")
 		}
 		// Add licensezero.json to manifests.
 		manifests, err := manifests.AddToManifests(paths.CWD, path.Base(licensezeroJSON))
@@ -146,18 +147,18 @@ var License = &Subcommand{
 	},
 }
 
-func writeLICENSE(response *api.PublicResponse) error {
+func writeLICENSE(directoryPath string, response *api.PublicResponse) (string, error) {
 	var toWrite string
-	existing, err := ioutil.ReadFile("LICENSE")
+	filePath, data, err := license.ReadLicense(directoryPath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			toWrite = ""
+		if license.IsNotFound(err) {
+			data = []byte{}
+			filePath = "LICENSE"
 		} else {
-			return errors.New("could not open LICENSE")
+			return "", errors.New("could not read license")
 		}
-	} else {
-		toWrite = string(existing)
 	}
+	toWrite = string(data)
 	if len(toWrite) != 0 {
 		toWrite = toWrite + "\n\n"
 	}
@@ -169,11 +170,11 @@ func writeLICENSE(response *api.PublicResponse) error {
 		"---\n\n" +
 		"Agent Signature (Ed25519):\n\n" +
 		signatureLines(response.License.AgentSignature) + "\n"
-	err = ioutil.WriteFile("LICENSE", []byte(toWrite), 0644)
+	err = ioutil.WriteFile(filePath, []byte(toWrite), 0644)
 	if err != nil {
-		return errors.New("Error writing LICENSE")
+		return "", err
 	}
-	return nil
+	return path.Base(filePath), nil
 }
 
 func signatureLines(signature string) string {
