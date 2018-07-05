@@ -6,6 +6,7 @@ import "errors"
 import "flag"
 import "github.com/licensezero/cli/api"
 import "github.com/licensezero/cli/data"
+import "github.com/licensezero/cli/manifests"
 import "io/ioutil"
 import "os"
 import "path"
@@ -131,15 +132,15 @@ var License = &Subcommand{
 		if !*silent {
 			os.Stdout.WriteString("Appended terms to LICENSE.\n")
 		}
-		if !*silent {
-			os.Stdout.WriteString(
-				"" +
-					"Make sure to configure your package manager to include licensezero.json\n" +
-					"in your package distribution.\n\n" +
-					"npm:    Add licensezero.json to the files array of your npm package's\n" +
-					"        package.json file, if you have one.\n\n" +
-					"Python: Add licensezero.json to MANIFEST.in.\n",
-			)
+		// Add licensezero.json to manifests.
+		manifests, err := manifests.AddToManifests(paths.CWD, path.Base(licensezeroJSON))
+		if err != nil {
+			Fail("Error adding licensezero.json to package manifests: " + err.Error())
+		}
+		for _, manifest := range manifests {
+			if !*silent {
+				os.Stdout.WriteString("Added licensezero.json to " + manifest + ".\n")
+			}
 		}
 		os.Exit(0)
 	},
