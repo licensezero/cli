@@ -6,7 +6,7 @@ licensezero:
 	go build -o licensezero -ldflags "$(LDFLAGS)"
 
 test: licensezero
-	go test
+	go test ./...
 
 build:
 	gox -output="licensezero-{{.OS}}-{{.Arch}}" -ldflags "$(LDFLAGS)" -verbose
