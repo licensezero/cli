@@ -75,7 +75,7 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 			returned.Invalid = append(returned.Invalid, result)
 			continue
 		}
-		err = CheckMetadata(&result, licensor.PublicKey, agentPublicKey)
+		err = CheckMetadata(&result.Envelope, licensor.PublicKey, agentPublicKey)
 		if err != nil {
 			returned.Invalid = append(returned.Invalid, result)
 			continue

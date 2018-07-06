@@ -12,8 +12,8 @@ type agentSignaturePackage struct {
 }
 
 // CheckMetadata verifies signatures to package metadata.
-func CheckMetadata(project *Project, licensorKeyHex string, agentKeyHex string) error {
-	serialized, err := json.Marshal(project.Envelope.Manifest)
+func CheckMetadata(envelope *ProjectManifestEnvelope, licensorKeyHex string, agentKeyHex string) error {
+	serialized, err := json.Marshal(envelope.Manifest)
 	if err != nil {
 		return errors.New("could not serialize Manifest")
 	}
@@ -24,7 +24,7 @@ func CheckMetadata(project *Project, licensorKeyHex string, agentKeyHex string) 
 	}
 	err = checkManifestSignature(
 		licensorKeyHex,
-		project.Envelope.LicensorSignature,
+		envelope.LicensorSignature,
 		compacted.Bytes(),
 		"licensor",
 	)
@@ -32,8 +32,8 @@ func CheckMetadata(project *Project, licensorKeyHex string, agentKeyHex string) 
 		return err
 	}
 	serialized, err = json.Marshal(agentSignaturePackage{
-		Manifest:          project.Envelope.Manifest,
-		LicensorSignature: project.Envelope.LicensorSignature,
+		Manifest:          envelope.Manifest,
+		LicensorSignature: envelope.LicensorSignature,
 	})
 	if err != nil {
 		return errors.New("could not serialize Manifest")
@@ -45,7 +45,7 @@ func CheckMetadata(project *Project, licensorKeyHex string, agentKeyHex string) 
 	}
 	err = checkManifestSignature(
 		agentKeyHex,
-		project.Envelope.AgentSignature,
+		envelope.AgentSignature,
 		compacted.Bytes(),
 		"agent",
 	)
