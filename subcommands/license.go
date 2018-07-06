@@ -71,6 +71,7 @@ var License = &Subcommand{
 		if err != nil {
 			if os.IsNotExist(err) {
 				newMetadata.LicenseZero = []interface{}{newEntry}
+				newMetadata.Version = "1.0.0"
 			} else {
 				Fail("Could not read licensezero.json.")
 			}
