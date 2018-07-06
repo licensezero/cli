@@ -38,6 +38,10 @@ func relicenseFlag(flagSet *flag.FlagSet) *uint {
 	return flagSet.Uint("relicense", 0, relicenseLine)
 }
 
+func noRelicenseFlag(flagSet *flag.FlagSet) *bool {
+	return flagSet.Bool("no-relicense", false, noRelicenseLine)
+}
+
 func silentFlag(flagSet *flag.FlagSet) *bool {
 	return flagSet.Bool("silent", false, silentLine)
 }

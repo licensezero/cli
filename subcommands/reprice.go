@@ -16,6 +16,7 @@ var Reprice = &Subcommand{
 		flagSet := flag.NewFlagSet("reprice", flag.ExitOnError)
 		price := priceFlag(flagSet)
 		relicense := relicenseFlag(flagSet)
+		noRelicense := noRelicenseFlag(flagSet)
 		projectID := projectIDFlag(flagSet)
 		id := idFlag(flagSet)
 		silent := silentFlag(flagSet)
@@ -23,6 +24,9 @@ var Reprice = &Subcommand{
 		flagSet.Usage = repriceUsage
 		flagSet.Parse(args)
 		if *price == 0 || (*projectID == "" && *id == "") {
+			repriceUsage()
+		}
+		if *noRelicense && *relicense != 0 {
 			repriceUsage()
 		}
 		if *projectID != "" && *id != "" {
@@ -52,12 +56,14 @@ var Reprice = &Subcommand{
 func repriceUsage() {
 	usage := repriceDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero reprice --id ID --price CENTS [--relicense CENTS]\n\n" +
+		"  licensezero reprice --id ID --price CENTS \\\n" +
+		"                      (--relicense CENTS | --no-relicense)\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
 			"price CENTS":     priceLine,
 			"id ID":           idLine,
 			"relicense CENTS": relicenseLine,
+			"no-relicense":    noRelicenseLine,
 			"silent":          silentLine,
 		})
 	Fail(usage)

@@ -15,6 +15,7 @@ var Offer = &Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("offer", flag.ExitOnError)
 		relicense := relicenseFlag(flagSet)
+		noRelicense := flagSet.Bool("no-relicense", false, "")
 		homepage := flagSet.String("homepage", "", "")
 		description := flagSet.String("description", "", "")
 		doNotOpen := doNotOpenFlag(flagSet)
@@ -23,6 +24,9 @@ var Offer = &Subcommand{
 		flagSet.Usage = offerUsage
 		flagSet.Parse(args)
 		if *price == 0 || *homepage == "" {
+			offerUsage()
+		}
+		if *noRelicense && *relicense != 0 {
 			offerUsage()
 		}
 		licensor, err := data.ReadLicensor(paths.Home)
@@ -45,7 +49,7 @@ var Offer = &Subcommand{
 func offerUsage() {
 	usage := offerDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero offer --price CENTS [--relicense CENTS] \\\n" +
+		"  licensezero offer --price CENTS (--relicense CENTS || --no-relicense)\\\n" +
 		"                    --homepage URL --description TEXT\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
@@ -54,6 +58,7 @@ func offerUsage() {
 			"homepage URL":     "Project homepage.",
 			"price CENTS":      priceLine,
 			"relicense CENTS":  relicenseLine,
+			"no-relicense":     noRelicenseLine,
 		})
 	Fail(usage)
 }
