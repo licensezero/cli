@@ -49,4 +49,4 @@ _Rudimentary Support_
 
 - Finds dependencies by recursing the working directory.
 - Does _not_ read name or version.
-- Does _not_ identify packages as Go packages.
+- Does _not_ identify packages as Rust packages.
