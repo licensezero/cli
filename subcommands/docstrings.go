@@ -1,6 +1,10 @@
 package subcommands
 
+const noncommercialLine = "Noncommercial project. Ignore noncommercial licenses."
+
 const noNoncommercialLine = "Ignore packages under noncommercial licenses like Prosperity."
+
+const openLine = "Open software project. Ignore reciprocal licenses."
 
 const noReciprocalLine = "Ignore packages under reciprocal licenses like Parity."
 

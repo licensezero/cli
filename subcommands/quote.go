@@ -18,15 +18,17 @@ var Quote = &Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
 		noNoncommercial := noNoncommercialFlag(flagSet)
-		noReciprocal := noReciprocalFlag(flagSet)
-		noParity := noParityFlag(flagSet)
 		noProsperity := noProsperityFlag(flagSet)
+		noncommercial := noncommercialFlag(flagSet)
+		noReciprocal := noReciprocalFlag(flagSet)
+		open := openFlag(flagSet)
+		noParity := noParityFlag(flagSet)
 		outputJSON := flagSet.Bool("json", false, "")
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = quoteUsage
 		flagSet.Parse(args)
-		suppressNoncommercial := *noNoncommercial || *noProsperity
-		suppressReciprocal := *noReciprocal || *noParity
+		suppressNoncommercial := *noncommercial || *noNoncommercial || *noProsperity
+		suppressReciprocal := *open || *noReciprocal || *noParity
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, suppressNoncommercial, suppressReciprocal)
 		if err != nil {
 			Fail("Could not read dependeny tree.")
@@ -128,9 +130,9 @@ func quoteUsage() {
 		"  licensezero quote\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
-			"json":             "Output JSON.",
-			"no-noncommercial": noNoncommercialLine,
-			"no-reciprocal":    noReciprocalLine,
+			"json":          "Output JSON.",
+			"noncommercial": noncommercialLine,
+			"open":          openLine,
 		})
 	Fail(usage)
 }

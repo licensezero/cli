@@ -17,9 +17,11 @@ var Buy = &Subcommand{
 		flagSet := flag.NewFlagSet("buy", flag.ExitOnError)
 		doNotOpen := doNotOpenFlag(flagSet)
 		noNoncommercial := noNoncommercialFlag(flagSet)
-		noReciprocal := noReciprocalFlag(flagSet)
-		noParity := noParityFlag(flagSet)
 		noProsperity := noProsperityFlag(flagSet)
+		noncommercial := noncommercialFlag(flagSet)
+		noReciprocal := noReciprocalFlag(flagSet)
+		open := openFlag(flagSet)
+		noParity := noParityFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = buyUsage
 		flagSet.Parse(args)
@@ -27,8 +29,8 @@ var Buy = &Subcommand{
 		if err != nil {
 			Fail(identityHint)
 		}
-		suppressNoncommercial := *noNoncommercial || *noProsperity
-		suppressReciprocal := *noReciprocal || *noParity
+		suppressNoncommercial := *noncommercial || *noNoncommercial || *noProsperity
+		suppressReciprocal := *open || *noReciprocal || *noParity
 		projects, err := inventory.Inventory(paths.Home, paths.CWD, suppressNoncommercial, suppressReciprocal)
 		if err != nil {
 			Fail("Could not read dependency tree.")
@@ -63,8 +65,8 @@ func buyUsage() {
 			"  licensezero buy\n\n" +
 			"Options:\n" +
 			flagsList(map[string]string{
-				"no-prosperity": noNoncommercialLine,
-				"no-parity":     noReciprocalLine,
+				"noncommercial": noncommercialLine,
+				"open":          openLine,
 				"do-not-open":   doNotOpenLine,
 				"silent":        silentLine,
 			})
