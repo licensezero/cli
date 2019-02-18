@@ -30,6 +30,7 @@ var Register = &Subcommand{
 			Fail("Error sending register request: " + err.Error())
 		}
 		os.Stdout.WriteString("Follow the Stripe authorization link sent by e-mail.\n")
+		os.Stdout.WriteString("If you cannot find the e-mail, check your junk mail folder.\n")
 		os.Exit(0)
 	},
 }
