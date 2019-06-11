@@ -1,7 +1,7 @@
 package subcommands
 
 import "time"
-import "github.com/licensezero/cli/data"
+import "licensezero.com/cli/data"
 import "github.com/mholt/archiver"
 import "os"
 

@@ -3,7 +3,7 @@ package api
 import "bytes"
 import "encoding/json"
 import "errors"
-import "github.com/licensezero/cli/data"
+import "licensezero.com/cli/data"
 import "io/ioutil"
 import "net/http"
 

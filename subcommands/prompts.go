@@ -1,7 +1,7 @@
 package subcommands
 
 import "fmt"
-import "github.com/licensezero/cli/api"
+import "licensezero.com/cli/api"
 import "golang.org/x/crypto/ssh/terminal"
 import "strings"
 import "syscall"

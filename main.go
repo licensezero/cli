@@ -1,7 +1,7 @@
 package main
 
 import "fmt"
-import "github.com/licensezero/cli/subcommands"
+import "licensezero.com/cli/subcommands"
 import "github.com/mitchellh/go-homedir"
 import "os"
 import "sort"

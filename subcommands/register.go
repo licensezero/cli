@@ -1,7 +1,7 @@
 package subcommands
 
-import "github.com/licensezero/cli/api"
-import "github.com/licensezero/cli/data"
+import "licensezero.com/cli/api"
+import "licensezero.com/cli/data"
 import "os"
 
 const registerDescription = "Register to sell private licenses."

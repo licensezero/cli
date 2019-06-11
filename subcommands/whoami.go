@@ -1,7 +1,7 @@
 package subcommands
 
 import "fmt"
-import "github.com/licensezero/cli/data"
+import "licensezero.com/cli/data"
 import "os"
 
 const whoAmIDescription = "Show your identity information."
