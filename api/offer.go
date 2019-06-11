@@ -6,6 +6,7 @@ import "errors"
 import "github.com/licensezero/cli/data"
 import "io/ioutil"
 import "net/http"
+import "strings"
 
 // AgencyReference includes the text required in agency terms agreement statements to the API.
 const AgencyReference = "the agency terms at https://licensezero.com/terms/agency"
@@ -28,6 +29,9 @@ type offerResponse struct {
 
 // Offer sends an offer API request.
 func Offer(licensor *data.Licensor, homepage, description string, private, relicense uint) (string, error) {
+	if !strings.HasPrefix(homepage, "https://") && !strings.HasPrefix(homepage, "http://") {
+		homepage = "http://" + homepage
+	}
 	bodyData := offerRequest{
 		Action:      "offer",
 		LicensorID:  licensor.LicensorID,
