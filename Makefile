@@ -3,6 +3,7 @@
 LDFLAGS=-X main.Rev=$(shell git tag -l --points-at HEAD | sed 's/^v//')
 
 licensezero:
+	go get -ldflags "$(LDFLAGS)" ./...
 	go build -o licensezero -ldflags "$(LDFLAGS)"
 
 test: licensezero
