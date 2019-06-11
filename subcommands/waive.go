@@ -37,6 +37,9 @@ var Waive = &Subcommand{
 		if *projectID != "" {
 			*id = *projectID
 		}
+		if !validID(*id) {
+			invalidID()
+		}
 		licensor, err := data.ReadLicensor(paths.Home)
 		if err != nil {
 			Fail(licensorHint)

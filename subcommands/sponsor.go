@@ -28,6 +28,9 @@ var Sponsor = &Subcommand{
 		if *projectID != "" {
 			*id = *projectID
 		}
+		if !validID(*id) {
+			invalidID()
+		}
 		identity, err := data.ReadIdentity(paths.Home)
 		if err != nil {
 			Fail(identityHint)
