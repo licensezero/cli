@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+// Generate subcommands/jurisdictions.go from the npm package
+// licensezero-jurisdictions.
+var stream = require('fs')
+  .createWriteStream(
+    require('path').join(
+      __dirname,
+      'subcommands',
+      'jurisdictions.go'
+    )
+  )
+
+function write (string) {
+  stream.write(string + '\n')
+}
+
+write('package subcommands')
+write('')
+write('func validJurisdiction(code string) bool {')
+write('\tswitch code {')
+require('licensezero-jurisdictions').forEach(function (valid) {
+  write(`\tcase "${valid}":\n\t\treturn true`)
+})
+write('\tdefault:\n\t\treturn false')
+write('\t}')
+write('}')

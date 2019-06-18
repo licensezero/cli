@@ -38,7 +38,7 @@ var Identify = &Subcommand{
 			Fail("Invalid Name.")
 		}
 		if !validJurisdiction(*jurisdiction) {
-			Fail("Invalid Jurisdiction.")
+			invalidJurisdiction()
 		}
 		if !validEMail(*email) {
 			Fail("Invalid E-Mail.")

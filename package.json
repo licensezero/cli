@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "devDependencies": {
+    "licensezero-jurisdictions": "^1.0.1"
+  }
+}

@@ -7,11 +7,7 @@ func validName(name string) bool {
 	return len(name) != 0
 }
 
-var jurisdictionPattern = regexp.MustCompile(`^[A-Z]{2}-[0-9A-Z]{1,3}$`)
-
-func validJurisdiction(name string) bool {
-	return jurisdictionPattern.MatchString(name)
-}
+//go:generate ../generate-jurisdictions
 
 func validEMail(email string) bool {
 	err := checkmail.ValidateFormat(email)
@@ -27,4 +23,8 @@ func validID(uuid string) bool {
 
 func invalidID() {
 	Fail("Invalid --id. Must be UUID from `licensezero offer`.")
+}
+
+func invalidJurisdiction() {
+	Fail("Invalid --jurisdiction. Must be ISO 3166-2 code like \"US-CA\" or \"DE-BE\".")
 }
