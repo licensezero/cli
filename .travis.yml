@@ -6,6 +6,7 @@ env:
   - GO111MODULE="on"
 before_install:
   - curl -sL https://licensezero.com/install.sh | sh
+  - go get github.com/mitchellh/gox
 script:
   - make
   - make test
