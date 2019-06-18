@@ -14,8 +14,8 @@ build: prebuild
 .PHONY: prebuild
 
 prebuild: node_modules
-	go get -ldflags "$(LDFLAGS)" ./...
 	go generate subcommands/validation.go
+	go get -ldflags "$(LDFLAGS)" ./...
 
 node_modules:
 	npm install
