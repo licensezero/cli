@@ -140,6 +140,7 @@ func readProjects(cwd string) ([]Project, error) {
 		readNPMProjects,
 		readRubyGemsProjects,
 		readGoDeps,
+		readCabalDeps,
 		recurseLicenseZeroFiles,
 	}
 	returned := []Project{}
