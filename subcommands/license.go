@@ -177,7 +177,7 @@ func writeCargoTOML(read []byte, cargoTOML string, response *api.PublicResponse,
 	}
 	packageRecord, hasPackage := parsed["package"].(map[string]interface{})
 	if !hasPackage {
-		Fail("Cago.toml does not have \"package\" data.")
+		Fail("Cargo.toml does not have \"package\" data.")
 	}
 	metadata, hasMetadata := packageRecord["metadata"].(map[string]interface{})
 	if !hasMetadata {
