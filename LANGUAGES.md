@@ -45,8 +45,6 @@ _Incomplete Support_
 
 ## <a id="rust">Rust</a>
 
-_Rudimentary Support_
-
-- Finds dependencies by recursing the working directory.
-- Does _not_ read name or version.
-- Does _not_ identify packages as Rust packages.
+- Finds dependencies by calling `cargo metadata`.
+- Reads name, and version from `Cargo.toml`.
+- Reads License Zero metadata from `Cargo.toml`.
