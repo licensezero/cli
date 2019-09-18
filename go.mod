@@ -3,6 +3,7 @@ module licensezero.com/cli
 go 1.12
 
 require (
+	github.com/BurntSushi/toml v0.3.1
 	github.com/badoux/checkmail v0.0.0-20180430153108-0755fe2dc241
 	github.com/dsnet/compress v0.0.0-20171208185109-cc9eb1d7ad76
 	github.com/licensezero/cli v6.1.1+incompatible

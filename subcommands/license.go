@@ -1,5 +1,6 @@
 package subcommands
 
+import "github.com/BurntSushi/toml"
 import "bytes"
 import "encoding/json"
 import "errors"
@@ -62,71 +63,18 @@ var License = &Subcommand{
 			Fail("Error sending license information request: " + err.Error())
 		}
 		checkForLegacyPackageJSON(paths.CWD)
-		// Add metadata to licensezero.json.
-		type FileStructure struct {
-			Version     string        `json:"version"`
-			LicenseZero []interface{} `json:"licensezero"`
-		}
-		var newMetadata FileStructure
-		newEntry := response.Metadata.LicenseZero
-		licensezeroJSON := path.Join(paths.CWD, "licensezero.json")
-		data, err := ioutil.ReadFile(licensezeroJSON)
+		// Attempt to read Cargo.toml.
+		cargoTOML := path.Join(paths.CWD, "Cargo.toml")
+		tomlBytes, err := ioutil.ReadFile(cargoTOML)
 		if err != nil {
 			if os.IsNotExist(err) {
-				newMetadata.LicenseZero = []interface{}{newEntry}
-				newMetadata.Version = "1.0.0"
+				os.Stdout.WriteString("Cargo.toml does not exist.")
+				writeLicenseZeroJSON(response, &paths, stack, id, silent)
 			} else {
-				Fail("Could not read licensezero.json.")
+				Fail("Error reading Cargo.toml.")
 			}
 		} else {
-			var existingMetadata FileStructure
-			err = json.Unmarshal(data, &existingMetadata)
-			if err != nil {
-				Fail("Error parsing licensezero.json.")
-			}
-			entries := existingMetadata.LicenseZero
-			if len(existingMetadata.LicenseZero) != 0 {
-				if *stack {
-					// Check if project already listed.
-					for _, entry := range entries {
-						if itemsMap, ok := entry.(map[string]interface{}); ok {
-							if license, ok := itemsMap["license"].(map[string]interface{}); ok {
-								if otherID, ok := license["projectID"].(string); ok {
-									if otherID == *id {
-										Fail("Project ID " + *id + " already appears in licensezero.json.")
-									}
-								}
-							}
-						}
-					}
-					entries = append(existingMetadata.LicenseZero, newEntry)
-				} else {
-					Fail("licensezero.json already has License Zero metadata.\nUse --stack to stack metadata.")
-				}
-			} else {
-				if *stack {
-					Fail("Cannot stack License Zero metadata. There is no preexisting metadata.")
-				} else {
-					entries = []interface{}{newEntry}
-				}
-			}
-			newMetadata.Version = existingMetadata.Version
-			newMetadata.LicenseZero = entries
-		}
-		serialized := new(bytes.Buffer)
-		encoder := json.NewEncoder(serialized)
-		encoder.SetEscapeHTML(false)
-		encoder.SetIndent("", "  ")
-		err = encoder.Encode(newMetadata)
-		if err != nil {
-			Fail("Error serializing new JSON.")
-		}
-		err = ioutil.WriteFile(licensezeroJSON, serialized.Bytes(), 0644)
-		if err != nil {
-			Fail("Error writing licensezero.json")
-		}
-		if !*silent {
-			os.Stdout.WriteString("Added metadata to licensezero.json.\n")
+			writeCargoTOML(tomlBytes, cargoTOML, response, &paths, stack, id, silent)
 		}
 		// Append to LICENSE.
 		err = writeLICENSE(response)
@@ -135,16 +83,6 @@ var License = &Subcommand{
 		}
 		if !*silent {
 			os.Stdout.WriteString("Appended terms to LICENSE.\n")
-		}
-		// Add licensezero.json to manifests.
-		manifests, err := manifests.AddToManifests(paths.CWD, path.Base(licensezeroJSON))
-		if err != nil {
-			Fail("Error adding licensezero.json to package manifests: " + err.Error())
-		}
-		for _, manifest := range manifests {
-			if !*silent {
-				os.Stdout.WriteString("Added licensezero.json to " + manifest + ".\n")
-			}
 		}
 		os.Exit(0)
 	},
@@ -229,4 +167,146 @@ func licenseUsage() {
 			"stack":      "Stack multiple project metadata entries.",
 		})
 	Fail(usage)
+}
+
+func writeCargoTOML(read []byte, cargoTOML string, response *api.PublicResponse, paths *Paths, stack *bool, id *string, silent *bool) {
+	newEntry := response.Metadata.LicenseZero
+	var parsed map[string]interface{}
+	if _, err := toml.Decode(string(read), &parsed); err != nil {
+		Fail("Could not parse Cargo.toml.")
+	}
+	packageRecord, hasPackage := parsed["package"].(map[string]interface{})
+	if !hasPackage {
+		Fail("Cago.toml does not have \"package\" data.")
+	}
+	metadata, hasMetadata := packageRecord["metadata"].(map[string]interface{})
+	if !hasMetadata {
+		metadata = map[string]interface{}{
+			"licensezero": map[string]interface{}{
+				"version": "2.0.0",
+				"ids":     []interface{}{},
+			},
+		}
+		packageRecord["metadata"] = metadata
+	}
+	licensezero, _ := metadata["licensezero"].(map[string]interface{})
+	entries, _ := licensezero["ids"].([]interface{})
+	if len(entries) != 0 {
+		if *stack {
+			// Check if project already listed.
+			for _, entry := range entries {
+				if itemsMap, ok := entry.(map[string]interface{}); ok {
+					if license, ok := itemsMap["license"].(map[string]interface{}); ok {
+						if otherID, ok := license["projectID"].(string); ok {
+							if otherID == *id {
+								Fail("Project ID " + *id + " already appears in Cargo.toml.")
+							}
+						}
+					}
+				}
+			}
+			entries = append(entries, newEntry)
+		} else {
+			Fail("Cargo.toml already has License Zero metadata.\nUse --stack to stack metadata.")
+		}
+	} else {
+		if *stack {
+			Fail("Cannot stack License Zero metadata. There is no preexisting metadata.")
+		} else {
+			entries = []interface{}{newEntry}
+		}
+	}
+	licensezero["ids"] = entries
+	serialized := new(bytes.Buffer)
+	encoder := toml.NewEncoder(serialized)
+	err := encoder.Encode(parsed)
+	if err != nil {
+		Fail("Error serializing new TOML.")
+	}
+	err = ioutil.WriteFile(cargoTOML, serialized.Bytes(), 0644)
+	if err != nil {
+		Fail("Error writing Cargo.toml")
+	}
+	if !*silent {
+		os.Stdout.WriteString("Added metadata to Cargo.toml.\n")
+	}
+}
+
+func writeLicenseZeroJSON(response *api.PublicResponse, paths *Paths, stack *bool, id *string, silent *bool) {
+	// Add metadata to licensezero.json.
+	type FileStructure struct {
+		Version     string        `json:"version"`
+		LicenseZero []interface{} `json:"licensezero"`
+	}
+	var newMetadata FileStructure
+	newEntry := response.Metadata.LicenseZero
+	licensezeroJSON := path.Join(paths.CWD, "licensezero.json")
+	data, err := ioutil.ReadFile(licensezeroJSON)
+	if err != nil {
+		if os.IsNotExist(err) {
+			newMetadata.LicenseZero = []interface{}{newEntry}
+			newMetadata.Version = "1.0.0"
+		} else {
+			Fail("Could not read licensezero.json.")
+		}
+	} else {
+		var existingMetadata FileStructure
+		err = json.Unmarshal(data, &existingMetadata)
+		if err != nil {
+			Fail("Error parsing licensezero.json.")
+		}
+		entries := existingMetadata.LicenseZero
+		if len(existingMetadata.LicenseZero) != 0 {
+			if *stack {
+				// Check if project already listed.
+				for _, entry := range entries {
+					if itemsMap, ok := entry.(map[string]interface{}); ok {
+						if license, ok := itemsMap["license"].(map[string]interface{}); ok {
+							if otherID, ok := license["projectID"].(string); ok {
+								if otherID == *id {
+									Fail("Project ID " + *id + " already appears in licensezero.json.")
+								}
+							}
+						}
+					}
+				}
+				entries = append(existingMetadata.LicenseZero, newEntry)
+			} else {
+				Fail("licensezero.json already has License Zero metadata.\nUse --stack to stack metadata.")
+			}
+		} else {
+			if *stack {
+				Fail("Cannot stack License Zero metadata. There is no preexisting metadata.")
+			} else {
+				entries = []interface{}{newEntry}
+			}
+		}
+		newMetadata.Version = existingMetadata.Version
+		newMetadata.LicenseZero = entries
+	}
+	serialized := new(bytes.Buffer)
+	encoder := json.NewEncoder(serialized)
+	encoder.SetEscapeHTML(false)
+	encoder.SetIndent("", "  ")
+	err = encoder.Encode(newMetadata)
+	if err != nil {
+		Fail("Error serializing new JSON.")
+	}
+	err = ioutil.WriteFile(licensezeroJSON, serialized.Bytes(), 0644)
+	if err != nil {
+		Fail("Error writing licensezero.json")
+	}
+	// Add licensezero.json to manifests.
+	manifests, err := manifests.AddToManifests(paths.CWD, path.Base(licensezeroJSON))
+	if err != nil {
+		Fail("Error adding licensezero.json to package manifests: " + err.Error())
+	}
+	for _, manifest := range manifests {
+		if !*silent {
+			os.Stdout.WriteString("Added licensezero.json to " + manifest + ".\n")
+		}
+	}
+	if !*silent {
+		os.Stdout.WriteString("Added metadata to licensezero.json.\n")
+	}
 }

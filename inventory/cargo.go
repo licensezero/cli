@@ -31,13 +31,13 @@ func readCargoCrates(packagePath string) ([]Project, error) {
 	return returned, nil
 }
 
-type cargoLicenseZeroMap struct {
+type CargoLicenseZeroMap struct {
 	Version   string                    `json:"version"`
 	Envelopes []ProjectManifestEnvelope `json:"ids"`
 }
 
 type cargoMetadataMap struct {
-	LicenseZero cargoLicenseZeroMap `json:"licensezero"`
+	LicenseZero CargoLicenseZeroMap `json:"licensezero"`
 }
 
 type cargoMetadataPackage struct {
