@@ -1,10 +1,10 @@
 package subcommands
 
 import "fmt"
-import "licensezero.com/cli/api"
 import "golang.org/x/crypto/ssh/terminal"
+import "licensezero.com/cli/api"
+import "os"
 import "strings"
-import "syscall"
 
 func confirm(prompt string) bool {
 	var response string
@@ -25,7 +25,7 @@ func confirm(prompt string) bool {
 
 func secretPrompt(prompt string) string {
 	fmt.Printf(prompt)
-	data, err := terminal.ReadPassword(int(syscall.Stderr))
+	data, err := terminal.ReadPassword(int(os.Stdin.Fd()))
 	if err != nil {
 		panic(err)
 	}
