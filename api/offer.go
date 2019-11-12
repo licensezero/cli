@@ -16,7 +16,7 @@ type offerRequest struct {
 	Action      string  `json:"action"`
 	LicensorID  string  `json:"licensorID"`
 	Token       string  `json:"token"`
-	Homepage    string  `json:"homepage"`
+	Repository  string  `json:"homepage"`
 	Pricing     Pricing `json:"pricing"`
 	Description string  `json:"description"`
 	Terms       string  `json:"terms"`
@@ -28,16 +28,16 @@ type offerResponse struct {
 }
 
 // Offer sends an offer API request.
-func Offer(licensor *data.Licensor, homepage, description string, private, relicense uint) (string, error) {
-	if !strings.HasPrefix(homepage, "https://") && !strings.HasPrefix(homepage, "http://") {
-		homepage = "http://" + homepage
+func Offer(licensor *data.Licensor, url, description string, private, relicense uint) (string, error) {
+	if !strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://") {
+		url = "http://" + url
 	}
 	bodyData := offerRequest{
 		Action:      "offer",
 		LicensorID:  licensor.LicensorID,
 		Token:       licensor.Token,
 		Description: description,
-		Homepage:    homepage,
+		Repository:  url,
 		Pricing: Pricing{
 			Private:   private,
 			Relicense: relicense,

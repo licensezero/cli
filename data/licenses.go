@@ -17,7 +17,7 @@ type LicenseEnvelope struct {
 	Signature      string
 }
 
-// LicenseFile describes partially parsed licensezero.json metadata about a project.
+// LicenseFile describes partially parsed licensezero.json metadata about a contribution set.
 type LicenseFile struct {
 	Manifest  string `json:"manifest"`
 	ProjectID string `json:"projectID"`
@@ -26,7 +26,7 @@ type LicenseFile struct {
 	Signature string `json:"signature"`
 }
 
-// LicenseManifest describes signed licensezero.json metadata about a project.
+// LicenseManifest describes signed licensezero.json metadata about a contribution set.
 type LicenseManifest struct {
 	Date     string `json:"date"`
 	Form     string `json:"FORM"`
@@ -43,7 +43,7 @@ type LicenseManifest struct {
 	Price   int    `json:"price"`
 	Project struct {
 		Description string `json:"description"`
-		Homepage    string `json:"homepage"`
+		Repository  string `json:"homepage"`
 		ProjectID   string `json:"projectID"`
 	}
 	Version string `json:"VERSION"`

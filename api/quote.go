@@ -11,7 +11,7 @@ type quoteRequest struct {
 	Projects []string `json:"projects"`
 }
 
-// QuoteProject describes the data the API projects on quoted projects.
+// QuoteProject describes the data the API provides on quoted contribution sets.
 type QuoteProject struct {
 	Licensor    LicensorInformation `json:"licensor"`
 	ProjectID   string              `json:"projectID"`

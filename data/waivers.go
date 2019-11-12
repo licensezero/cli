@@ -43,7 +43,7 @@ type WaiverManifest struct {
 	} `json:"licensor"`
 	Project struct {
 		Description string `json:"description"`
-		Homepage    string `json:"homepage"`
+		Repository  string `json:"homepage"`
 		ProjectID   string `json:"projectID"`
 	} `json:"project"`
 	Term string `json:"term"`

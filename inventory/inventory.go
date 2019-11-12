@@ -5,7 +5,7 @@ import "licensezero.com/cli/data"
 import "os"
 import "path"
 
-// Project describes a License Zero project in inventory.
+// Project describes a License Zero contribution set in inventory.
 type Project struct {
 	Type     string                  `json:"type"`
 	Path     string                  `json:"path"`
@@ -22,11 +22,11 @@ type ProjectManifestEnvelope struct {
 	Manifest          ProjectManifest `json:"license"`
 }
 
-// ProjectManifest describes project data from licensezero.json.
+// ProjectManifest describes contribution set data from licensezero.json.
 type ProjectManifest struct {
 	// Note: These declaration must appear in the order so as to
 	// serialize in the correct order for signature verification.
-	Homepage     string `json:"homepage"`
+	Repository   string `json:"homepage"`
 	Jurisdiction string `json:"jurisdiction"`
 	Name         string `json:"name"`
 	ProjectID    string `json:"projectID"`
