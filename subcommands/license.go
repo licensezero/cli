@@ -14,6 +14,8 @@ import "path"
 
 const licenseDescription = "Write license terms and metadata."
 
+const currentMetadatVersion = "2.0.0"
+
 // License writes LICENSE and licensezero.json.
 var License = &Subcommand{
 	Tag:         "seller",
@@ -183,7 +185,7 @@ func writeCargoTOML(read []byte, cargoTOML string, response *api.PublicResponse,
 	if !hasMetadata {
 		metadata = map[string]interface{}{
 			"licensezero": map[string]interface{}{
-				"version": "2.0.0",
+				"version": currentMetadatVersion,
 				"ids":     []interface{}{},
 			},
 		}
@@ -245,7 +247,7 @@ func writeLicenseZeroJSON(response *api.PublicResponse, paths *Paths, stack *boo
 	if err != nil {
 		if os.IsNotExist(err) {
 			newMetadata.LicenseZero = []interface{}{newEntry}
-			newMetadata.Version = "1.0.0"
+			newMetadata.Version = currentMetadatVersion
 		} else {
 			Fail("Could not read licensezero.json.")
 		}
