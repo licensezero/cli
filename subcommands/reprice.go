@@ -6,9 +6,9 @@ import "licensezero.com/cli/data"
 import "io/ioutil"
 import "os"
 
-const repriceDescription = "Change project pricing."
+const repriceDescription = "Change pricing."
 
-// Reprice changes project pricing.
+// Reprice changes pricing.
 var Reprice = &Subcommand{
 	Tag:         "seller",
 	Description: repriceDescription,

@@ -6,7 +6,7 @@ import "licensezero.com/cli/data"
 import "io/ioutil"
 import "os"
 
-const lockDescription = "Lock project pricing and availability."
+const lockDescription = "Lock pricing and availability."
 
 // Lock fixes pricing and availability.
 var Lock = &Subcommand{

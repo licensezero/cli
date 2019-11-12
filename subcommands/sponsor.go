@@ -5,7 +5,7 @@ import "licensezero.com/cli/api"
 import "licensezero.com/cli/data"
 import "io/ioutil"
 
-const sponsorDescription = "Sponsor relicensing of a project."
+const sponsorDescription = "Sponsor relicensing."
 
 // Sponsor starts a project sponsorship transaction.
 var Sponsor = &Subcommand{
