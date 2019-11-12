@@ -9,7 +9,7 @@ const latestDescription = "Check for a newer version."
 // Latest prints checks the running version against the latest available.
 var Latest = &Subcommand{
 	Tag:         "misc",
-	Description: whoAmIDescription,
+	Description: latestDescription,
 	Handler: func(args []string, paths Paths) {
 		var running string
 		if args[0] == "" {
