@@ -54,13 +54,13 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 	for _, license := range parsed.Licenses {
 		envelope, err := data.LicenseFileToEnvelope(&license)
 		if err != nil {
-			os.Stderr.WriteString("Error parsing license for offer ID" + license.OfferID + ".\n")
+			os.Stderr.WriteString("Error parsing license for offer " + license.OfferID + ".\n")
 			continue
 		}
 		offerID := envelope.Manifest.Offer.OfferID
 		licensor, err := api.Read(offerID)
 		if err != nil {
-			os.Stderr.WriteString("Error fetching offer developer information for " + offerID + ": " + err.Error() + "\n")
+			os.Stderr.WriteString("Error fetching information for offer " + offerID + ": " + err.Error() + "\n")
 			continue
 		}
 		err = data.CheckLicenseSignature(envelope, licensor.PublicKey)
@@ -70,7 +70,7 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 		}
 		err = data.WriteLicense(paths.Home, envelope)
 		if err != nil {
-			os.Stderr.WriteString("Error writing license for offer ID" + license.OfferID + ".\n")
+			os.Stderr.WriteString("Error writing license for offer " + license.OfferID + ".\n")
 			continue
 		}
 		imported++
