@@ -7,7 +7,7 @@ import "io/ioutil"
 import "os"
 import "path"
 
-// LicenseEnvelope describes fully parsed licensezero.json metadata about an offer.
+// LicenseEnvelope describes fully parsed licensezero.json metadata about a license.
 type LicenseEnvelope struct {
 	Manifest       LicenseManifest
 	ManifestString string
@@ -17,7 +17,7 @@ type LicenseEnvelope struct {
 	Signature      string
 }
 
-// LicenseFile describes partially parsed licensezero.json metadata about a contribution set.
+// LicenseFile describes partially parsed licensezero.json metadata about a license.
 type LicenseFile struct {
 	Manifest  string `json:"manifest"`
 	OfferID   string `json:"offerID"`
@@ -26,7 +26,7 @@ type LicenseFile struct {
 	Signature string `json:"signature"`
 }
 
-// LicenseManifest describes signed licensezero.json metadata about a contribution set.
+// LicenseManifest describes signed license data.
 type LicenseManifest struct {
 	Date     string `json:"date"`
 	Form     string `json:"FORM"`
