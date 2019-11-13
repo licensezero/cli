@@ -16,14 +16,14 @@ var Offer = &Subcommand{
 		flagSet := flag.NewFlagSet("offer", flag.ExitOnError)
 		relicense := relicenseFlag(flagSet)
 		noRelicense := flagSet.Bool("no-relicense", false, "")
-		repository := flagSet.String("repository", "", "")
+		url := flagSet.String("url", "", "")
 		description := flagSet.String("description", "", "")
 		doNotOpen := doNotOpenFlag(flagSet)
 		price := priceFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = offerUsage
 		flagSet.Parse(args)
-		if *price == 0 || *repository == "" {
+		if *price == 0 || *url == "" {
 			offerUsage()
 		}
 		if *noRelicense && *relicense != 0 {
@@ -36,7 +36,7 @@ var Offer = &Subcommand{
 		if !confirmAgencyTerms() {
 			Fail(agencyTermsHint)
 		}
-		offerID, err := api.Offer(licensor, *repository, *description, *price, *relicense)
+		offerID, err := api.Offer(licensor, *url, *description, *price, *relicense)
 		if err != nil {
 			Fail("Error sending offer request: " + err.Error())
 		}
@@ -50,12 +50,12 @@ func offerUsage() {
 	usage := offerDescription + "\n\n" +
 		"Usage:\n" +
 		"  licensezero offer --price CENTS (--relicense CENTS || --no-relicense)\\\n" +
-		"                    --repository URL --description TEXT\n\n" +
+		"                    --url URL --description TEXT\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
 			"description TEXT": "Description.",
 			"do-not-open":      "Do not open page in browser.",
-			"repository URL":   "Source code repository URL.",
+			"url URL":          "Source code url URL.",
 			"price CENTS":      priceLine,
 			"relicense CENTS":  relicenseLine,
 			"no-relicense":     noRelicenseLine,
