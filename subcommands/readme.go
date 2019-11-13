@@ -116,7 +116,7 @@ var README = &Subcommand{
 		existing = existing + "\n\n" + strings.Join(summaries, "\n\n")
 		existing = existing + "\n\n" + strings.Join(availabilities, "\n\n")
 		for _, offerID := range offerIDs {
-			offerLink := "https://licensezero.com/offers/" + offerID
+			offerLink := "https://licensezero.com/ids/" + offerID
 			badge := "" +
 				"[" +
 				"![licensezero.com pricing](" + offerLink + "/badge.svg)" +
