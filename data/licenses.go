@@ -131,7 +131,7 @@ func WriteLicense(home string, license *LicenseEnvelope) error {
 	return ioutil.WriteFile(licensePath(home, license.OfferID), json, 0644)
 }
 
-// CheckLicenseSignature verifies the signatures to a liecnse envelope.
+// CheckLicenseSignature verifies the signatures to a license envelope.
 func CheckLicenseSignature(license *LicenseEnvelope, publicKey string) error {
 	serialized, err := json.Marshal(license.Manifest)
 	if err != nil {
