@@ -34,8 +34,8 @@ func idFlag(flagSet *flag.FlagSet) *string {
 	return flagSet.String("id", "", idLine)
 }
 
-func projectIDFlag(flagSet *flag.FlagSet) *string {
-	return flagSet.String("project", "", projectIDLine)
+func offerIDFlag(flagSet *flag.FlagSet) *string {
+	return flagSet.String("offer", "", offerIDLine)
 }
 
 func priceFlag(flagSet *flag.FlagSet) *uint {

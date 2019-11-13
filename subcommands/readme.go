@@ -27,7 +27,7 @@ var README = &Subcommand{
 		} else {
 			existing = string(data)
 		}
-		projectIDs, termsIDs, err := readEntries(paths.CWD)
+		offerIDs, termsIDs, err := readEntries(paths.CWD)
 		if err != nil {
 			Fail(err.Error())
 		}
@@ -35,8 +35,8 @@ var README = &Subcommand{
 			existing = existing + "\n\n"
 		}
 		existing = existing + "# Licensing"
-		if len(projectIDs) == 0 {
-			Fail("No License Zero project metadata in licensezero.json.")
+		if len(offerIDs) == 0 {
+			Fail("No License Zero offer metadata in licensezero.json.")
 		}
 		haveReciprocal := false
 		haveNoncommercial := false
@@ -111,17 +111,17 @@ var README = &Subcommand{
 					"are available via [licensezero.com](https://licensezero.com).",
 			)
 		} else {
-			Fail("Unrecognized License Zero project terms.")
+			Fail("Unrecognized License Zero offer terms.")
 		}
 		existing = existing + "\n\n" + strings.Join(summaries, "\n\n")
 		existing = existing + "\n\n" + strings.Join(availabilities, "\n\n")
-		for _, projectID := range projectIDs {
-			projectLink := "https://licensezero.com/projects/" + projectID
+		for _, offerID := range offerIDs {
+			offerLink := "https://licensezero.com/offers/" + offerID
 			badge := "" +
 				"[" +
-				"![licensezero.com pricing](" + projectLink + "/badge.svg)" +
+				"![licensezero.com pricing](" + offerLink + "/badge.svg)" +
 				"]" +
-				"(" + projectLink + ")"
+				"(" + offerLink + ")"
 			existing = existing + "\n\n" + badge
 		}
 		err = ioutil.WriteFile(readmeName, []byte(existing), 0644)
@@ -149,17 +149,17 @@ func twoOrMore(values []bool) bool {
 }
 
 func readEntries(directory string) ([]string, []string, error) {
-	projects, err := inventory.ReadLicenseZeroJSON(directory)
+	offers, err := inventory.ReadLicenseZeroJSON(directory)
 	if err != nil {
 		return nil, nil, err
 	}
-	var projectIDs []string
+	var offerIDs []string
 	var terms []string
-	for _, project := range projects {
-		projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
-		terms = append(terms, project.Envelope.Manifest.Terms)
+	for _, offer := range offers {
+		offerIDs = append(offerIDs, offer.Envelope.Manifest.OfferID)
+		terms = append(terms, offer.Envelope.Manifest.Terms)
 	}
-	return projectIDs, terms, nil
+	return offerIDs, terms, nil
 }
 
 func readmeUsage() {

@@ -17,23 +17,23 @@ var Reprice = &Subcommand{
 		price := priceFlag(flagSet)
 		relicense := relicenseFlag(flagSet)
 		noRelicense := noRelicenseFlag(flagSet)
-		projectID := projectIDFlag(flagSet)
+		offerID := offerIDFlag(flagSet)
 		id := idFlag(flagSet)
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = repriceUsage
 		flagSet.Parse(args)
-		if *price == 0 || (*projectID == "" && *id == "") {
+		if *price == 0 || (*offerID == "" && *id == "") {
 			repriceUsage()
 		}
 		if *noRelicense && *relicense != 0 {
 			repriceUsage()
 		}
-		if *projectID != "" && *id != "" {
+		if *offerID != "" && *id != "" {
 			repriceUsage()
 		}
-		if *projectID != "" {
-			*id = *projectID
+		if *offerID != "" {
+			*id = *offerID
 		}
 		if !validID(*id) {
 			invalidID()

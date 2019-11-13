@@ -54,23 +54,23 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 	for _, license := range parsed.Licenses {
 		envelope, err := data.LicenseFileToEnvelope(&license)
 		if err != nil {
-			os.Stderr.WriteString("Error parsing license for project ID" + license.ProjectID + ".\n")
+			os.Stderr.WriteString("Error parsing license for offer ID" + license.OfferID + ".\n")
 			continue
 		}
-		projectID := envelope.Manifest.Project.ProjectID
-		licensor, err := api.Project(projectID)
+		offerID := envelope.Manifest.Offer.OfferID
+		licensor, err := api.Read(offerID)
 		if err != nil {
-			os.Stderr.WriteString("Error fetching project developer information for " + projectID + ": " + err.Error() + "\n")
+			os.Stderr.WriteString("Error fetching offer developer information for " + offerID + ": " + err.Error() + "\n")
 			continue
 		}
 		err = data.CheckLicenseSignature(envelope, licensor.PublicKey)
 		if err != nil {
-			os.Stderr.WriteString("Invalid license signature for project " + projectID + ".\n")
+			os.Stderr.WriteString("Invalid license signature for offer " + offerID + ".\n")
 			continue
 		}
 		err = data.WriteLicense(paths.Home, envelope)
 		if err != nil {
-			os.Stderr.WriteString("Error writing license for project ID" + license.ProjectID + ".\n")
+			os.Stderr.WriteString("Error writing license for offer ID" + license.OfferID + ".\n")
 			continue
 		}
 		imported++
@@ -105,9 +105,9 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		if err != nil {
 			Fail("Error reading license.")
 		}
-		licensor, err := api.Project(license.Manifest.Project.ProjectID)
+		licensor, err := api.Read(license.Manifest.Offer.OfferID)
 		if err != nil {
-			Fail("Error fetching project developer information: " + err.Error())
+			Fail("Error fetching offer developer information: " + err.Error())
 		}
 		err = data.CheckLicenseSignature(license, licensor.PublicKey)
 		if err != nil {
@@ -122,9 +122,9 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		if err != nil {
 			Fail("Error reading waiver.")
 		}
-		licensor, err := api.Project(waiver.Manifest.Project.ProjectID)
+		licensor, err := api.Read(waiver.Manifest.Offer.OfferID)
 		if err != nil {
-			Fail("Error fetching project developer information: " + err.Error())
+			Fail("Error fetching offer developer information: " + err.Error())
 		}
 		err = data.CheckWaiverSignature(waiver, licensor.PublicKey)
 		if err != nil {

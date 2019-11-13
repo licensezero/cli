@@ -7,14 +7,14 @@ import "io/ioutil"
 import "net/http"
 
 type quoteRequest struct {
-	Action   string   `json:"action"`
-	Projects []string `json:"projects"`
+	Action string   `json:"action"`
+	Offers []string `json:"offers"`
 }
 
-// QuoteProject describes the data the API provides on quoted contribution sets.
-type QuoteProject struct {
+// QuoteOffer describes the data the API provides on quoted contribution sets.
+type QuoteOffer struct {
 	Licensor    LicensorInformation `json:"licensor"`
-	ProjectID   string              `json:"projectID"`
+	OfferID     string              `json:"offerID"`
 	Description string              `json:"description"`
 	Repository  string              `json:"homepage"`
 	Pricing     Pricing             `json:"pricing"`
@@ -35,10 +35,10 @@ type Pricing struct {
 }
 
 // Quote sends a quote API request.
-func Quote(projectIDs []string) ([]QuoteProject, error) {
+func Quote(offerIDs []string) ([]QuoteOffer, error) {
 	bodyData := quoteRequest{
-		Action:   "quote",
-		Projects: projectIDs,
+		Action: "quote",
+		Offers: offerIDs,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {
@@ -54,8 +54,8 @@ func Quote(projectIDs []string) ([]QuoteProject, error) {
 		return nil, err
 	}
 	var parsed struct {
-		Error    interface{}    `json:"error"`
-		Projects []QuoteProject `json:"projects"`
+		Error  interface{}  `json:"error"`
+		Offers []QuoteOffer `json:"offers"`
 	}
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
@@ -64,5 +64,5 @@ func Quote(projectIDs []string) ([]QuoteProject, error) {
 	if message, ok := parsed.Error.(string); ok {
 		return nil, errors.New(message)
 	}
-	return parsed.Projects, nil
+	return parsed.Offers, nil
 }

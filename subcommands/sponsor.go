@@ -7,26 +7,26 @@ import "io/ioutil"
 
 const sponsorDescription = "Sponsor relicensing."
 
-// Sponsor starts a project sponsorship transaction.
+// Sponsor starts an offer sponsorship transaction.
 var Sponsor = &Subcommand{
 	Tag:         "buyer",
 	Description: sponsorDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("sponsor", flag.ExitOnError)
 		doNotOpen := doNotOpenFlag(flagSet)
-		projectID := projectIDFlag(flagSet)
+		offerID := offerIDFlag(flagSet)
 		id := idFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = sponsorUsage
 		flagSet.Parse(args)
-		if *projectID == "" && *id == "" {
+		if *offerID == "" && *id == "" {
 			sponsorUsage()
 		}
-		if *projectID != "" && *id != "" {
+		if *offerID != "" && *id != "" {
 			sponsorUsage()
 		}
-		if *projectID != "" {
-			*id = *projectID
+		if *offerID != "" {
+			*id = *offerID
 		}
 		if !validID(*id) {
 			invalidID()

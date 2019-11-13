@@ -5,8 +5,8 @@ import "os/exec"
 import "bytes"
 import "path"
 
-func readCargoCrates(packagePath string) ([]Project, error) {
-	var returned []Project
+func readCargoCrates(packagePath string) ([]Offer, error) {
+	var returned []Offer
 	metadata, err := cargoReadMetadata(packagePath)
 	if err != nil {
 		return nil, err
@@ -14,26 +14,26 @@ func readCargoCrates(packagePath string) ([]Project, error) {
 	for _, packageRecord := range metadata.Packages {
 		metadata := packageRecord.Metadata.LicenseZero
 		for _, envelope := range metadata.Envelopes {
-			projectID := envelope.Manifest.ProjectID
-			if alreadyHaveProject(returned, projectID) {
+			offerID := envelope.Manifest.OfferID
+			if alreadyHaveOffer(returned, offerID) {
 				continue
 			}
-			project := Project{
+			offer := Offer{
 				Type:     "cargo",
 				Path:     path.Dir(packageRecord.ManifestPath),
 				Name:     packageRecord.Name,
 				Version:  packageRecord.Version,
 				Envelope: envelope,
 			}
-			returned = append(returned, project)
+			returned = append(returned, offer)
 		}
 	}
 	return returned, nil
 }
 
 type CargoLicenseZeroMap struct {
-	Version   string                    `json:"version"`
-	Envelopes []ProjectManifestEnvelope `json:"ids"`
+	Version   string                  `json:"version"`
+	Envelopes []OfferManifestEnvelope `json:"ids"`
 }
 
 type cargoMetadataMap struct {

@@ -31,12 +31,12 @@ var Buy = &Subcommand{
 		}
 		suppressNoncommercial := *noncommercial || *noNoncommercial || *noProsperity
 		suppressReciprocal := *open || *noReciprocal || *noParity
-		projects, err := inventory.Inventory(paths.Home, paths.CWD, suppressNoncommercial, suppressReciprocal)
+		offers, err := inventory.Inventory(paths.Home, paths.CWD, suppressNoncommercial, suppressReciprocal)
 		if err != nil {
 			Fail("Could not read dependency tree.")
 		} else {
-			licensable := projects.Licensable
-			unlicensed := projects.Unlicensed
+			licensable := offers.Licensable
+			unlicensed := offers.Unlicensed
 			if len(licensable) == 0 {
 				os.Stdout.WriteString("No License Zero dependencies found.\n")
 				os.Exit(0)
@@ -45,11 +45,11 @@ var Buy = &Subcommand{
 				os.Stdout.WriteString("No private licenses to buy.\n")
 				os.Exit(0)
 			}
-			var projectIDs []string
-			for _, project := range unlicensed {
-				projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
+			var offerIDs []string
+			for _, offer := range unlicensed {
+				offerIDs = append(offerIDs, offer.Envelope.Manifest.OfferID)
 			}
-			location, err := api.Buy(identity, projectIDs)
+			location, err := api.Buy(identity, offerIDs)
 			if err != nil {
 				Fail("Error sending buy request: " + err.Error())
 			}

@@ -29,18 +29,18 @@ var Quote = &Subcommand{
 		flagSet.Parse(args)
 		suppressNoncommercial := *noncommercial || *noNoncommercial || *noProsperity
 		suppressReciprocal := *open || *noReciprocal || *noParity
-		projects, err := inventory.Inventory(paths.Home, paths.CWD, suppressNoncommercial, suppressReciprocal)
+		offers, err := inventory.Inventory(paths.Home, paths.CWD, suppressNoncommercial, suppressReciprocal)
 		if err != nil {
 			Fail("Could not read dependeny tree.")
 		}
-		licensable := projects.Licensable
-		licensed := projects.Licensed
-		waived := projects.Waived
-		unlicensed := projects.Unlicensed
-		ignored := projects.Ignored
-		invalid := projects.Invalid
+		licensable := offers.Licensable
+		licensed := offers.Licensed
+		waived := offers.Waived
+		unlicensed := offers.Unlicensed
+		ignored := offers.Ignored
+		invalid := offers.Invalid
 		if *outputJSON {
-			marshalled, err := json.Marshal(projects)
+			marshalled, err := json.Marshal(offers)
 			if err != nil {
 				Fail("Error serializing output.")
 			}
@@ -51,7 +51,7 @@ var Quote = &Subcommand{
 			fmt.Println("No License Zero dependencies found.")
 			os.Exit(0)
 		}
-		fmt.Printf("License Zero Projects: %d\n", len(licensable))
+		fmt.Printf("License Zero Offers: %d\n", len(licensable))
 		fmt.Printf("Licensed: %d\n", len(licensed))
 		fmt.Printf("Waived: %d\n", len(waived))
 		fmt.Printf("Ignored: %d\n", len(ignored))
@@ -60,27 +60,27 @@ var Quote = &Subcommand{
 		if len(unlicensed) == 0 {
 			os.Exit(0)
 		}
-		var projectIDs []string
-		for _, project := range unlicensed {
-			projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
+		var offerIDs []string
+		for _, offer := range unlicensed {
+			offerIDs = append(offerIDs, offer.Envelope.Manifest.OfferID)
 		}
-		response, err := api.Quote(projectIDs)
+		response, err := api.Quote(offerIDs)
 		if err != nil {
 			Fail("Error requesting quote: " + err.Error())
 		}
 		var total uint
-		for _, project := range response {
-			var prior *inventory.Project
+		for _, offer := range response {
+			var prior *inventory.Offer
 			for _, candidate := range unlicensed {
-				if candidate.Envelope.Manifest.ProjectID == project.ProjectID {
+				if candidate.Envelope.Manifest.OfferID == offer.OfferID {
 					prior = &candidate
 					break
 				}
 			}
-			total += project.Pricing.Private
-			fmt.Println("\n- Project: " + project.ProjectID)
-			fmt.Println("  Description: " + project.Description)
-			fmt.Println("  Repository: " + project.Repository)
+			total += offer.Pricing.Private
+			fmt.Println("\n- Offer: " + offer.OfferID)
+			fmt.Println("  Description: " + offer.Description)
+			fmt.Println("  Repository: " + offer.Repository)
 			if prior != nil {
 				if prior.Envelope.Manifest.Terms == "noncommercial" {
 					fmt.Println("  Terms: Noncommercial")
@@ -92,8 +92,8 @@ var Quote = &Subcommand{
 					fmt.Println("  Terms: Prosperity")
 				}
 			}
-			fmt.Println("  Licensor: " + project.Licensor.Name + " [" + project.Licensor.Jurisdiction + "]")
-			if project.Retracted {
+			fmt.Println("  Licensor: " + offer.Licensor.Name + " [" + offer.Licensor.Jurisdiction + "]")
+			if offer.Retracted {
 				fmt.Println("  Retracted!")
 			}
 			if prior != nil {
@@ -113,7 +113,7 @@ var Quote = &Subcommand{
 					fmt.Println("  Version: " + prior.Version)
 				}
 			}
-			fmt.Println("  Price: " + currency(project.Pricing.Private))
+			fmt.Println("  Price: " + currency(offer.Pricing.Private))
 			fmt.Printf("\nTotal: %s\n", currency(total))
 		}
 		if len(unlicensed) == 0 {

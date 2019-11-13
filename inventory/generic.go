@@ -8,38 +8,38 @@ import "path"
 
 // LicenseZeroJSONFile describes the contents of licensezero.json.
 type LicenseZeroJSONFile struct {
-	Version   string                    `json:"version"`
-	Envelopes []ProjectManifestEnvelope `json:"licensezero"`
+	Version   string                  `json:"version"`
+	Envelopes []OfferManifestEnvelope `json:"licensezero"`
 }
 
-func recurseLicenseZeroFiles(directoryPath string) ([]Project, error) {
-	var returned []Project
+func recurseLicenseZeroFiles(directoryPath string) ([]Offer, error) {
+	var returned []Offer
 	entries, err := readAndStatDir(directoryPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return []Project{}, nil
+			return []Offer{}, nil
 		}
 		return nil, err
 	}
 	for _, entry := range entries {
 		name := entry.Name()
 		if name == "licensezero.json" {
-			projects, err := ReadLicenseZeroJSON(directoryPath)
+			offers, err := ReadLicenseZeroJSON(directoryPath)
 			if err != nil {
 				return nil, err
 			}
-			for _, project := range projects {
-				if alreadyHaveProject(returned, project.Envelope.Manifest.ProjectID) {
+			for _, offer := range offers {
+				if alreadyHaveOffer(returned, offer.Envelope.Manifest.OfferID) {
 					continue
 				}
 				packageInfo := findPackageInfo(directoryPath)
 				if packageInfo != nil {
-					project.Type = packageInfo.Type
-					project.Name = packageInfo.Name
-					project.Version = packageInfo.Version
-					project.Scope = packageInfo.Scope
+					offer.Type = packageInfo.Type
+					offer.Name = packageInfo.Name
+					offer.Version = packageInfo.Version
+					offer.Scope = packageInfo.Scope
 				}
-				returned = append(returned, project)
+				returned = append(returned, offer)
 			}
 		} else if entry.IsDir() {
 			directory := path.Join(directoryPath, name)
@@ -53,8 +53,8 @@ func recurseLicenseZeroFiles(directoryPath string) ([]Project, error) {
 	return returned, nil
 }
 
-func findPackageInfo(directoryPath string) *Project {
-	approaches := []func(string) *Project{
+func findPackageInfo(directoryPath string) *Offer {
+	approaches := []func(string) *Offer{
 		findNPMPackageInfo,
 		findPythonPackageInfo,
 		findMavenPackageInfo,
@@ -70,8 +70,8 @@ func findPackageInfo(directoryPath string) *Project {
 }
 
 // ReadLicenseZeroJSON read metadata from licensezero.json.
-func ReadLicenseZeroJSON(directoryPath string) ([]Project, error) {
-	var returned []Project
+func ReadLicenseZeroJSON(directoryPath string) ([]Offer, error) {
+	var returned []Offer
 	jsonFile := path.Join(directoryPath, "licensezero.json")
 	data, err := ioutil.ReadFile(jsonFile)
 	if err != nil {
@@ -80,17 +80,17 @@ func ReadLicenseZeroJSON(directoryPath string) ([]Project, error) {
 	var parsed LicenseZeroJSONFile
 	json.Unmarshal(data, &parsed)
 	for _, envelope := range parsed.Envelopes {
-		project := Project{
+		offer := Offer{
 			Path:     directoryPath,
 			Envelope: envelope,
 		}
 		realDirectory, err := realpath.Realpath(directoryPath)
 		if err != nil {
-			project.Path = realDirectory
+			offer.Path = realDirectory
 		} else {
-			project.Path = directoryPath
+			offer.Path = directoryPath
 		}
-		returned = append(returned, project)
+		returned = append(returned, offer)
 	}
 	return returned, nil
 }

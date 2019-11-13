@@ -5,7 +5,7 @@ import "os/exec"
 import "regexp"
 import "strings"
 
-func readRubyGemsProjects(packagePath string) ([]Project, error) {
+func readRubyGemsOffers(packagePath string) ([]Offer, error) {
 	// Run `bundle show` in the working directory to list dependencies.
 	showNamesAndVersions := exec.Command("bundle", "show")
 	showNamesAndVersions.Dir = packagePath
@@ -25,7 +25,7 @@ func readRubyGemsProjects(packagePath string) ([]Project, error) {
 		return nil, err
 	}
 	paths := strings.Split(string(second.Bytes()), "\n")
-	var returned []Project
+	var returned []Offer
 	// Parse each line of output.
 	re, _ := regexp.Compile(`^\s+\*\s+([^(]+) \((.+)\)$`)
 	for i, line := range namesAndVersions[1:] {
@@ -37,18 +37,18 @@ func readRubyGemsProjects(packagePath string) ([]Project, error) {
 		version := result[2]
 		gemPath := paths[i]
 		// Try to read a licensezero.json file there.
-		projects, err := ReadLicenseZeroJSON(gemPath)
+		offers, err := ReadLicenseZeroJSON(gemPath)
 		if err != nil {
 			continue
 		}
-		for _, project := range projects {
-			if alreadyHaveProject(returned, project.Envelope.Manifest.ProjectID) {
+		for _, offer := range offers {
+			if alreadyHaveOffer(returned, offer.Envelope.Manifest.OfferID) {
 				continue
 			}
-			project.Type = "rubygem"
-			project.Name = name
-			project.Version = version
-			returned = append(returned, project)
+			offer.Type = "rubygem"
+			offer.Name = name
+			offer.Version = version
+			returned = append(returned, offer)
 		}
 	}
 	return returned, nil

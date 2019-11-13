@@ -22,7 +22,7 @@ var License = &Subcommand{
 	Description: licenseDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("license", flag.ExitOnError)
-		projectID := projectIDFlag(flagSet)
+		offerID := offerIDFlag(flagSet)
 		id := idFlag(flagSet)
 		prosperity := flagSet.Bool("prosperity", false, "Use The Prosperity Public License")
 		parity := flagSet.Bool("parity", false, "Use The Parity Public License.")
@@ -37,14 +37,14 @@ var License = &Subcommand{
 		if !*prosperity && !*parity {
 			licenseUsage()
 		}
-		if *projectID == "" && *id == "" {
+		if *offerID == "" && *id == "" {
 			licenseUsage()
 		}
-		if *projectID != "" && *id != "" {
+		if *offerID != "" && *id != "" {
 			licenseUsage()
 		}
-		if *projectID != "" {
-			*id = *projectID
+		if *offerID != "" {
+			*id = *offerID
 		}
 		if !validID(*id) {
 			invalidID()
@@ -166,7 +166,7 @@ func licenseUsage() {
 			"prosperity": "Use the Prosperity Public License.",
 			"parity":     "Use The Parity Publice License.",
 			"silent":     silentLine,
-			"stack":      "Stack multiple project metadata entries.",
+			"stack":      "Stack multiple offer metadata entries.",
 		})
 	Fail(usage)
 }
@@ -195,13 +195,13 @@ func writeCargoTOML(read []byte, cargoTOML string, response *api.PublicResponse,
 	entries, _ := licensezero["ids"].([]interface{})
 	if len(entries) != 0 {
 		if *stack {
-			// Check if project already listed.
+			// Check if offer already listed.
 			for _, entry := range entries {
 				if itemsMap, ok := entry.(map[string]interface{}); ok {
 					if license, ok := itemsMap["license"].(map[string]interface{}); ok {
-						if otherID, ok := license["projectID"].(string); ok {
+						if otherID, ok := license["offerID"].(string); ok {
 							if otherID == *id {
-								Fail("Project ID " + *id + " already appears in Cargo.toml.")
+								Fail("Offer ID " + *id + " already appears in Cargo.toml.")
 							}
 						}
 					}
@@ -260,13 +260,13 @@ func writeLicenseZeroJSON(response *api.PublicResponse, paths *Paths, stack *boo
 		entries := existingMetadata.LicenseZero
 		if len(existingMetadata.LicenseZero) != 0 {
 			if *stack {
-				// Check if project already listed.
+				// Check if offer already listed.
 				for _, entry := range entries {
 					if itemsMap, ok := entry.(map[string]interface{}); ok {
 						if license, ok := itemsMap["license"].(map[string]interface{}); ok {
-							if otherID, ok := license["projectID"].(string); ok {
+							if otherID, ok := license["offerID"].(string); ok {
 								if otherID == *id {
-									Fail("Project ID " + *id + " already appears in licensezero.json.")
+									Fail("Offer ID " + *id + " already appears in licensezero.json.")
 								}
 							}
 						}

@@ -4,7 +4,7 @@ import "encoding/json"
 import "io/ioutil"
 import "path"
 
-func findComposerPackageInfo(directoryPath string) *Project {
+func findComposerPackageInfo(directoryPath string) *Offer {
 	composerJSON := path.Join(directoryPath, "composer.json")
 	data, err := ioutil.ReadFile(composerJSON)
 	if err != nil {
@@ -18,7 +18,7 @@ func findComposerPackageInfo(directoryPath string) *Project {
 	if err != nil {
 		return nil
 	}
-	return &Project{
+	return &Offer{
 		Type:    "composer",
 		Name:    parsed.Name,
 		Version: parsed.Version,

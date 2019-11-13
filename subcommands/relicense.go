@@ -19,20 +19,20 @@ var Relicense = &Subcommand{
 	Description: relicenseDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("relicense", flag.ExitOnError)
-		projectID := projectIDFlag(flagSet)
+		offerID := offerIDFlag(flagSet)
 		id := idFlag(flagSet)
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = relicenseUsage
 		flagSet.Parse(args)
-		if *projectID == "" && *id == "" {
+		if *offerID == "" && *id == "" {
 			relicenseUsage()
 		}
-		if *projectID != "" && *id != "" {
+		if *offerID != "" && *id != "" {
 			relicenseUsage()
 		}
-		if *projectID != "" {
-			*id = *projectID
+		if *offerID != "" {
+			*id = *offerID
 		}
 		if !validID(*id) {
 			invalidID()
@@ -61,9 +61,9 @@ var Relicense = &Subcommand{
 		if err != nil {
 			Fail("Error parsing licensezero.json.")
 		}
-		newEntries := []inventory.ProjectManifestEnvelope{}
+		newEntries := []inventory.OfferManifestEnvelope{}
 		for _, entry := range existingMetadata.Envelopes {
-			if entry.Manifest.ProjectID != *id {
+			if entry.Manifest.OfferID != *id {
 				newEntries = append(newEntries, entry)
 			}
 		}
@@ -117,7 +117,7 @@ func relicenseUsage() {
 		flagsList(map[string]string{
 			"id ID":  idLine,
 			"silent": silentLine,
-			"stack":  "Stack multiple project metadata entries.",
+			"stack":  "Stack multiple offer metadata entries.",
 		})
 	Fail(usage)
 }

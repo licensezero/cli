@@ -7,12 +7,12 @@ import "errors"
 import "golang.org/x/crypto/ed25519"
 
 type agentSignaturePackage struct {
-	Manifest          ProjectManifest `json:"license"`
-	LicensorSignature string          `json:"licensorSignature"`
+	Manifest          OfferManifest `json:"license"`
+	LicensorSignature string        `json:"licensorSignature"`
 }
 
 // CheckMetadata verifies signatures to package metadata.
-func CheckMetadata(envelope *ProjectManifestEnvelope, licensorKeyHex string, agentKeyHex string) error {
+func CheckMetadata(envelope *OfferManifestEnvelope, licensorKeyHex string, agentKeyHex string) error {
 	serialized, err := json.Marshal(envelope.Manifest)
 	if err != nil {
 		return errors.New("could not serialize Manifest")

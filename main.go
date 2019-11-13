@@ -20,7 +20,7 @@ var commands = map[string]*subcommands.Subcommand{
 	"lock":      subcommands.Lock,
 	"offer":     subcommands.Offer,
 	"quote":     subcommands.Quote,
-	"projects":  subcommands.Projects,
+	"offers":    subcommands.Offers,
 	"readme":    subcommands.README,
 	"register":  subcommands.Register,
 	"relicense": subcommands.Relicense,
@@ -64,7 +64,7 @@ func main() {
 }
 
 func showUsage() {
-	os.Stdout.WriteString("Manage License Zero projects and dependencies.\n\nSubcommands:\n")
+	os.Stdout.WriteString("Manage License Zero offers and dependencies.\n\nSubcommands:\n")
 	buyer := map[string]*subcommands.Subcommand{}
 	seller := map[string]*subcommands.Subcommand{}
 	misc := map[string]*subcommands.Subcommand{}
