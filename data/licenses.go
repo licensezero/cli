@@ -17,7 +17,7 @@ type LicenseEnvelope struct {
 	Signature      string
 }
 
-// LicenseFile describes partially parsed licensezero.json metadata about a license.
+// LicenseFile describes partially parsed license data.
 type LicenseFile struct {
 	Manifest  string `json:"manifest"`
 	OfferID   string `json:"offerID"`
@@ -47,6 +47,15 @@ type LicenseManifest struct {
 		OfferID     string `json:"offerID"`
 	}
 	Version string `json:"VERSION"`
+}
+
+// LegacyLicenseFile describes partially parsed license data in an old format.
+type LegacyLicenseFile struct {
+	Manifest  string `json:"manifest"`
+	ProjectID string `json:"projectID"`
+	Document  string `json:"document"`
+	PublicKey string `json:"publicKey"`
+	Signature string `json:"signature"`
 }
 
 func licensePath(home string, offerID string) string {
@@ -103,12 +112,29 @@ func ReadLicense(filePath string) (*LicenseEnvelope, error) {
 	if err != nil {
 		return nil, err
 	}
-	var file LicenseFile
-	err = json.Unmarshal(data, &file)
+	var versioned VersionedJSON
+	err = json.Unmarshal(data, &versioned)
 	if err != nil {
 		return nil, err
 	}
-	return LicenseFileToEnvelope(&file)
+	var schema = versioned.Schema
+	if schema == "" {
+		var legacyFile LegacyLicenseFile
+		err = json.Unmarshal(data, &versioned)
+		if err != nil {
+			return nil, err
+		}
+		return LicenseFileToEnvelope(&legacyFile)
+	}
+	if schema == "2.0.0" {
+		var licenseFile LicenseFile
+		err = json.Unmarshal(data, &versioned)
+		if err != nil {
+			return nil, err
+		}
+		return LicenseFileToEnvelope(&licenseFile)
+	}
+	return nil, errors.New("invalid schema")
 }
 
 // WriteLicense writes a license file to the CLI configuration directory.
