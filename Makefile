@@ -18,4 +18,4 @@ prebuild: node_modules
 	go get -ldflags "$(LDFLAGS)" ./...
 
 node_modules:
-	npm install
+	npm ci
