@@ -1,9 +1,7 @@
 package inventory
 
 import "github.com/yookoala/realpath"
-import "fmt"
 import "github.com/BurntSushi/toml"
-import "os"
 import "encoding/json"
 import "os/exec"
 import "errors"
@@ -97,13 +95,11 @@ func ReadCargoTOML(directoryPath string) ([]Project, error) {
 	if _, err := toml.Decode(string(data), &parsed); err != nil {
 		return nil, errors.New("could not parse Cargo.toml")
 	}
-	fmt.Printf("%+v\n", parsed)
 	for _, envelope := range parsed.Package.Metadata.LicenseZero.Envelopes {
 		project := Project{
 			Path:     directoryPath,
 			Envelope: envelope,
 		}
-		os.Stdout.WriteString(project.Envelope.Manifest.ProjectID)
 		realDirectory, err := realpath.Realpath(directoryPath)
 		if err != nil {
 			project.Path = realDirectory
