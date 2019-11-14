@@ -17,22 +17,22 @@ type Project struct {
 
 // ProjectManifestEnvelope describes a signed project manifest.
 type ProjectManifestEnvelope struct {
-	LicensorSignature string          `json:"licensorSignature"`
-	AgentSignature    string          `json:"agentSignature"`
-	Manifest          ProjectManifest `json:"license"`
+	LicensorSignature string          `json:"licensorSignature" toml:"licensorSignature"`
+	AgentSignature    string          `json:"agentSignature" toml:"agentSignature"`
+	Manifest          ProjectManifest `json:"license" toml:"license"`
 }
 
 // ProjectManifest describes contribution set data from licensezero.json.
 type ProjectManifest struct {
 	// Note: These declaration must appear in the order so as to
 	// serialize in the correct order for signature verification.
-	Repository   string `json:"homepage"`
-	Jurisdiction string `json:"jurisdiction"`
-	Name         string `json:"name"`
-	ProjectID    string `json:"projectID"`
-	PublicKey    string `json:"publicKey"`
-	Terms        string `json:"terms"`
-	Version      string `json:"version"`
+	Repository   string `json:"homepage" toml:"homepage"`
+	Jurisdiction string `json:"jurisdiction" tom:"jurisdiction"`
+	Name         string `json:"name" toml:"name"`
+	ProjectID    string `json:"projectID" toml:"projectID"`
+	PublicKey    string `json:"publicKey" toml:"publicKey"`
+	Terms        string `json:"terms" toml:"terms"`
+	Version      string `json:"version" toml:"version"`
 }
 
 // Projects describes the categorization of projects in inventory.

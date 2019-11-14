@@ -1,9 +1,15 @@
 package inventory
 
+import "github.com/yookoala/realpath"
+import "fmt"
+import "github.com/BurntSushi/toml"
+import "os"
 import "encoding/json"
 import "os/exec"
+import "errors"
 import "bytes"
 import "path"
+import "io/ioutil"
 
 func readCargoCrates(packagePath string) ([]Project, error) {
 	var returned []Project
@@ -31,13 +37,14 @@ func readCargoCrates(packagePath string) ([]Project, error) {
 	return returned, nil
 }
 
+// CargoLicenseZeroMap describes metadata for Cargo crates.
 type CargoLicenseZeroMap struct {
-	Version   string                    `json:"version"`
-	Envelopes []ProjectManifestEnvelope `json:"ids"`
+	Version   string                    `json:"version" toml:"version"`
+	Envelopes []ProjectManifestEnvelope `json:"ids" toml:"ids"`
 }
 
 type cargoMetadataMap struct {
-	LicenseZero CargoLicenseZeroMap `json:"licensezero"`
+	LicenseZero CargoLicenseZeroMap `json:"licensezero" toml:"licensezero"`
 }
 
 type cargoMetadataPackage struct {
@@ -66,4 +73,44 @@ func cargoReadMetadata(packagePath string) (*cargoMetadataOutput, error) {
 		return nil, err
 	}
 	return &parsed, nil
+}
+
+type cargoTOMLData struct {
+	Package cargoTOMLPackage `toml:"package"`
+}
+
+type cargoTOMLPackage struct {
+	Name     string           `toml:"name"`
+	Version  string           `toml:"version"`
+	Metadata cargoMetadataMap `toml:"metadata"`
+}
+
+// ReadCargoTOML reads metadata from Cargo.toml.
+func ReadCargoTOML(directoryPath string) ([]Project, error) {
+	var returned []Project
+	cargoTOML := path.Join(directoryPath, "Cargo.toml")
+	data, err := ioutil.ReadFile(cargoTOML)
+	if err != nil {
+		return nil, err
+	}
+	var parsed cargoTOMLData
+	if _, err := toml.Decode(string(data), &parsed); err != nil {
+		return nil, errors.New("could not parse Cargo.toml")
+	}
+	fmt.Printf("%+v\n", parsed)
+	for _, envelope := range parsed.Package.Metadata.LicenseZero.Envelopes {
+		project := Project{
+			Path:     directoryPath,
+			Envelope: envelope,
+		}
+		os.Stdout.WriteString(project.Envelope.Manifest.ProjectID)
+		realDirectory, err := realpath.Realpath(directoryPath)
+		if err != nil {
+			project.Path = realDirectory
+		} else {
+			project.Path = directoryPath
+		}
+		returned = append(returned, project)
+	}
+	return returned, nil
 }

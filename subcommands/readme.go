@@ -36,7 +36,7 @@ var README = &Subcommand{
 		}
 		existing = existing + "# Licensing"
 		if len(projectIDs) == 0 {
-			Fail("No License Zero project metadata in licensezero.json.")
+			Fail("No License Zero project metadata.")
 		}
 		haveReciprocal := false
 		haveNoncommercial := false
@@ -149,7 +149,7 @@ func twoOrMore(values []bool) bool {
 }
 
 func readEntries(directory string) ([]string, []string, error) {
-	projects, err := inventory.ReadLicenseZeroJSON(directory)
+	var projects, err = inventory.ReadLocalProjects(directory)
 	if err != nil {
 		return nil, nil, err
 	}

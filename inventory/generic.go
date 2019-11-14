@@ -2,6 +2,7 @@ package inventory
 
 import "encoding/json"
 import "github.com/yookoala/realpath"
+import "errors"
 import "io/ioutil"
 import "os"
 import "path"
@@ -67,6 +68,24 @@ func findPackageInfo(directoryPath string) *Project {
 		}
 	}
 	return nil
+}
+
+// ReadLocalProjects reads project metadata from various files.
+func ReadLocalProjects(directoryPath string) ([]Project, error) {
+	var results []Project
+	var hadResults = 0
+	var readerFunctions = []func(string) ([]Project, error){ReadLicenseZeroJSON, ReadCargoTOML}
+	for _, readerFunction := range readerFunctions {
+		projects, err := readerFunction(directoryPath)
+		if err == nil {
+			hadResults = hadResults + 1
+			results = projects
+		}
+	}
+	if hadResults > 1 {
+		return nil, errors.New("multiple metadata files")
+	}
+	return results, nil
 }
 
 // ReadLicenseZeroJSON read metadata from licensezero.json.
