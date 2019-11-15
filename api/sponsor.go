@@ -9,7 +9,7 @@ import "net/http"
 
 type sponsorRequest struct {
 	Action       string `json:"action"`
-	ProjectID    string `json:"offerID"`
+	OfferID      string `json:"offerID"`
 	Sponsor      string `json:"sponsor"`
 	Jurisdiction string `json:"jurisdiction"`
 	EMail        string `json:"email"`
@@ -24,7 +24,7 @@ type sponsorResponse struct {
 func Sponsor(identity *data.Identity, offerID string) (string, error) {
 	bodyData := sponsorRequest{
 		Action:       "sponsor",
-		ProjectID:    offerID,
+		OfferID:      offerID,
 		Sponsor:      identity.Name,
 		Jurisdiction: identity.Jurisdiction,
 		EMail:        identity.EMail,

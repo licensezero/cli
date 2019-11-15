@@ -14,7 +14,7 @@ type lockRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
-	ProjectID  string `json:"offerID"`
+	OfferID    string `json:"offerID"`
 	Unlock     string `json:"unlock"`
 }
 
@@ -26,7 +26,7 @@ type lockResponse struct {
 func Lock(licensor *data.Licensor, offerID string, unlock string) error {
 	bodyData := lockRequest{
 		Action:     "lock",
-		ProjectID:  offerID,
+		OfferID:    offerID,
 		Unlock:     unlock,
 		LicensorID: licensor.LicensorID,
 		Token:      licensor.Token,

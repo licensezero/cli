@@ -12,7 +12,7 @@ type repriceRequest struct {
 	Action     string  `json:"action"`
 	LicensorID string  `json:"licensorID"`
 	Token      string  `json:"token"`
-	ProjectID  string  `json:"offerID"`
+	OfferID    string  `json:"offerID"`
 	Pricing    Pricing `json:"pricing"`
 }
 
@@ -25,7 +25,7 @@ func Reprice(licensor *data.Licensor, offerID string, private, relicense uint) e
 	bodyData := repriceRequest{
 		Action:     "reprice",
 		LicensorID: licensor.LicensorID,
-		ProjectID:  offerID,
+		OfferID:    offerID,
 		Token:      licensor.Token,
 		Pricing: Pricing{
 			Private:   private,

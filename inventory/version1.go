@@ -14,7 +14,7 @@ type Version1Manifest struct {
 	Repository   string `json:"homepage" toml:"homepage"`
 	Jurisdiction string `json:"jurisdiction" tom:"jurisdiction"`
 	Name         string `json:"name" toml:"name"`
-	ProjectID    string `json:"offerID" toml:"offerID"`
+	OfferID      string `json:"offerID" toml:"offerID"`
 	PublicKey    string `json:"publicKey" toml:"publicKey"`
 	Terms        string `json:"terms" toml:"terms"`
 	Version      string `json:"version" toml:"version"`

@@ -23,8 +23,8 @@ type offerRequest struct {
 }
 
 type offerResponse struct {
-	Error     interface{} `json:"error"`
-	ProjectID string      `json:"offerID"`
+	Error   interface{} `json:"error"`
+	OfferID string      `json:"offerID"`
 }
 
 // Offer sends an offer API request.
@@ -65,5 +65,5 @@ func Offer(licensor *data.Licensor, url, description string, private, relicense 
 	if message, ok := parsed.Error.(string); ok {
 		return "", errors.New(message)
 	}
-	return parsed.ProjectID, nil
+	return parsed.OfferID, nil
 }

@@ -12,7 +12,7 @@ type retractRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
-	ProjectID  string `json:"offerID"`
+	OfferID    string `json:"offerID"`
 }
 
 type retractResponse struct {
@@ -25,7 +25,7 @@ func Retract(licensor *data.Licensor, offerID string) error {
 		Action:     "retract",
 		LicensorID: licensor.LicensorID,
 		Token:      licensor.Token,
-		ProjectID:  offerID,
+		OfferID:    offerID,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {

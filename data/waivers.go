@@ -11,7 +11,7 @@ import "time"
 
 // WaiverEnvelope describes a fully parsed waiver file.
 type WaiverEnvelope struct {
-	ProjectID      string
+	OfferID        string
 	Manifest       WaiverManifest
 	ManifestString string
 	Document       string
@@ -21,7 +21,7 @@ type WaiverEnvelope struct {
 
 // WaiverFile describes a partially parsed waiver file.
 type WaiverFile struct {
-	ProjectID string `json:"offerID"`
+	OfferID   string `json:"offerID"`
 	Manifest  string `json:"manifest"`
 	Document  string `json:"document"`
 	Signature string `json:"signature"`
@@ -44,7 +44,7 @@ type WaiverManifest struct {
 	Project struct {
 		Description string `json:"description"`
 		Repository  string `json:"homepage"`
-		ProjectID   string `json:"offerID"`
+		OfferID     string `json:"offerID"`
 	} `json:"project"`
 	Term string `json:"term"`
 }
@@ -119,7 +119,7 @@ func ReadWaiver(filePath string) (*WaiverEnvelope, error) {
 	return &WaiverEnvelope{
 		Manifest:       manifest,
 		ManifestString: file.Manifest,
-		ProjectID:      file.ProjectID,
+		OfferID:        file.OfferID,
 		Document:       file.Document,
 		PublicKey:      file.PublicKey,
 		Signature:      file.Signature,
@@ -130,7 +130,7 @@ func ReadWaiver(filePath string) (*WaiverEnvelope, error) {
 func WriteWaiver(home string, waiver *WaiverEnvelope) error {
 	file := WaiverFile{
 		Manifest:  waiver.ManifestString,
-		ProjectID: waiver.ProjectID,
+		OfferID:   waiver.OfferID,
 		Document:  waiver.Document,
 		PublicKey: waiver.PublicKey,
 		Signature: waiver.Signature,
@@ -143,7 +143,7 @@ func WriteWaiver(home string, waiver *WaiverEnvelope) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(waiverPath(home, waiver.ProjectID), json, 0644)
+	return ioutil.WriteFile(waiverPath(home, waiver.OfferID), json, 0644)
 }
 
 // CheckWaiverSignature verifies the signatures to a waiver.
@@ -157,7 +157,7 @@ func CheckWaiverSignature(waiver *WaiverEnvelope, publicKey string) error {
 	if err != nil {
 		return errors.New("could not compact waiver manifest")
 	}
-	if waiver.ProjectID != waiver.Manifest.Project.ProjectID {
+	if waiver.OfferID != waiver.Manifest.Project.OfferID {
 		return errors.New("project IDs do not match")
 	}
 	err = checkSignature(

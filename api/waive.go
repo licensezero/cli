@@ -12,7 +12,7 @@ type waiveRequest struct {
 	Action       string      `json:"action"`
 	LicensorID   string      `json:"licensorID"`
 	Token        string      `json:"token"`
-	ProjectID    string      `json:"offerID"`
+	OfferID      string      `json:"offerID"`
 	Beneficiary  string      `json:"beneficiary"`
 	Jurisdiction string      `json:"jurisdiction"`
 	Term         interface{} `json:"term"`
@@ -28,7 +28,7 @@ func Waive(licensor *data.Licensor, offerID, beneficiary, jurisdiction string, t
 		Action:       "waiver",
 		LicensorID:   licensor.LicensorID,
 		Token:        licensor.Token,
-		ProjectID:    offerID,
+		OfferID:      offerID,
 		Beneficiary:  beneficiary,
 		Jurisdiction: jurisdiction,
 		Term:         term,

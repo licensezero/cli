@@ -17,7 +17,7 @@ func (json Version1LicenseZeroJSONFile) offers() []Offer {
 	var returned []Offer
 	for _, envelope := range json.Envelopes {
 		returned = append(returned, Offer{
-			OfferID: envelope.Manifest.ProjectID,
+			OfferID: envelope.Manifest.OfferID,
 			License: LicenseData{
 				Terms:   envelope.Manifest.Terms,
 				Version: envelope.Manifest.Version,

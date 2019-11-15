@@ -11,7 +11,7 @@ type publicRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
-	ProjectID  string `json:"offerID"`
+	OfferID    string `json:"offerID"`
 	Terms      string `json:"terms"`
 }
 
@@ -33,7 +33,7 @@ type PublicResponse struct {
 func Public(licensor *data.Licensor, offerID string, terms string) (*PublicResponse, error) {
 	bodyData := publicRequest{
 		Action:     "public",
-		ProjectID:  offerID,
+		OfferID:    offerID,
 		Terms:      terms,
 		LicensorID: licensor.LicensorID,
 		Token:      licensor.Token,

@@ -112,7 +112,7 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Offers, e
 
 func haveLicense(offer *Offer, licenses []data.LicenseEnvelope, identity *data.Identity) bool {
 	for _, license := range licenses {
-		if license.ProjectID == offer.OfferID &&
+		if license.OfferID == offer.OfferID &&
 			license.Manifest.Licensee.Name == identity.Name &&
 			license.Manifest.Licensee.Jurisdiction == identity.Jurisdiction &&
 			license.Manifest.Licensee.EMail == identity.EMail {
@@ -124,7 +124,7 @@ func haveLicense(offer *Offer, licenses []data.LicenseEnvelope, identity *data.I
 
 func haveWaiver(offer *Offer, waivers []data.WaiverEnvelope, identity *data.Identity) bool {
 	for _, waiver := range waivers {
-		if waiver.ProjectID == offer.OfferID &&
+		if waiver.OfferID == offer.OfferID &&
 			waiver.Manifest.Beneficiary.Name == identity.Name &&
 			waiver.Manifest.Beneficiary.Jurisdiction == identity.Jurisdiction {
 			return true

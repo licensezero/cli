@@ -7,8 +7,8 @@ import "io/ioutil"
 import "net/http"
 
 type projectRequest struct {
-	Action    string `json:"action"`
-	ProjectID string `json:"offerID"`
+	Action  string `json:"action"`
+	OfferID string `json:"offerID"`
 }
 
 type projectResponse struct {
@@ -19,8 +19,8 @@ type projectResponse struct {
 // Project sends a project API request.
 func Project(offerID string) (*LicensorInformation, error) {
 	bodyData := projectRequest{
-		Action:    "project",
-		ProjectID: offerID,
+		Action:  "project",
+		OfferID: offerID,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {
