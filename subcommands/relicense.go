@@ -52,7 +52,7 @@ var Relicense = &Subcommand{
 			Fail("Could not read licensezero.json.")
 		}
 		var existingJSON interface{}
-		var existingMetadata inventory.LicenseZeroJSONFile
+		var existingMetadata inventory.Version1LicenseZeroJSONFile
 		err = json.Unmarshal(data, &existingJSON)
 		if err != nil {
 			Fail("Error parsing licensezero.json.")
@@ -61,7 +61,7 @@ var Relicense = &Subcommand{
 		if err != nil {
 			Fail("Error parsing licensezero.json.")
 		}
-		newEntries := []inventory.ProjectManifestEnvelope{}
+		newEntries := []inventory.Version1Envelope{}
 		for _, entry := range existingMetadata.Envelopes {
 			if entry.Manifest.ProjectID != *id {
 				newEntries = append(newEntries, entry)

@@ -149,17 +149,17 @@ func twoOrMore(values []bool) bool {
 }
 
 func readEntries(directory string) ([]string, []string, error) {
-	var projects, err = inventory.ReadLocalProjects(directory)
+	var offers, err = inventory.ReadPackageOffers(directory)
 	if err != nil {
 		return nil, nil, err
 	}
-	var projectIDs []string
+	var offerIDs []string
 	var terms []string
-	for _, project := range projects {
-		projectIDs = append(projectIDs, project.Envelope.Manifest.ProjectID)
-		terms = append(terms, project.Envelope.Manifest.Terms)
+	for _, offer := range offers {
+		offerIDs = append(offerIDs, offer.OfferID)
+		terms = append(terms, offer.License.Terms)
 	}
-	return projectIDs, terms, nil
+	return offerIDs, terms, nil
 }
 
 func readmeUsage() {

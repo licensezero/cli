@@ -8,52 +8,56 @@ import "path"
 import "strings"
 
 type packageJSONFile struct {
-	Name      string                    `json:"name"`
-	Version   string                    `json:"version"`
-	Envelopes []ProjectManifestEnvelope `json:"licensezero"`
+	Name      string             `json:"name"`
+	Version   string             `json:"version"`
+	Envelopes []Version1Envelope `json:"licensezero"`
 }
 
-func readNPMProjects(packagePath string) ([]Project, error) {
-	var returned []Project
+func readNPMOffers(packagePath string) ([]Offer, error) {
+	var returned []Offer
 	nodeModules := path.Join(packagePath, "node_modules")
 	entries, err := readAndStatDir(nodeModules)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return []Project{}, nil
+			return []Offer{}, nil
 		}
 		return nil, err
 	}
-	processProject := func(directory string, scope *string) error {
-		anyNewProjects := false
+	processOffer := func(directory string, scope *string) error {
+		anyNewOffers := false
 		parsed, err := readPackageJSON(directory)
 		if err != nil {
 			return err
 		}
 		for _, envelope := range parsed.Envelopes {
-			if alreadyHaveProject(returned, envelope.Manifest.ProjectID) {
+			if alreadyHaveOffer(returned, envelope.Manifest.ProjectID) {
 				continue
 			}
-			anyNewProjects = true
-			project := Project{
-				Type:     "npm",
-				Path:     directory,
-				Name:     parsed.Name,
-				Version:  parsed.Version,
-				Envelope: envelope,
+			anyNewOffers = true
+			project := Offer{
+				Artifact: ArtifactData{
+					Type:    "npm",
+					Path:    directory,
+					Name:    parsed.Name,
+					Version: parsed.Version,
+				},
+				License: LicenseData{
+					Terms:   envelope.Manifest.Terms,
+					Version: envelope.Manifest.Version,
+				},
+				OfferID: envelope.Manifest.ProjectID,
 			}
 			realDirectory, err := realpath.Realpath(directory)
 			if err != nil {
-				project.Path = realDirectory
-			} else {
-				project.Path = directory
+				project.Artifact.Path = realDirectory
 			}
 			if scope != nil {
-				project.Scope = *scope
+				project.Artifact.Scope = *scope
 			}
 			returned = append(returned, project)
 		}
-		if anyNewProjects {
-			below, recursionError := readNPMProjects(directory)
+		if anyNewOffers {
+			below, recursionError := readNPMOffers(directory)
 			if recursionError != nil {
 				return recursionError
 			}
@@ -82,14 +86,14 @@ func readNPMProjects(packagePath string) ([]Project, error) {
 					continue
 				}
 				directory := path.Join(nodeModules, name, scopeEntry.Name())
-				err := processProject(directory, &scope)
+				err := processOffer(directory, &scope)
 				if err != nil {
 					return nil, err
 				}
 			}
 		} else { // ./node_modules/package/
 			directory := path.Join(nodeModules, name)
-			err := processProject(directory, nil)
+			err := processOffer(directory, nil)
 			if err != nil {
 				return nil, err
 			}
@@ -112,16 +116,16 @@ func readPackageJSON(directory string) (*packageJSONFile, error) {
 	return &parsed, nil
 }
 
-func alreadyHaveProject(projects []Project, projectID string) bool {
-	for _, other := range projects {
-		if other.Envelope.Manifest.ProjectID == projectID {
+func alreadyHaveOffer(offers []Offer, offerID string) bool {
+	for _, other := range offers {
+		if other.OfferID == offerID {
 			return true
 		}
 	}
 	return false
 }
 
-func findNPMPackageInfo(directoryPath string) *Project {
+func findNPMPackageInfo(directoryPath string) *Offer {
 	packageJSON := path.Join(directoryPath, "package.json")
 	data, err := ioutil.ReadFile(packageJSON)
 	if err != nil {
@@ -145,10 +149,12 @@ func findNPMPackageInfo(directoryPath string) *Project {
 	} else {
 		name = rawName
 	}
-	return &Project{
-		Type:    "npm",
-		Name:    name,
-		Scope:   scope,
-		Version: parsed.Version,
+	return &Offer{
+		Artifact: ArtifactData{
+			Type:    "npm",
+			Name:    name,
+			Scope:   scope,
+			Version: parsed.Version,
+		},
 	}
 }

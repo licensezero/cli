@@ -10,7 +10,7 @@ type pom struct {
 	Version    string `xml:"version"`
 }
 
-func findMavenPackageInfo(directoryPath string) *Project {
+func findMavenPackageInfo(directoryPath string) *Offer {
 	pomFile := path.Join(directoryPath, "pom.xml")
 	data, err := ioutil.ReadFile(pomFile)
 	if err != nil {
@@ -24,10 +24,12 @@ func findMavenPackageInfo(directoryPath string) *Project {
 	if parsed.ArtifactID == "" {
 		return nil
 	}
-	return &Project{
-		Type:    "maven",
-		Name:    parsed.ArtifactID,
-		Scope:   parsed.GroupID,
-		Version: parsed.Version,
+	return &Offer{
+		Artifact: ArtifactData{
+			Type:    "maven",
+			Name:    parsed.ArtifactID,
+			Scope:   parsed.GroupID,
+			Version: parsed.Version,
+		},
 	}
 }

@@ -6,45 +6,51 @@ import "encoding/json"
 import "errors"
 import "golang.org/x/crypto/ed25519"
 
-type agentSignaturePackage struct {
-	Manifest          ProjectManifest `json:"license"`
-	LicensorSignature string          `json:"licensorSignature"`
+// Verifiable describes a struct that can be serialized for signing.
+type Verifiable interface {
+	verifyLicensorSignature(keyHex string) error
+	verifyAgentSignature(keyHex string) error
 }
 
-// CheckMetadata verifies signatures to package metadata.
-func CheckMetadata(envelope *ProjectManifestEnvelope, licensorKeyHex string, agentKeyHex string) error {
+type agentSignaturePackage struct {
+	Manifest          Version1Manifest `json:"license"`
+	LicensorSignature string           `json:"licensorSignature"`
+}
+
+func (envelope *Version1Envelope) verifyLicensorSignature(keyHex string) error {
 	serialized, err := json.Marshal(envelope.Manifest)
 	if err != nil {
-		return errors.New("could not serialize Manifest")
+		return errors.New("could not serialize manifest")
 	}
 	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
-		return errors.New("could not compact Manifest")
+		return errors.New("could not compact manifest")
 	}
 	err = checkManifestSignature(
-		licensorKeyHex,
+		keyHex,
 		envelope.LicensorSignature,
 		compacted.Bytes(),
 		"licensor",
 	)
-	if err != nil {
-		return err
-	}
-	serialized, err = json.Marshal(agentSignaturePackage{
+	return err
+}
+
+func (envelope Version1Envelope) verifyAgentSignature(keyHex string) error {
+	serialized, err := json.Marshal(agentSignaturePackage{
 		Manifest:          envelope.Manifest,
 		LicensorSignature: envelope.LicensorSignature,
 	})
 	if err != nil {
-		return errors.New("could not serialize Manifest")
+		return errors.New("could not serialize manifest")
 	}
-	compacted = bytes.NewBuffer([]byte{})
+	compacted := bytes.NewBuffer([]byte{})
 	err = json.Compact(compacted, serialized)
 	if err != nil {
 		return errors.New("could not serialize agent signature packet")
 	}
 	err = checkManifestSignature(
-		agentKeyHex,
+		keyHex,
 		envelope.AgentSignature,
 		compacted.Bytes(),
 		"agent",

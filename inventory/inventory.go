@@ -5,48 +5,46 @@ import "licensezero.com/cli/data"
 import "os"
 import "path"
 
-// Project describes a License Zero contribution set in inventory.
-type Project struct {
-	Type     string                  `json:"type"`
-	Path     string                  `json:"path"`
-	Scope    string                  `json:"scope,omitempty"`
-	Name     string                  `json:"name"`
-	Version  string                  `json:"version"`
-	Envelope ProjectManifestEnvelope `json:"envelope"`
+// Offer describes a License Zero offer in inventory.
+type Offer struct {
+	Artifact   ArtifactData `json:"artifact"`
+	License    LicenseData  `json:"license"`
+	OfferID    string       `json:"offerID"`
+	LicensorID string       `json:"licensorID"`
+	Envelope   Verifiable   `json:"omit"`
 }
 
-// ProjectManifestEnvelope describes a signed project manifest.
-type ProjectManifestEnvelope struct {
-	LicensorSignature string          `json:"licensorSignature" toml:"licensorSignature"`
-	AgentSignature    string          `json:"agentSignature" toml:"agentSignature"`
-	Manifest          ProjectManifest `json:"license" toml:"license"`
+// ArtifactData groups data about package, crate, and so on.
+type ArtifactData struct {
+	Type    string `json:"type"`
+	Path    string `json:"path"`
+	Scope   string `json:"scope,omitempty"`
+	Name    string `json:"name"`
+	Version string `json:"version"`
 }
 
-// ProjectManifest describes contribution set data from licensezero.json.
-type ProjectManifest struct {
-	// Note: These declaration must appear in the order so as to
-	// serialize in the correct order for signature verification.
-	Repository   string `json:"homepage" toml:"homepage"`
-	Jurisdiction string `json:"jurisdiction" tom:"jurisdiction"`
-	Name         string `json:"name" toml:"name"`
-	ProjectID    string `json:"projectID" toml:"projectID"`
-	PublicKey    string `json:"publicKey" toml:"publicKey"`
-	Terms        string `json:"terms" toml:"terms"`
-	Version      string `json:"version" toml:"version"`
+// LicenseData groups data about a public license for an artifact.
+type LicenseData struct {
+	Terms   string `json:"terms"`
+	Version string `json:"version"`
 }
 
-// Projects describes the categorization of projects in inventory.
-type Projects struct {
-	Licensable []Project `json:"licensable"`
-	Licensed   []Project `json:"licensed"`
-	Waived     []Project `json:"waived"`
-	Unlicensed []Project `json:"unlicensed"`
-	Ignored    []Project `json:"ignored"`
-	Invalid    []Project `json:"invalid"`
+type offerContainer interface {
+	offers() []Offer
+}
+
+// Offers describes the categorization of projects in inventory.
+type Offers struct {
+	Licensable []Offer `json:"licensable"`
+	Licensed   []Offer `json:"licensed"`
+	Waived     []Offer `json:"waived"`
+	Unlicensed []Offer `json:"unlicensed"`
+	Ignored    []Offer `json:"ignored"`
+	Invalid    []Offer `json:"invalid"`
 }
 
 // Inventory finds License Zero projects included or referenced in a working tree.
-func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects, error) {
+func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Offers, error) {
 	identity, _ := data.ReadIdentity(home)
 	var licenses []data.LicenseEnvelope
 	var waivers []data.WaiverEnvelope
@@ -60,7 +58,8 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 			waivers = readWaivers
 		}
 	}
-	projects, err := readProjects(cwd)
+	licensor, _ := data.ReadLicensor(home)
+	offers, err := readOffers(cwd)
 	if err != nil {
 		return nil, err
 	}
@@ -68,48 +67,52 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Projects,
 	if err != nil {
 		return nil, err
 	}
-	var returned Projects
-	for _, result := range projects {
-		licensor, err := api.Project(result.Envelope.Manifest.ProjectID)
+	var returned Offers
+	for _, offer := range offers {
+		offerLicensor, err := api.Project(offer.OfferID)
 		if err != nil {
-			returned.Invalid = append(returned.Invalid, result)
+			returned.Invalid = append(returned.Invalid, offer)
 			continue
 		}
-		err = CheckMetadata(&result.Envelope, licensor.PublicKey, agentPublicKey)
+		err = offer.Envelope.verifyLicensorSignature(offerLicensor.PublicKey)
 		if err != nil {
-			returned.Invalid = append(returned.Invalid, result)
-			continue
-		} else {
-			returned.Licensable = append(returned.Licensable, result)
-		}
-		if haveLicense(&result, licenses, identity) {
-			returned.Licensed = append(returned.Licensed, result)
+			returned.Invalid = append(returned.Invalid, offer)
 			continue
 		}
-		if haveWaiver(&result, waivers, identity) {
-			returned.Waived = append(returned.Waived, result)
+		err = offer.Envelope.verifyAgentSignature(agentPublicKey)
+		if err != nil {
+			returned.Invalid = append(returned.Invalid, offer)
 			continue
 		}
-		if identity != nil && ownProject(&result, identity) {
+		returned.Licensable = append(returned.Licensable, offer)
+		if haveLicense(&offer, licenses, identity) {
+			returned.Licensed = append(returned.Licensed, offer)
 			continue
 		}
-		terms := result.Envelope.Manifest.Terms
+		if haveWaiver(&offer, waivers, identity) {
+			returned.Waived = append(returned.Waived, offer)
+			continue
+		}
+		if licensor != nil && ownOffer(&offer, licensor) {
+			continue
+		}
+		terms := offer.License.Terms
 		if (terms == "noncommercial" || terms == "prosperity") && ignoreNC {
-			returned.Ignored = append(returned.Ignored, result)
+			returned.Ignored = append(returned.Ignored, offer)
 			continue
 		}
 		if (terms == "reciprocal" || terms == "parity") && ignoreR {
-			returned.Ignored = append(returned.Ignored, result)
+			returned.Ignored = append(returned.Ignored, offer)
 			continue
 		}
-		returned.Unlicensed = append(returned.Unlicensed, result)
+		returned.Unlicensed = append(returned.Unlicensed, offer)
 	}
 	return &returned, nil
 }
 
-func haveLicense(project *Project, licenses []data.LicenseEnvelope, identity *data.Identity) bool {
+func haveLicense(offer *Offer, licenses []data.LicenseEnvelope, identity *data.Identity) bool {
 	for _, license := range licenses {
-		if license.ProjectID == project.Envelope.Manifest.ProjectID &&
+		if license.ProjectID == offer.OfferID &&
 			license.Manifest.Licensee.Name == identity.Name &&
 			license.Manifest.Licensee.Jurisdiction == identity.Jurisdiction &&
 			license.Manifest.Licensee.EMail == identity.EMail {
@@ -119,9 +122,9 @@ func haveLicense(project *Project, licenses []data.LicenseEnvelope, identity *da
 	return false
 }
 
-func haveWaiver(project *Project, waivers []data.WaiverEnvelope, identity *data.Identity) bool {
+func haveWaiver(offer *Offer, waivers []data.WaiverEnvelope, identity *data.Identity) bool {
 	for _, waiver := range waivers {
-		if waiver.ProjectID == project.Envelope.Manifest.ProjectID &&
+		if waiver.ProjectID == offer.OfferID &&
 			waiver.Manifest.Beneficiary.Name == identity.Name &&
 			waiver.Manifest.Beneficiary.Jurisdiction == identity.Jurisdiction {
 			return true
@@ -130,29 +133,27 @@ func haveWaiver(project *Project, waivers []data.WaiverEnvelope, identity *data.
 	return false
 }
 
-func ownProject(project *Project, identity *data.Identity) bool {
-	return project.Envelope.Manifest.Name == identity.Name &&
-		project.Envelope.Manifest.Jurisdiction == identity.Jurisdiction
+func ownOffer(offer *Offer, licensor *data.Licensor) bool {
+	return offer.LicensorID == licensor.LicensorID
 }
 
-func readProjects(cwd string) ([]Project, error) {
-	descenders := []func(string) ([]Project, error){
-		readNPMProjects,
-		readRubyGemsProjects,
+func readOffers(cwd string) ([]Offer, error) {
+	descenders := []func(string) ([]Offer, error){
+		readNPMOffers,
+		readRubyGemsOffers,
 		readGoDeps,
 		readCargoCrates,
 		recurseLicenseZeroFiles,
 	}
-	returned := []Project{}
+	returned := []Offer{}
 	for _, descender := range descenders {
-		projects, err := descender(cwd)
+		offers, err := descender(cwd)
 		if err == nil {
-			for _, project := range projects {
-				projectID := project.Envelope.Manifest.ProjectID
-				if alreadyHaveProject(returned, projectID) {
+			for _, offer := range offers {
+				if alreadyHaveOffer(returned, offer.OfferID) {
 					continue
 				}
-				returned = append(returned, project)
+				returned = append(returned, offer)
 			}
 		}
 	}
