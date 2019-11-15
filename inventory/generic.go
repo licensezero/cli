@@ -7,13 +7,16 @@ import "io/ioutil"
 import "os"
 import "path"
 
-// Version1LicenseZeroJSONFile describes the contents of a version 1 licensezero.json file.
-type Version1LicenseZeroJSONFile struct {
+// Version2LicenseZeroMetadata describes the contents of a version 2 metadata.
+type Version2LicenseZeroMetadata []Version2Envelope
+
+// Version1LicenseZeroMetadata describes the contents of a version 1 metadata.
+type Version1LicenseZeroMetadata struct {
 	Version   string             `json:"version"`
 	Envelopes []Version1Envelope `json:"licensezero"`
 }
 
-func (json Version1LicenseZeroJSONFile) offers() []Offer {
+func (json Version1LicenseZeroMetadata) offers() []Offer {
 	var returned []Offer
 	for _, envelope := range json.Envelopes {
 		returned = append(returned, Offer{
@@ -107,7 +110,7 @@ func ReadLicenseZeroJSON(directoryPath string) ([]Offer, error) {
 	if err != nil {
 		return nil, err
 	}
-	var parsed Version1LicenseZeroJSONFile
+	var parsed Version1LicenseZeroMetadata
 	json.Unmarshal(data, &parsed)
 	for _, envelope := range parsed.Envelopes {
 		offer := Offer{

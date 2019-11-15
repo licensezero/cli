@@ -52,7 +52,7 @@ var Relicense = &Subcommand{
 			Fail("Could not read licensezero.json.")
 		}
 		var existingJSON interface{}
-		var existingMetadata inventory.Version1LicenseZeroJSONFile
+		var existingMetadata inventory.Version1LicenseZeroMetadata
 		err = json.Unmarshal(data, &existingJSON)
 		if err != nil {
 			Fail("Error parsing licensezero.json.")
