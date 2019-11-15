@@ -17,3 +17,16 @@ type Version2Manifest struct {
 	Terms      string `json:"terms" toml:"terms"`
 	Version    string `json:"version" toml:"version"`
 }
+
+func (envelope *Version2Envelope) offer() Offer {
+	var manifest = envelope.Manifest
+	return Offer{
+		License: LicenseData{
+			Terms:   manifest.Terms,
+			Version: manifest.Version,
+		},
+		OfferID:    manifest.OfferID,
+		LicensorID: manifest.LicensorID,
+		Envelope:   envelope,
+	}
+}

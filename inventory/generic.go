@@ -20,7 +20,7 @@ func (json Version1LicenseZeroMetadata) offers() []Offer {
 	var returned []Offer
 	for _, envelope := range json.Envelopes {
 		returned = append(returned, Offer{
-			OfferID: envelope.Manifest.OfferID,
+			OfferID: envelope.Manifest.ProjectID,
 			License: LicenseData{
 				Terms:   envelope.Manifest.Terms,
 				Version: envelope.Manifest.Version,
@@ -102,28 +102,80 @@ func ReadPackageOffers(directoryPath string) ([]Offer, error) {
 	return returned, nil
 }
 
-// ReadLicenseZeroJSON read metadata from licensezero.json.
+// ReadLicenseZeroJSON reads metadata from licensezero.json.
 func ReadLicenseZeroJSON(directoryPath string) ([]Offer, error) {
-	var returned []Offer
+	realDirectory, err := realpath.Realpath(directoryPath)
+	if err != nil {
+		directoryPath = realDirectory
+	}
 	jsonFile := path.Join(directoryPath, "licensezero.json")
 	data, err := ioutil.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}
-	var parsed Version1LicenseZeroMetadata
-	json.Unmarshal(data, &parsed)
-	for _, envelope := range parsed.Envelopes {
+	var unstructured interface{}
+	json.Unmarshal(data, &unstructured)
+	// Check if Array.
+	list, matched := unstructured.([]interface{})
+	if !matched {
+		return parseArrayMetadata(directoryPath, list)
+	}
+	// Check if Object.
+	_, matched = unstructured.(map[string]interface{})
+	if !matched {
+		return parseObjectMetadata(directoryPath, unstructured)
+	}
+	return nil, errors.New("could not parse licensezero.json")
+}
+
+func parseArrayMetadata(directoryPath string, parsed []interface{}) ([]Offer, error) {
+	var returned []Offer
+	// Iterate elements of the JSON Array.
+	for _, entry := range parsed {
+		object, matched := entry.(map[string]interface{})
+		if !matched {
+			return nil, errors.New("invalid entry")
+		}
+		schema, matched := object["schema"].(string)
+		if !matched || schema == "" {
+			// Version 1 envelope.
+			envelope, matched := entry.(Version1Envelope)
+			if !matched {
+				return nil, errors.New("invalid entry")
+			}
+			var offer = envelope.offer()
+			offer.Artifact.Path = directoryPath
+			returned = append(returned, offer)
+		} else if schema == "2.0.0" {
+			// Version 2 envelope.
+			envelope, matched := entry.(Version2Envelope)
+			if !matched {
+				return nil, errors.New("invalid entry")
+			}
+			var offer = envelope.offer()
+			offer.Artifact.Path = directoryPath
+			returned = append(returned, offer)
+		} else {
+			// Unknown version schema.
+			// TODO: Show hint to run `latest` on encountering unknown schema.
+			return nil, errors.New("unkown version schema")
+		}
+	}
+	return returned, nil
+}
+
+func parseObjectMetadata(directoryPath string, unstructured interface{}) ([]Offer, error) {
+	metadata, matched := unstructured.(Version1LicenseZeroMetadata)
+	if !matched {
+		return nil, errors.New("could not parse licensezero.json")
+	}
+	var returned []Offer
+	for _, envelope := range metadata.Envelopes {
 		offer := Offer{
 			License: LicenseData{
 				Terms:   envelope.Manifest.Terms,
 				Version: envelope.Manifest.Version,
 			},
-		}
-		realDirectory, err := realpath.Realpath(directoryPath)
-		if err != nil {
-			offer.Artifact.Path = realDirectory
-		} else {
-			offer.Artifact.Path = directoryPath
 		}
 		returned = append(returned, offer)
 	}

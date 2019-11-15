@@ -63,7 +63,7 @@ var Relicense = &Subcommand{
 		}
 		newEntries := []inventory.Version1Envelope{}
 		for _, entry := range existingMetadata.Envelopes {
-			if entry.Manifest.OfferID != *id {
+			if entry.Manifest.ProjectID != *id {
 				newEntries = append(newEntries, entry)
 			}
 		}

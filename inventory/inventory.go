@@ -29,8 +29,9 @@ type LicenseData struct {
 	Version string `json:"version"`
 }
 
-type offerContainer interface {
-	offers() []Offer
+// Envelope describes a signed data envelope with offer information.
+type Envelope interface {
+	offer() Offer
 }
 
 // Offers describes the categorization of projects in inventory.

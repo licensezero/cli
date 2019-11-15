@@ -18,7 +18,7 @@ func readCargoCrates(packagePath string) ([]Offer, error) {
 	for _, packageRecord := range metadata.Packages {
 		metadata := packageRecord.Metadata.LicenseZero
 		for _, envelope := range metadata.Envelopes {
-			offerID := envelope.Manifest.OfferID
+			offerID := envelope.Manifest.ProjectID
 			if alreadyHaveOffer(returned, offerID) {
 				continue
 			}
@@ -29,7 +29,7 @@ func readCargoCrates(packagePath string) ([]Offer, error) {
 					Name:    packageRecord.Name,
 					Version: packageRecord.Version,
 				},
-				OfferID: envelope.Manifest.OfferID,
+				OfferID: envelope.Manifest.ProjectID,
 				License: LicenseData{
 					Terms:   envelope.Manifest.Terms,
 					Version: envelope.Manifest.Version,
@@ -109,7 +109,7 @@ func ReadCargoTOML(directoryPath string) ([]Offer, error) {
 				Version: parsed.Package.Version,
 				Path:    directoryPath,
 			},
-			OfferID: envelope.Manifest.OfferID,
+			OfferID: envelope.Manifest.ProjectID,
 			License: LicenseData{
 				Terms:   envelope.Manifest.Terms,
 				Version: envelope.Manifest.Version,

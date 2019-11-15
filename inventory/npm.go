@@ -30,7 +30,7 @@ func readNPMOffers(packagePath string) ([]Offer, error) {
 			return err
 		}
 		for _, envelope := range parsed.Envelopes {
-			if alreadyHaveOffer(returned, envelope.Manifest.OfferID) {
+			if alreadyHaveOffer(returned, envelope.Manifest.ProjectID) {
 				continue
 			}
 			anyNewOffers = true
@@ -45,7 +45,7 @@ func readNPMOffers(packagePath string) ([]Offer, error) {
 					Terms:   envelope.Manifest.Terms,
 					Version: envelope.Manifest.Version,
 				},
-				OfferID: envelope.Manifest.OfferID,
+				OfferID: envelope.Manifest.ProjectID,
 			}
 			realDirectory, err := realpath.Realpath(directory)
 			if err != nil {

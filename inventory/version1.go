@@ -14,8 +14,20 @@ type Version1Manifest struct {
 	Repository   string `json:"homepage" toml:"homepage"`
 	Jurisdiction string `json:"jurisdiction" tom:"jurisdiction"`
 	Name         string `json:"name" toml:"name"`
-	OfferID      string `json:"offerID" toml:"offerID"`
+	ProjectID    string `json:"projectID" toml:"projectID"`
 	PublicKey    string `json:"publicKey" toml:"publicKey"`
 	Terms        string `json:"terms" toml:"terms"`
 	Version      string `json:"version" toml:"version"`
+}
+
+func (envelope *Version1Envelope) offer() Offer {
+	var manifest = envelope.Manifest
+	return Offer{
+		License: LicenseData{
+			Terms:   manifest.Terms,
+			Version: manifest.Version,
+		},
+		OfferID:  manifest.ProjectID,
+		Envelope: envelope,
+	}
 }
