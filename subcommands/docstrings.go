@@ -16,7 +16,7 @@ const relicenseLine = "Cost to relicense on Charity terms, in US cents."
 
 const noRelicenseLine = "Do not offer to relicense on Charity terms."
 
-const offerIDLine = "Project ID (UUID)."
+const offerIDLine = "Offer ID (UUID)."
 
 const idLine = "License Zero ID (UUID)."
 

@@ -41,7 +41,7 @@ type LicenseManifest struct {
 	}
 	OrderID string `json:"orderID"`
 	Price   int    `json:"price"`
-	Project struct {
+	Offer   struct {
 		Description string `json:"description"`
 		Repository  string `json:"homepage"`
 		OfferID     string `json:"offerID"`
@@ -142,7 +142,7 @@ func CheckLicenseSignature(license *LicenseEnvelope, publicKey string) error {
 	if err != nil {
 		return errors.New("could not compact license manifest")
 	}
-	if license.OfferID != license.Manifest.Project.OfferID {
+	if license.OfferID != license.Manifest.Offer.OfferID {
 		return errors.New("project IDs do not match")
 	}
 	err = checkSignature(

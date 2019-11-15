@@ -16,8 +16,8 @@ type projectResponse struct {
 	Licensor LicensorInformation `json:"licensor"`
 }
 
-// Project sends a project API request.
-func Project(offerID string) (*LicensorInformation, error) {
+// Read sends a read API request.
+func Read(offerID string) (*LicensorInformation, error) {
 	bodyData := projectRequest{
 		Action:  "project",
 		OfferID: offerID,

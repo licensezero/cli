@@ -69,7 +69,7 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Offers, e
 	}
 	var returned Offers
 	for _, offer := range offers {
-		offerLicensor, err := api.Project(offer.OfferID)
+		offerLicensor, err := api.Read(offer.OfferID)
 		if err != nil {
 			returned.Invalid = append(returned.Invalid, offer)
 			continue

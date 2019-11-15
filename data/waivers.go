@@ -41,7 +41,7 @@ type WaiverManifest struct {
 		Jurisdiction string `json:"jurisdiction"`
 		Name         string `json:"name"`
 	} `json:"licensor"`
-	Project struct {
+	Offer struct {
 		Description string `json:"description"`
 		Repository  string `json:"homepage"`
 		OfferID     string `json:"offerID"`
@@ -157,7 +157,7 @@ func CheckWaiverSignature(waiver *WaiverEnvelope, publicKey string) error {
 	if err != nil {
 		return errors.New("could not compact waiver manifest")
 	}
-	if waiver.OfferID != waiver.Manifest.Project.OfferID {
+	if waiver.OfferID != waiver.Manifest.Offer.OfferID {
 		return errors.New("project IDs do not match")
 	}
 	err = checkSignature(

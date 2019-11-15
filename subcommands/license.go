@@ -201,7 +201,7 @@ func writeCargoTOML(read []byte, cargoTOML string, response *api.PublicResponse,
 					if license, ok := itemsMap["license"].(map[string]interface{}); ok {
 						if otherID, ok := license["offerID"].(string); ok {
 							if otherID == *id {
-								Fail("Project ID " + *id + " already appears in Cargo.toml.")
+								Fail("Offer ID " + *id + " already appears in Cargo.toml.")
 							}
 						}
 					}
@@ -266,7 +266,7 @@ func writeLicenseZeroJSON(response *api.PublicResponse, paths *Paths, stack *boo
 						if license, ok := itemsMap["license"].(map[string]interface{}); ok {
 							if otherID, ok := license["offerID"].(string); ok {
 								if otherID == *id {
-									Fail("Project ID " + *id + " already appears in licensezero.json.")
+									Fail("Offer ID " + *id + " already appears in licensezero.json.")
 								}
 							}
 						}

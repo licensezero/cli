@@ -41,7 +41,7 @@ var Offer = &Subcommand{
 			Fail("Error sending offer request: " + err.Error())
 		}
 		location := "https://licensezero.com/projects/" + offerID
-		os.Stdout.WriteString("Project ID: " + offerID + "\n")
+		os.Stdout.WriteString("Offer ID: " + offerID + "\n")
 		openURLAndExit(location, doNotOpen)
 	},
 }

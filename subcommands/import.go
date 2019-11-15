@@ -57,8 +57,8 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 			os.Stderr.WriteString("Error parsing license for project ID" + license.OfferID + ".\n")
 			continue
 		}
-		offerID := envelope.Manifest.Project.OfferID
-		licensor, err := api.Project(offerID)
+		offerID := envelope.Manifest.Offer.OfferID
+		licensor, err := api.Read(offerID)
 		if err != nil {
 			os.Stderr.WriteString("Error fetching project developer information for " + offerID + ": " + err.Error() + "\n")
 			continue
@@ -105,7 +105,7 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		if err != nil {
 			Fail("Error reading license.")
 		}
-		licensor, err := api.Project(license.Manifest.Project.OfferID)
+		licensor, err := api.Read(license.Manifest.Offer.OfferID)
 		if err != nil {
 			Fail("Error fetching project developer information: " + err.Error())
 		}
@@ -122,7 +122,7 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		if err != nil {
 			Fail("Error reading waiver.")
 		}
-		licensor, err := api.Project(waiver.Manifest.Project.OfferID)
+		licensor, err := api.Read(waiver.Manifest.Offer.OfferID)
 		if err != nil {
 			Fail("Error fetching project developer information: " + err.Error())
 		}

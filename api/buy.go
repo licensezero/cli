@@ -9,7 +9,7 @@ import "net/http"
 
 type buyRequest struct {
 	Action       string   `json:"action"`
-	Projects     []string `json:"projects"`
+	Offers       []string `json:"projects"`
 	Name         string   `json:"licensee"`
 	Jurisdiction string   `json:"jurisdiction"`
 	EMail        string   `json:"email"`
@@ -25,7 +25,7 @@ type buyResponse struct {
 func Buy(identity *data.Identity, offerIDs []string) (string, error) {
 	bodyData := buyRequest{
 		Action:       "order",
-		Projects:     offerIDs,
+		Offers:       offerIDs,
 		Name:         identity.Name,
 		Jurisdiction: identity.Jurisdiction,
 		EMail:        identity.EMail,
