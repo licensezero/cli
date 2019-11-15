@@ -7,16 +7,10 @@ import "os"
 import "path"
 import "strings"
 
-type packageJSONFile struct {
-	Name      string             `json:"name"`
-	Version   string             `json:"version"`
-	Envelopes []Version1Envelope `json:"licensezero"`
-}
-
 func readNPMOffers(packagePath string) ([]Offer, error) {
 	var returned []Offer
 	nodeModules := path.Join(packagePath, "node_modules")
-	entries, err := readAndStatDir(nodeModules)
+	directoryEntries, err := readAndStatDir(nodeModules)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return []Offer{}, nil
@@ -25,36 +19,24 @@ func readNPMOffers(packagePath string) ([]Offer, error) {
 	}
 	processOffer := func(directory string, scope *string) error {
 		anyNewOffers := false
-		parsed, err := readPackageJSON(directory)
+		offers, err := readPackageJSON(directory)
 		if err != nil {
 			return err
 		}
-		for _, envelope := range parsed.Envelopes {
-			if alreadyHaveOffer(returned, envelope.Manifest.ProjectID) {
+		realDirectory, err := realpath.Realpath(directory)
+		if err != nil {
+			directory = realDirectory
+		}
+		for _, offer := range offers {
+			if alreadyHaveOffer(returned, offer.OfferID) {
 				continue
 			}
 			anyNewOffers = true
-			project := Offer{
-				Artifact: ArtifactData{
-					Type:    "npm",
-					Path:    directory,
-					Name:    parsed.Name,
-					Version: parsed.Version,
-				},
-				License: LicenseData{
-					Terms:   envelope.Manifest.Terms,
-					Version: envelope.Manifest.Version,
-				},
-				OfferID: envelope.Manifest.ProjectID,
-			}
-			realDirectory, err := realpath.Realpath(directory)
-			if err != nil {
-				project.Artifact.Path = realDirectory
-			}
+			offer.Artifact.Path = directory
 			if scope != nil {
-				project.Artifact.Scope = *scope
+				offer.Artifact.Scope = *scope
 			}
-			returned = append(returned, project)
+			returned = append(returned, offer)
 		}
 		if anyNewOffers {
 			below, recursionError := readNPMOffers(directory)
@@ -65,7 +47,8 @@ func readNPMOffers(packagePath string) ([]Offer, error) {
 		}
 		return nil
 	}
-	for _, entry := range entries {
+
+	for _, entry := range directoryEntries {
 		if !entry.IsDir() {
 			continue
 		}
@@ -102,18 +85,31 @@ func readNPMOffers(packagePath string) ([]Offer, error) {
 	return returned, nil
 }
 
-func readPackageJSON(directory string) (*packageJSONFile, error) {
+func readPackageJSON(directory string) ([]Offer, error) {
 	packageJSON := path.Join(directory, "package.json")
 	data, err := ioutil.ReadFile(packageJSON)
 	if err != nil {
 		return nil, err
 	}
-	var parsed packageJSONFile
+	var parsed struct {
+		Name        string      `json:"name"`
+		Version     string      `json:"version"`
+		LicenseZero interface{} `json:"licensezero"`
+	}
 	json.Unmarshal(data, &parsed)
 	if err != nil {
 		return nil, err
 	}
-	return &parsed, nil
+	result, err := interpretLicenseZeroMetadata(parsed.LicenseZero)
+	if err != nil {
+		return nil, err
+	}
+	for _, offer := range result {
+		offer.Artifact.Type = "npm"
+		offer.Artifact.Name = parsed.Name
+		offer.Artifact.Version = parsed.Version
+	}
+	return result, nil
 }
 
 func alreadyHaveOffer(offers []Offer, offerID string) bool {

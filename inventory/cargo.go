@@ -17,23 +17,16 @@ func readCargoCrates(packagePath string) ([]Offer, error) {
 	}
 	for _, packageRecord := range metadata.Packages {
 		metadata := packageRecord.Metadata.LicenseZero
-		for _, envelope := range metadata.Envelopes {
-			offerID := envelope.Manifest.ProjectID
-			if alreadyHaveOffer(returned, offerID) {
-				continue
-			}
-			offer := Offer{
-				Artifact: ArtifactData{
-					Type:    "cargo",
-					Path:    path.Dir(packageRecord.ManifestPath),
-					Name:    packageRecord.Name,
-					Version: packageRecord.Version,
-				},
-				OfferID: envelope.Manifest.ProjectID,
-				License: LicenseData{
-					Terms:   envelope.Manifest.Terms,
-					Version: envelope.Manifest.Version,
-				},
+		offers, err := interpretLicenseZeroMetadata(metadata)
+		if err != nil {
+			return nil, err
+		}
+		for _, offer := range offers {
+			offer.Artifact = ArtifactData{
+				Type:    "cargo",
+				Path:    path.Dir(packageRecord.ManifestPath),
+				Name:    packageRecord.Name,
+				Version: packageRecord.Version,
 			}
 			returned = append(returned, offer)
 		}
@@ -41,14 +34,8 @@ func readCargoCrates(packagePath string) ([]Offer, error) {
 	return returned, nil
 }
 
-// CargoLicenseZeroMap describes metadata for Cargo crates.
-type CargoLicenseZeroMap struct {
-	Version   string             `json:"version" toml:"version"`
-	Envelopes []Version1Envelope `json:"ids" toml:"ids"`
-}
-
 type cargoMetadataMap struct {
-	LicenseZero CargoLicenseZeroMap `json:"licensezero" toml:"licensezero"`
+	LicenseZero interface{} `json:"licensezero" toml:"licensezero"`
 }
 
 type cargoMetadataPackage struct {
@@ -101,23 +88,20 @@ func ReadCargoTOML(directoryPath string) ([]Offer, error) {
 	if _, err := toml.Decode(string(data), &parsed); err != nil {
 		return nil, errors.New("could not parse Cargo.toml")
 	}
-	for _, envelope := range parsed.Package.Metadata.LicenseZero.Envelopes {
-		offer := Offer{
-			Artifact: ArtifactData{
-				Type:    "cargo",
-				Name:    parsed.Package.Name,
-				Version: parsed.Package.Version,
-				Path:    directoryPath,
-			},
-			OfferID: envelope.Manifest.ProjectID,
-			License: LicenseData{
-				Terms:   envelope.Manifest.Terms,
-				Version: envelope.Manifest.Version,
-			},
-		}
-		realDirectory, err := realpath.Realpath(directoryPath)
-		if err != nil {
-			offer.Artifact.Path = realDirectory
+	offers, err := interpretLicenseZeroMetadata(parsed.Package.Metadata.LicenseZero)
+	if err != nil {
+		return nil, err
+	}
+	realDirectory, err := realpath.Realpath(directoryPath)
+	if err != nil {
+		directoryPath = realDirectory
+	}
+	for _, offer := range offers {
+		offer.Artifact = ArtifactData{
+			Type:    "cargo",
+			Name:    parsed.Package.Name,
+			Version: parsed.Package.Version,
+			Path:    directoryPath,
 		}
 		returned = append(returned, offer)
 	}

@@ -115,20 +115,31 @@ func ReadLicenseZeroJSON(directoryPath string) ([]Offer, error) {
 	}
 	var unstructured interface{}
 	json.Unmarshal(data, &unstructured)
+	returned, err := interpretLicenseZeroMetadata(unstructured)
+	if err != nil {
+		return nil, err
+	}
+	for _, offer := range returned {
+		offer.Artifact.Path = directoryPath
+	}
+	return returned, nil
+}
+
+func interpretLicenseZeroMetadata(unstructured interface{}) ([]Offer, error) {
 	// Check if Array.
 	list, matched := unstructured.([]interface{})
 	if !matched {
-		return parseArrayMetadata(directoryPath, list)
+		return parseArrayMetadata(list)
 	}
 	// Check if Object.
 	_, matched = unstructured.(map[string]interface{})
 	if !matched {
-		return parseObjectMetadata(directoryPath, unstructured)
+		return parseObjectMetadata(unstructured)
 	}
 	return nil, errors.New("could not parse licensezero.json")
 }
 
-func parseArrayMetadata(directoryPath string, parsed []interface{}) ([]Offer, error) {
+func parseArrayMetadata(parsed []interface{}) ([]Offer, error) {
 	var returned []Offer
 	// Iterate elements of the JSON Array.
 	for _, entry := range parsed {
@@ -144,7 +155,6 @@ func parseArrayMetadata(directoryPath string, parsed []interface{}) ([]Offer, er
 				return nil, errors.New("invalid entry")
 			}
 			var offer = envelope.offer()
-			offer.Artifact.Path = directoryPath
 			returned = append(returned, offer)
 		} else if schema == "2.0.0" {
 			// Version 2 envelope.
@@ -153,7 +163,6 @@ func parseArrayMetadata(directoryPath string, parsed []interface{}) ([]Offer, er
 				return nil, errors.New("invalid entry")
 			}
 			var offer = envelope.offer()
-			offer.Artifact.Path = directoryPath
 			returned = append(returned, offer)
 		} else {
 			// Unknown version schema.
@@ -164,7 +173,7 @@ func parseArrayMetadata(directoryPath string, parsed []interface{}) ([]Offer, er
 	return returned, nil
 }
 
-func parseObjectMetadata(directoryPath string, unstructured interface{}) ([]Offer, error) {
+func parseObjectMetadata(unstructured interface{}) ([]Offer, error) {
 	metadata, matched := unstructured.(Version1LicenseZeroMetadata)
 	if !matched {
 		return nil, errors.New("could not parse licensezero.json")
