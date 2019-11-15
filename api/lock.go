@@ -14,7 +14,7 @@ type lockRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
-	ProjectID  string `json:"projectID"`
+	ProjectID  string `json:"offerID"`
 	Unlock     string `json:"unlock"`
 }
 
@@ -23,10 +23,10 @@ type lockResponse struct {
 }
 
 // Lock sends a lock API request.
-func Lock(licensor *data.Licensor, projectID string, unlock string) error {
+func Lock(licensor *data.Licensor, offerID string, unlock string) error {
 	bodyData := lockRequest{
 		Action:     "lock",
-		ProjectID:  projectID,
+		ProjectID:  offerID,
 		Unlock:     unlock,
 		LicensorID: licensor.LicensorID,
 		Token:      licensor.Token,

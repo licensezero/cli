@@ -24,7 +24,7 @@ type offerRequest struct {
 
 type offerResponse struct {
 	Error     interface{} `json:"error"`
-	ProjectID string      `json:"projectID"`
+	ProjectID string      `json:"offerID"`
 }
 
 // Offer sends an offer API request.

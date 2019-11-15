@@ -22,10 +22,10 @@ type buyResponse struct {
 }
 
 // Buy sends a buy API request.
-func Buy(identity *data.Identity, projectIDs []string) (string, error) {
+func Buy(identity *data.Identity, offerIDs []string) (string, error) {
 	bodyData := buyRequest{
 		Action:       "order",
-		Projects:     projectIDs,
+		Projects:     offerIDs,
 		Name:         identity.Name,
 		Jurisdiction: identity.Jurisdiction,
 		EMail:        identity.EMail,

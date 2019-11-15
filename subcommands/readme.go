@@ -27,7 +27,7 @@ var README = &Subcommand{
 		} else {
 			existing = string(data)
 		}
-		projectIDs, termsIDs, err := readEntries(paths.CWD)
+		offerIDs, termsIDs, err := readEntries(paths.CWD)
 		if err != nil {
 			Fail(err.Error())
 		}
@@ -35,7 +35,7 @@ var README = &Subcommand{
 			existing = existing + "\n\n"
 		}
 		existing = existing + "# Licensing"
-		if len(projectIDs) == 0 {
+		if len(offerIDs) == 0 {
 			Fail("No License Zero project metadata.")
 		}
 		haveReciprocal := false
@@ -115,8 +115,8 @@ var README = &Subcommand{
 		}
 		existing = existing + "\n\n" + strings.Join(summaries, "\n\n")
 		existing = existing + "\n\n" + strings.Join(availabilities, "\n\n")
-		for _, projectID := range projectIDs {
-			projectLink := "https://licensezero.com/projects/" + projectID
+		for _, offerID := range offerIDs {
+			projectLink := "https://licensezero.com/projects/" + offerID
 			badge := "" +
 				"[" +
 				"![licensezero.com pricing](" + projectLink + "/badge.svg)" +

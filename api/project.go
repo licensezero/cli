@@ -8,7 +8,7 @@ import "net/http"
 
 type projectRequest struct {
 	Action    string `json:"action"`
-	ProjectID string `json:"projectID"`
+	ProjectID string `json:"offerID"`
 }
 
 type projectResponse struct {
@@ -17,10 +17,10 @@ type projectResponse struct {
 }
 
 // Project sends a project API request.
-func Project(projectID string) (*LicensorInformation, error) {
+func Project(offerID string) (*LicensorInformation, error) {
 	bodyData := projectRequest{
 		Action:    "project",
-		ProjectID: projectID,
+		ProjectID: offerID,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {

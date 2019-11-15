@@ -20,7 +20,7 @@ type LicenseEnvelope struct {
 // LicenseFile describes partially parsed licensezero.json metadata about a contribution set.
 type LicenseFile struct {
 	Manifest  string `json:"manifest"`
-	ProjectID string `json:"projectID"`
+	ProjectID string `json:"offerID"`
 	Document  string `json:"document"`
 	PublicKey string `json:"publicKey"`
 	Signature string `json:"signature"`
@@ -44,13 +44,13 @@ type LicenseManifest struct {
 	Project struct {
 		Description string `json:"description"`
 		Repository  string `json:"homepage"`
-		ProjectID   string `json:"projectID"`
+		ProjectID   string `json:"offerID"`
 	}
 	Version string `json:"VERSION"`
 }
 
-func licensePath(home string, projectID string) string {
-	return path.Join(licensesPath(home), projectID+".json")
+func licensePath(home string, offerID string) string {
+	return path.Join(licensesPath(home), offerID+".json")
 }
 
 func licensesPath(home string) string {

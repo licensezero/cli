@@ -19,20 +19,20 @@ var Relicense = &Subcommand{
 	Description: relicenseDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("relicense", flag.ExitOnError)
-		projectID := projectIDFlag(flagSet)
+		offerID := offerIDFlag(flagSet)
 		id := idFlag(flagSet)
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = relicenseUsage
 		flagSet.Parse(args)
-		if *projectID == "" && *id == "" {
+		if *offerID == "" && *id == "" {
 			relicenseUsage()
 		}
-		if *projectID != "" && *id != "" {
+		if *offerID != "" && *id != "" {
 			relicenseUsage()
 		}
-		if *projectID != "" {
-			*id = *projectID
+		if *offerID != "" {
+			*id = *offerID
 		}
 		if !validID(*id) {
 			invalidID()

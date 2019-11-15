@@ -21,7 +21,7 @@ type WaiverEnvelope struct {
 
 // WaiverFile describes a partially parsed waiver file.
 type WaiverFile struct {
-	ProjectID string `json:"projectID"`
+	ProjectID string `json:"offerID"`
 	Manifest  string `json:"manifest"`
 	Document  string `json:"document"`
 	Signature string `json:"signature"`
@@ -44,7 +44,7 @@ type WaiverManifest struct {
 	Project struct {
 		Description string `json:"description"`
 		Repository  string `json:"homepage"`
-		ProjectID   string `json:"projectID"`
+		ProjectID   string `json:"offerID"`
 	} `json:"project"`
 	Term string `json:"term"`
 }
@@ -53,8 +53,8 @@ func waiversPath(home string) string {
 	return path.Join(ConfigPath(home), "waivers")
 }
 
-func waiverPath(home string, projectID string) string {
-	return path.Join(waiversPath(home), projectID+".json")
+func waiverPath(home string, offerID string) string {
+	return path.Join(waiversPath(home), offerID+".json")
 }
 
 // ReadWaivers reads all waivers from the configuration directory.

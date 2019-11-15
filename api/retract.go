@@ -12,7 +12,7 @@ type retractRequest struct {
 	Action     string `json:"action"`
 	LicensorID string `json:"licensorID"`
 	Token      string `json:"token"`
-	ProjectID  string `json:"projectID"`
+	ProjectID  string `json:"offerID"`
 }
 
 type retractResponse struct {
@@ -20,12 +20,12 @@ type retractResponse struct {
 }
 
 // Retract sends retract API requests.
-func Retract(licensor *data.Licensor, projectID string) error {
+func Retract(licensor *data.Licensor, offerID string) error {
 	bodyData := retractRequest{
 		Action:     "retract",
 		LicensorID: licensor.LicensorID,
 		Token:      licensor.Token,
-		ProjectID:  projectID,
+		ProjectID:  offerID,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {

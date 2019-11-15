@@ -18,14 +18,14 @@ var Waive = &Subcommand{
 		days := flagSet.Uint("days", 0, "Days.")
 		forever := flagSet.Bool("forever", false, "Forever.")
 		beneficiary := flagSet.String("beneficiary", "", "Beneficiary legal name.")
-		projectID := projectIDFlag(flagSet)
+		offerID := offerIDFlag(flagSet)
 		id := idFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = waiveUsage
 		flagSet.Parse(args)
-		if *projectID == "" && *id == "" {
+		if *offerID == "" && *id == "" {
 			licenseUsage()
-		} else if *projectID != "" && *id != "" {
+		} else if *offerID != "" && *id != "" {
 			licenseUsage()
 		} else if *forever && *days > 0 {
 			waiveUsage()
@@ -34,8 +34,8 @@ var Waive = &Subcommand{
 		} else if *beneficiary == "" || *jurisdiction == "" {
 			waiveUsage()
 		}
-		if *projectID != "" {
-			*id = *projectID
+		if *offerID != "" {
+			*id = *offerID
 		}
 		if !validID(*id) {
 			invalidID()

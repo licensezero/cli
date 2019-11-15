@@ -57,15 +57,15 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 			os.Stderr.WriteString("Error parsing license for project ID" + license.ProjectID + ".\n")
 			continue
 		}
-		projectID := envelope.Manifest.Project.ProjectID
-		licensor, err := api.Project(projectID)
+		offerID := envelope.Manifest.Project.ProjectID
+		licensor, err := api.Project(offerID)
 		if err != nil {
-			os.Stderr.WriteString("Error fetching project developer information for " + projectID + ": " + err.Error() + "\n")
+			os.Stderr.WriteString("Error fetching project developer information for " + offerID + ": " + err.Error() + "\n")
 			continue
 		}
 		err = data.CheckLicenseSignature(envelope, licensor.PublicKey)
 		if err != nil {
-			os.Stderr.WriteString("Invalid license signature for project " + projectID + ".\n")
+			os.Stderr.WriteString("Invalid license signature for project " + offerID + ".\n")
 			continue
 		}
 		err = data.WriteLicense(paths.Home, envelope)

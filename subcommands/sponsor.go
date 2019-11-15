@@ -14,19 +14,19 @@ var Sponsor = &Subcommand{
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("sponsor", flag.ExitOnError)
 		doNotOpen := doNotOpenFlag(flagSet)
-		projectID := projectIDFlag(flagSet)
+		offerID := offerIDFlag(flagSet)
 		id := idFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = sponsorUsage
 		flagSet.Parse(args)
-		if *projectID == "" && *id == "" {
+		if *offerID == "" && *id == "" {
 			sponsorUsage()
 		}
-		if *projectID != "" && *id != "" {
+		if *offerID != "" && *id != "" {
 			sponsorUsage()
 		}
-		if *projectID != "" {
-			*id = *projectID
+		if *offerID != "" {
+			*id = *offerID
 		}
 		if !validID(*id) {
 			invalidID()

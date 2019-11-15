@@ -36,12 +36,12 @@ var Offer = &Subcommand{
 		if !confirmAgencyTerms() {
 			Fail(agencyTermsHint)
 		}
-		projectID, err := api.Offer(licensor, *repository, *description, *price, *relicense)
+		offerID, err := api.Offer(licensor, *repository, *description, *price, *relicense)
 		if err != nil {
 			Fail("Error sending offer request: " + err.Error())
 		}
-		location := "https://licensezero.com/projects/" + projectID
-		os.Stdout.WriteString("Project ID: " + projectID + "\n")
+		location := "https://licensezero.com/projects/" + offerID
+		os.Stdout.WriteString("Project ID: " + offerID + "\n")
 		openURLAndExit(location, doNotOpen)
 	},
 }

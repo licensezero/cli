@@ -12,7 +12,7 @@ type repriceRequest struct {
 	Action     string  `json:"action"`
 	LicensorID string  `json:"licensorID"`
 	Token      string  `json:"token"`
-	ProjectID  string  `json:"projectID"`
+	ProjectID  string  `json:"offerID"`
 	Pricing    Pricing `json:"pricing"`
 }
 
@@ -21,11 +21,11 @@ type repriceResponse struct {
 }
 
 // Reprice sends reprice API requests.
-func Reprice(licensor *data.Licensor, projectID string, private, relicense uint) error {
+func Reprice(licensor *data.Licensor, offerID string, private, relicense uint) error {
 	bodyData := repriceRequest{
 		Action:     "reprice",
 		LicensorID: licensor.LicensorID,
-		ProjectID:  projectID,
+		ProjectID:  offerID,
 		Token:      licensor.Token,
 		Pricing: Pricing{
 			Private:   private,
