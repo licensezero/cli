@@ -1,5 +1,6 @@
 package inventory
 
+import "fmt"
 import "licensezero.com/cli/api"
 import "licensezero.com/cli/data"
 import "os"
@@ -77,6 +78,7 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Offers, e
 		}
 		err = offer.Envelope.verifyLicensorSignature(offerLicensor.PublicKey)
 		if err != nil {
+			fmt.Printf("invalid licensor signature")
 			returned.Invalid = append(returned.Invalid, offer)
 			continue
 		}

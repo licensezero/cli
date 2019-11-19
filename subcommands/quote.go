@@ -47,11 +47,7 @@ var Quote = &Subcommand{
 			os.Stdout.WriteString(string(marshalled) + "\n")
 			os.Exit(0)
 		}
-		if len(licensable) == 0 {
-			fmt.Println("No License Zero dependencies found.")
-			os.Exit(0)
-		}
-		fmt.Printf("License Zero Offers: %d\n", len(licensable))
+		fmt.Printf("Licensable: %d\n", len(licensable))
 		fmt.Printf("Licensed: %d\n", len(licensed))
 		fmt.Printf("Waived: %d\n", len(waived))
 		fmt.Printf("Ignored: %d\n", len(ignored))

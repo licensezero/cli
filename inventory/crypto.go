@@ -1,6 +1,7 @@
 package inventory
 
 import "bytes"
+import "fmt"
 import "encoding/hex"
 import "encoding/json"
 import "errors"
@@ -98,6 +99,7 @@ func verifyLicensorJSON(keyHex string, signatureHex string, manifest interface{}
 	if err != nil {
 		return errors.New("could not compact manifest")
 	}
+	fmt.Printf(compacted.String() + "\n")
 	err = checkManifestSignature(
 		keyHex,
 		signatureHex,
@@ -108,15 +110,17 @@ func verifyLicensorJSON(keyHex string, signatureHex string, manifest interface{}
 }
 
 func checkManifestSignature(publicKey string, signature string, json []byte, source string) error {
+	fmt.Printf("Public Key: %v\n", publicKey)
 	signatureBytes := make([]byte, hex.DecodedLen(len(signature)))
 	_, err := hex.Decode(signatureBytes, []byte(signature))
 	if err != nil {
-		return errors.New("invalid " + source + "signature")
+		return errors.New("malformed " + source + "signature")
 	}
+	fmt.Printf("Signature: %v\n", signature)
 	publicKeyBytes := make([]byte, hex.DecodedLen(len(publicKey)))
 	_, err = hex.Decode(publicKeyBytes, []byte(publicKey))
 	if err != nil {
-		return errors.New("invalid " + source + " public key")
+		return errors.New("malformed " + source + " public key")
 	}
 	signatureValid := ed25519.Verify(
 		publicKeyBytes,

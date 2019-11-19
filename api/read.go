@@ -8,7 +8,7 @@ import "net/http"
 
 type projectRequest struct {
 	Action  string `json:"action"`
-	OfferID string `json:"offerID"`
+	OfferID string `json:"projectID"`
 }
 
 type projectResponse struct {

@@ -2,6 +2,7 @@ package inventory
 
 import "encoding/json"
 import "github.com/yookoala/realpath"
+import "github.com/mitchellh/mapstructure"
 import "errors"
 import "io/ioutil"
 import "os"
@@ -12,8 +13,8 @@ type Version2LicenseZeroMetadata []Version2Envelope
 
 // Version1LicenseZeroMetadata describes the contents of a version 1 metadata.
 type Version1LicenseZeroMetadata struct {
-	Version   string             `json:"version"`
-	Envelopes []Version1Envelope `json:"licensezero"`
+	Version   string             `json:"version" mapstructure:"version"`
+	Envelopes []Version1Envelope `json:"licensezero" mapstructure:"licensezero"`
 }
 
 func (json Version1LicenseZeroMetadata) offers() []Offer {
@@ -126,17 +127,14 @@ func ReadLicenseZeroJSON(directoryPath string) ([]Offer, error) {
 }
 
 func interpretLicenseZeroMetadata(unstructured interface{}) ([]Offer, error) {
-	// Check if Array.
-	list, matched := unstructured.([]interface{})
-	if !matched {
-		return parseArrayMetadata(list)
+	switch value := unstructured.(type) {
+	case []interface{}:
+		return parseArrayMetadata(value)
+	case map[string]interface{}:
+		return parseObjectMetadata(value)
+	default:
+		return nil, errors.New("could not parse licensezero.json")
 	}
-	// Check if Object.
-	_, matched = unstructured.(map[string]interface{})
-	if !matched {
-		return parseObjectMetadata(unstructured)
-	}
-	return nil, errors.New("could not parse licensezero.json")
 }
 
 func parseArrayMetadata(parsed []interface{}) ([]Offer, error) {
@@ -174,8 +172,9 @@ func parseArrayMetadata(parsed []interface{}) ([]Offer, error) {
 }
 
 func parseObjectMetadata(unstructured interface{}) ([]Offer, error) {
-	metadata, matched := unstructured.(Version1LicenseZeroMetadata)
-	if !matched {
+	var metadata Version1LicenseZeroMetadata
+	err := mapstructure.Decode(unstructured, &metadata)
+	if err != nil {
 		return nil, errors.New("could not parse licensezero.json")
 	}
 	var returned []Offer
@@ -185,6 +184,8 @@ func parseObjectMetadata(unstructured interface{}) ([]Offer, error) {
 				Terms:   envelope.Manifest.Terms,
 				Version: envelope.Manifest.Version,
 			},
+			OfferID:  envelope.Manifest.ProjectID,
+			Envelope: envelope,
 		}
 		returned = append(returned, offer)
 	}
