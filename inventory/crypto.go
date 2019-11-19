@@ -1,7 +1,6 @@
 package inventory
 
 import "bytes"
-import "fmt"
 import "encoding/hex"
 import "encoding/json"
 import "errors"
@@ -9,16 +8,30 @@ import "golang.org/x/crypto/ed25519"
 
 // Verifiable describes a struct that can be serialized for signing.
 type Verifiable interface {
-	verifyLicensorSignature(keyHex string) error
-	verifyAgentSignature(keyHex string) error
+	verifyLicensorSignature(licensorKeyHex string) error
+	verifyAgentSignature(agentKeyHex string) error
 }
 
-func (envelope Version1Envelope) verifyLicensorSignature(keyHex string) error {
-	return verifyLicensorJSON(
-		keyHex,
+func (envelope Version1Envelope) verifyLicensorSignature(licensorKeyHex string) error {
+	serialized, err := json.Marshal(envelope.Manifest)
+	if err != nil {
+		return errors.New("could not serialize manifest")
+	}
+	compacted := bytes.NewBuffer([]byte{})
+	err = json.Compact(compacted, serialized)
+	if err != nil {
+		return errors.New("could not compact manifest")
+	}
+	err = checkManifestSignature(
+		licensorKeyHex,
 		envelope.LicensorSignature,
-		envelope.Manifest,
+		compacted.Bytes(),
+		"licensor",
 	)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 type version1AgentSignaturePackage struct {
@@ -26,7 +39,7 @@ type version1AgentSignaturePackage struct {
 	LicensorSignature string           `json:"licensorSignature"`
 }
 
-func (envelope Version1Envelope) verifyAgentSignature(keyHex string) error {
+func (envelope Version1Envelope) verifyAgentSignature(agentKeyHex string) error {
 	serialized, err := json.Marshal(version1AgentSignaturePackage{
 		Manifest:          envelope.Manifest,
 		LicensorSignature: envelope.LicensorSignature,
@@ -40,7 +53,7 @@ func (envelope Version1Envelope) verifyAgentSignature(keyHex string) error {
 		return errors.New("could not serialize agent signature packet")
 	}
 	err = checkManifestSignature(
-		keyHex,
+		agentKeyHex,
 		envelope.AgentSignature,
 		compacted.Bytes(),
 		"agent",
@@ -51,12 +64,26 @@ func (envelope Version1Envelope) verifyAgentSignature(keyHex string) error {
 	return nil
 }
 
-func (envelope Version2Envelope) verifyLicensorSignature(keyHex string) error {
-	return verifyLicensorJSON(
-		keyHex,
+func (envelope Version2Envelope) verifyLicensorSignature(licensorKeyHex string) error {
+	serialized, err := json.Marshal(envelope.Manifest)
+	if err != nil {
+		return errors.New("could not serialize manifest")
+	}
+	compacted := bytes.NewBuffer([]byte{})
+	err = json.Compact(compacted, serialized)
+	if err != nil {
+		return errors.New("could not compact manifest")
+	}
+	err = checkManifestSignature(
+		licensorKeyHex,
 		envelope.LicensorSignature,
-		envelope.Manifest,
+		compacted.Bytes(),
+		"licensor",
 	)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 type version2AgentSignaturePackage struct {
@@ -64,7 +91,7 @@ type version2AgentSignaturePackage struct {
 	LicensorSignature string           `json:"licensorSignature"`
 }
 
-func (envelope Version2Envelope) verifyAgentSignature(keyHex string) error {
+func (envelope Version2Envelope) verifyAgentSignature(agentKeyHex string) error {
 	serialized, err := json.Marshal(version2AgentSignaturePackage{
 		Manifest:          envelope.Manifest,
 		LicensorSignature: envelope.LicensorSignature,
@@ -78,7 +105,7 @@ func (envelope Version2Envelope) verifyAgentSignature(keyHex string) error {
 		return errors.New("could not serialize agent signature packet")
 	}
 	err = checkManifestSignature(
-		keyHex,
+		agentKeyHex,
 		envelope.AgentSignature,
 		compacted.Bytes(),
 		"agent",
@@ -89,7 +116,7 @@ func (envelope Version2Envelope) verifyAgentSignature(keyHex string) error {
 	return nil
 }
 
-func verifyLicensorJSON(keyHex string, signatureHex string, manifest interface{}) error {
+func verifyLicensorJSON(licensorKeyHex string, signatureHex string, manifest interface{}) error {
 	serialized, err := json.Marshal(manifest)
 	if err != nil {
 		return errors.New("could not serialize manifest")
@@ -99,9 +126,8 @@ func verifyLicensorJSON(keyHex string, signatureHex string, manifest interface{}
 	if err != nil {
 		return errors.New("could not compact manifest")
 	}
-	fmt.Printf(compacted.String() + "\n")
 	err = checkManifestSignature(
-		keyHex,
+		licensorKeyHex,
 		signatureHex,
 		compacted.Bytes(),
 		"licensor",
@@ -110,13 +136,11 @@ func verifyLicensorJSON(keyHex string, signatureHex string, manifest interface{}
 }
 
 func checkManifestSignature(publicKey string, signature string, json []byte, source string) error {
-	fmt.Printf("Public Key: %v\n", publicKey)
 	signatureBytes := make([]byte, hex.DecodedLen(len(signature)))
 	_, err := hex.Decode(signatureBytes, []byte(signature))
 	if err != nil {
 		return errors.New("malformed " + source + "signature")
 	}
-	fmt.Printf("Signature: %v\n", signature)
 	publicKeyBytes := make([]byte, hex.DecodedLen(len(publicKey)))
 	_, err = hex.Decode(publicKeyBytes, []byte(publicKey))
 	if err != nil {
