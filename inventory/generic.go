@@ -148,16 +148,18 @@ func parseArrayMetadata(parsed []interface{}) ([]Offer, error) {
 		schema, matched := object["schema"].(string)
 		if !matched || schema == "" {
 			// Version 1 envelope.
-			envelope, matched := entry.(Version1Envelope)
-			if !matched {
+			var envelope Version1Envelope
+			err := mapstructure.Decode(entry, &envelope)
+			if err != nil {
 				return nil, errors.New("invalid entry")
 			}
 			var offer = envelope.offer()
 			returned = append(returned, offer)
 		} else if schema == "2.0.0" {
 			// Version 2 envelope.
-			envelope, matched := entry.(Version2Envelope)
-			if !matched {
+			var envelope Version2Envelope
+			err := mapstructure.Decode(entry, &envelope)
+			if err != nil {
 				return nil, errors.New("invalid entry")
 			}
 			var offer = envelope.offer()
