@@ -31,11 +31,12 @@ type Version1LicenseEnvelope struct {
 }
 
 func (envelope Version1LicenseEnvelope) license() AbstractLicense {
+	licensee := envelope.Manifest.Licensee
 	return AbstractLicense{
 		OfferID:              envelope.OfferID,
-		LicenseeName:         envelope.Manifest.Licensee.Name,
-		LicenseeJurisdiction: envelope.Manifest.Licensee.Jurisdiction,
-		LicenseeEMail:        envelope.Manifest.Licensee.EMail,
+		LicenseeName:         licensee.Name,
+		LicenseeJurisdiction: licensee.Jurisdiction,
+		LicenseeEMail:        licensee.EMail,
 	}
 }
 
