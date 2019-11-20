@@ -81,16 +81,16 @@ func licensesPath(home string) string {
 }
 
 // ReadLicenses reads all saved licenses from the CLI configuration directory.
-func ReadLicenses(home string) ([]Version1LicenseEnvelope, error) {
+func ReadLicenses(home string) ([]AbstractLicense, error) {
 	directoryPath := path.Join(ConfigPath(home), "licenses")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {
-			return []Version1LicenseEnvelope{}, nil
+			return []AbstractLicense{}, nil
 		}
 		return nil, directoryReadError
 	}
-	var returned []Version1LicenseEnvelope
+	var returned []AbstractLicense
 	for _, entry := range entries {
 		name := entry.Name()
 		filePath := path.Join(home, "licenses", name)
@@ -98,7 +98,7 @@ func ReadLicenses(home string) ([]Version1LicenseEnvelope, error) {
 		if err != nil {
 			return nil, err
 		}
-		returned = append(returned, *license)
+		returned = append(returned, license.license())
 	}
 	return returned, nil
 }
