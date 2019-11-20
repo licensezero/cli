@@ -12,6 +12,8 @@ import "time"
 // Waiver describes a waiver.
 type Waiver struct {
 	OfferID                 string
+	Date                    string
+	Term                    string
 	BeneficiaryName         string
 	BeneficiaryJurisdiction string
 	BeneficiaryEMail        string
@@ -93,20 +95,21 @@ func ReadWaivers(home string) ([]Waiver, error) {
 	for _, entry := range entries {
 		name := entry.Name()
 		filePath := path.Join(directoryPath, name)
-		waiver, err := ReadWaiver(filePath)
+		raw, err := ReadWaiver(filePath)
+		waiver := raw.waiver()
 		if err != nil {
 			return nil, err
 		}
-		unexpired, _ := checkUnexpired(waiver)
+		unexpired, _ := checkUnexpired(&waiver)
 		if unexpired {
-			returned = append(returned, waiver.waiver())
+			returned = append(returned, waiver)
 		}
 	}
 	return returned, nil
 }
 
-func checkUnexpired(waiver *Version1WaiverEnvelope) (bool, error) {
-	termString := waiver.Manifest.Term
+func checkUnexpired(waiver *Waiver) (bool, error) {
+	termString := waiver.Term
 	if termString == "forever" {
 		return true, nil
 	}
@@ -114,7 +117,7 @@ func checkUnexpired(waiver *Version1WaiverEnvelope) (bool, error) {
 	if err != nil {
 		return false, errors.New("could not parse term")
 	}
-	expiration, err := time.Parse(time.RFC3339, waiver.Manifest.Date)
+	expiration, err := time.Parse(time.RFC3339, waiver.Date)
 	if err != nil {
 		return false, err
 	}
