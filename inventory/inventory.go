@@ -48,7 +48,7 @@ type Offers struct {
 // Inventory finds License Zero projects included or referenced in a working tree.
 func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Offers, error) {
 	identity, _ := data.ReadIdentity(home)
-	var licenses []data.AbstractLicense
+	var licenses []data.License
 	var waivers []data.WaiverEnvelope
 	if identity != nil {
 		readLicenses, err := data.ReadLicenses(home)
@@ -113,7 +113,7 @@ func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Offers, e
 	return &returned, nil
 }
 
-func haveLicense(offer *Offer, licenses []data.AbstractLicense, identity *data.Identity) bool {
+func haveLicense(offer *Offer, licenses []data.License, identity *data.Identity) bool {
 	for _, license := range licenses {
 		if license.OfferID == offer.OfferID &&
 			license.LicenseeName == identity.Name &&

@@ -7,17 +7,17 @@ import "io/ioutil"
 import "os"
 import "path"
 
-// AbstractLicense descibes the minimum information encoded by a license.
-type AbstractLicense struct {
+// License descibes the minimum information encoded by a license.
+type License struct {
 	OfferID              string
 	LicenseeName         string
 	LicenseeJurisdiction string
 	LicenseeEMail        string
 }
 
-// License represents a license file in any version of the schema.
-type License interface {
-	license() AbstractLicense
+// LicenseVersion represents a license file in any version of the schema.
+type LicenseVersion interface {
+	license() License
 }
 
 // Version1LicenseEnvelope describes fully parsed licensezero.json metadata about a project.
@@ -30,9 +30,9 @@ type Version1LicenseEnvelope struct {
 	Signature      string
 }
 
-func (envelope Version1LicenseEnvelope) license() AbstractLicense {
+func (envelope Version1LicenseEnvelope) license() License {
 	licensee := envelope.Manifest.Licensee
-	return AbstractLicense{
+	return License{
 		OfferID:              envelope.OfferID,
 		LicenseeName:         licensee.Name,
 		LicenseeJurisdiction: licensee.Jurisdiction,
@@ -81,16 +81,16 @@ func licensesPath(home string) string {
 }
 
 // ReadLicenses reads all saved licenses from the CLI configuration directory.
-func ReadLicenses(home string) ([]AbstractLicense, error) {
+func ReadLicenses(home string) ([]License, error) {
 	directoryPath := path.Join(ConfigPath(home), "licenses")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {
-			return []AbstractLicense{}, nil
+			return []License{}, nil
 		}
 		return nil, directoryReadError
 	}
-	var returned []AbstractLicense
+	var returned []License
 	for _, entry := range entries {
 		name := entry.Name()
 		filePath := path.Join(home, "licenses", name)
