@@ -44,7 +44,7 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 		Fail("Error reading " + *bundle + ".")
 	}
 	var parsed struct {
-		Licenses []data.LicenseFile `json:"licenses"`
+		Licenses []data.Version1LicenseFile `json:"licenses"`
 	}
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {

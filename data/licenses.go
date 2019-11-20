@@ -7,9 +7,22 @@ import "io/ioutil"
 import "os"
 import "path"
 
-// LicenseEnvelope describes fully parsed licensezero.json metadata about a project.
-type LicenseEnvelope struct {
-	Manifest       LicenseManifest
+// AbstractLicense descibes the minimum information encoded by a license.
+type AbstractLicense struct {
+	OfferID              string
+	LicenseeName         string
+	LicenseeJurisdiction string
+	LicenseeEMail        string
+}
+
+// License represents a license file in any version of the schema.
+type License interface {
+	license() AbstractLicense
+}
+
+// Version1LicenseEnvelope describes fully parsed licensezero.json metadata about a project.
+type Version1LicenseEnvelope struct {
+	Manifest       Version1LicenseManifest
 	ManifestString string
 	OfferID        string
 	Document       string
@@ -17,8 +30,17 @@ type LicenseEnvelope struct {
 	Signature      string
 }
 
-// LicenseFile describes partially parsed licensezero.json metadata about a contribution set.
-type LicenseFile struct {
+func (envelope Version1LicenseEnvelope) license() AbstractLicense {
+	return AbstractLicense{
+		OfferID:              envelope.OfferID,
+		LicenseeName:         envelope.Manifest.Licensee.Name,
+		LicenseeJurisdiction: envelope.Manifest.Licensee.Jurisdiction,
+		LicenseeEMail:        envelope.Manifest.Licensee.EMail,
+	}
+}
+
+// Version1LicenseFile describes partially parsed licensezero.json metadata about a contribution set.
+type Version1LicenseFile struct {
 	Manifest  string `json:"manifest"`
 	OfferID   string `json:"offerID"`
 	Document  string `json:"document"`
@@ -26,8 +48,8 @@ type LicenseFile struct {
 	Signature string `json:"signature"`
 }
 
-// LicenseManifest describes signed licensezero.json metadata about a contribution set.
-type LicenseManifest struct {
+// Version1LicenseManifest describes signed licensezero.json metadata about a contribution set.
+type Version1LicenseManifest struct {
 	Date     string `json:"date"`
 	Form     string `json:"FORM"`
 	Licensee struct {
@@ -58,16 +80,16 @@ func licensesPath(home string) string {
 }
 
 // ReadLicenses reads all saved licenses from the CLI configuration directory.
-func ReadLicenses(home string) ([]LicenseEnvelope, error) {
+func ReadLicenses(home string) ([]Version1LicenseEnvelope, error) {
 	directoryPath := path.Join(ConfigPath(home), "licenses")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {
-			return []LicenseEnvelope{}, nil
+			return []Version1LicenseEnvelope{}, nil
 		}
 		return nil, directoryReadError
 	}
-	var returned []LicenseEnvelope
+	var returned []Version1LicenseEnvelope
 	for _, entry := range entries {
 		name := entry.Name()
 		filePath := path.Join(home, "licenses", name)
@@ -81,13 +103,13 @@ func ReadLicenses(home string) ([]LicenseEnvelope, error) {
 }
 
 // LicenseFileToEnvelope fully parses license file data.
-func LicenseFileToEnvelope(file *LicenseFile) (*LicenseEnvelope, error) {
-	var manifest LicenseManifest
+func LicenseFileToEnvelope(file *Version1LicenseFile) (*Version1LicenseEnvelope, error) {
+	var manifest Version1LicenseManifest
 	err := json.Unmarshal([]byte(file.Manifest), &manifest)
 	if err != nil {
 		return nil, err
 	}
-	return &LicenseEnvelope{
+	return &Version1LicenseEnvelope{
 		Manifest:       manifest,
 		ManifestString: file.Manifest,
 		OfferID:        file.OfferID,
@@ -98,12 +120,12 @@ func LicenseFileToEnvelope(file *LicenseFile) (*LicenseEnvelope, error) {
 }
 
 // ReadLicense reads a license file from disk.
-func ReadLicense(filePath string) (*LicenseEnvelope, error) {
+func ReadLicense(filePath string) (*Version1LicenseEnvelope, error) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
-	var file LicenseFile
+	var file Version1LicenseFile
 	err = json.Unmarshal(data, &file)
 	if err != nil {
 		return nil, err
@@ -112,8 +134,8 @@ func ReadLicense(filePath string) (*LicenseEnvelope, error) {
 }
 
 // WriteLicense writes a license file to the CLI configuration directory.
-func WriteLicense(home string, license *LicenseEnvelope) error {
-	file := LicenseFile{
+func WriteLicense(home string, license *Version1LicenseEnvelope) error {
+	file := Version1LicenseFile{
 		Manifest:  license.ManifestString,
 		OfferID:   license.OfferID,
 		Document:  license.Document,
@@ -132,7 +154,7 @@ func WriteLicense(home string, license *LicenseEnvelope) error {
 }
 
 // CheckLicenseSignature verifies the signatures to a liecnse envelope.
-func CheckLicenseSignature(license *LicenseEnvelope, publicKey string) error {
+func CheckLicenseSignature(license *Version1LicenseEnvelope, publicKey string) error {
 	serialized, err := json.Marshal(license.Manifest)
 	if err != nil {
 		return errors.New("could not serialize license manifest")
@@ -156,7 +178,7 @@ func CheckLicenseSignature(license *LicenseEnvelope, publicKey string) error {
 	return nil
 }
 
-func compactLicenseManifest(data *LicenseManifest) (*bytes.Buffer, error) {
+func compactLicenseManifest(data *Version1LicenseManifest) (*bytes.Buffer, error) {
 	serialized, err := json.Marshal(data)
 	if err != nil {
 		return nil, errors.New("could not serialize license manifest")
