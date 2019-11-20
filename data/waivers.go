@@ -9,18 +9,40 @@ import "path"
 import "strconv"
 import "time"
 
-// WaiverEnvelope describes a fully parsed waiver file.
-type WaiverEnvelope struct {
+// Waiver describes a waiver.
+type Waiver struct {
+	OfferID                 string
+	BeneficiaryName         string
+	BeneficiaryJurisdiction string
+	BeneficiaryEMail        string
+}
+
+// WaiverVersion abstracts over waiver versions.
+type WaiverVersion interface {
+	waiver() Waiver
+}
+
+// Version1WaiverEnvelope describes a fully parsed waiver file.
+type Version1WaiverEnvelope struct {
 	OfferID        string
-	Manifest       WaiverManifest
+	Manifest       Version1WaiverManifest
 	ManifestString string
 	Document       string
 	Signature      string
 	PublicKey      string
 }
 
-// WaiverFile describes a partially parsed waiver file.
-type WaiverFile struct {
+func (waiver Version1WaiverEnvelope) waiver() Waiver {
+	beneficiary := waiver.Manifest.Beneficiary
+	return Waiver{
+		OfferID:                 waiver.OfferID,
+		BeneficiaryName:         beneficiary.Name,
+		BeneficiaryJurisdiction: beneficiary.Jurisdiction,
+	}
+}
+
+// Version1WaiverFile describes a partially parsed waiver file.
+type Version1WaiverFile struct {
 	OfferID   string `json:"offerID"`
 	Manifest  string `json:"manifest"`
 	Document  string `json:"document"`
@@ -28,8 +50,8 @@ type WaiverFile struct {
 	PublicKey string `json:"publicKey"`
 }
 
-// WaiverManifest describes signed waiver data.
-type WaiverManifest struct {
+// Version1WaiverManifest describes signed waiver data.
+type Version1WaiverManifest struct {
 	Form        string `json:"FORM"`
 	Version     string `json:"VERSION"`
 	Beneficiary struct {
@@ -58,16 +80,16 @@ func waiverPath(home string, offerID string) string {
 }
 
 // ReadWaivers reads all waivers from the configuration directory.
-func ReadWaivers(home string) ([]WaiverEnvelope, error) {
+func ReadWaivers(home string) ([]Waiver, error) {
 	directoryPath := waiversPath(home)
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
 		if os.IsNotExist(directoryReadError) {
-			return []WaiverEnvelope{}, nil
+			return []Waiver{}, nil
 		}
 		return nil, directoryReadError
 	}
-	var returned []WaiverEnvelope
+	var returned []Waiver
 	for _, entry := range entries {
 		name := entry.Name()
 		filePath := path.Join(directoryPath, name)
@@ -77,13 +99,13 @@ func ReadWaivers(home string) ([]WaiverEnvelope, error) {
 		}
 		unexpired, _ := checkUnexpired(waiver)
 		if unexpired {
-			returned = append(returned, *waiver)
+			returned = append(returned, waiver.waiver())
 		}
 	}
 	return returned, nil
 }
 
-func checkUnexpired(waiver *WaiverEnvelope) (bool, error) {
+func checkUnexpired(waiver *Version1WaiverEnvelope) (bool, error) {
 	termString := waiver.Manifest.Term
 	if termString == "forever" {
 		return true, nil
@@ -101,22 +123,22 @@ func checkUnexpired(waiver *WaiverEnvelope) (bool, error) {
 }
 
 // ReadWaiver reads a waiver file.
-func ReadWaiver(filePath string) (*WaiverEnvelope, error) {
+func ReadWaiver(filePath string) (*Version1WaiverEnvelope, error) {
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
-	var file WaiverFile
+	var file Version1WaiverFile
 	json.Unmarshal(data, &file)
 	if err != nil {
 		return nil, err
 	}
-	var manifest WaiverManifest
+	var manifest Version1WaiverManifest
 	err = json.Unmarshal([]byte(file.Manifest), &manifest)
 	if err != nil {
 		return nil, err
 	}
-	return &WaiverEnvelope{
+	return &Version1WaiverEnvelope{
 		Manifest:       manifest,
 		ManifestString: file.Manifest,
 		OfferID:        file.OfferID,
@@ -127,8 +149,8 @@ func ReadWaiver(filePath string) (*WaiverEnvelope, error) {
 }
 
 // WriteWaiver writes a waiver to the configuration directory
-func WriteWaiver(home string, waiver *WaiverEnvelope) error {
-	file := WaiverFile{
+func WriteWaiver(home string, waiver *Version1WaiverEnvelope) error {
+	file := Version1WaiverFile{
 		Manifest:  waiver.ManifestString,
 		OfferID:   waiver.OfferID,
 		Document:  waiver.Document,
@@ -147,7 +169,7 @@ func WriteWaiver(home string, waiver *WaiverEnvelope) error {
 }
 
 // CheckWaiverSignature verifies the signatures to a waiver.
-func CheckWaiverSignature(waiver *WaiverEnvelope, publicKey string) error {
+func CheckWaiverSignature(waiver *Version1WaiverEnvelope, publicKey string) error {
 	serialized, err := json.Marshal(waiver.Manifest)
 	if err != nil {
 		return errors.New("coiuld not serialize waiver manifest")
@@ -171,7 +193,7 @@ func CheckWaiverSignature(waiver *WaiverEnvelope, publicKey string) error {
 	return nil
 }
 
-func compactWaiverManifest(data *WaiverManifest) (*bytes.Buffer, error) {
+func compactVersion1WaiverManifest(data *Version1WaiverManifest) (*bytes.Buffer, error) {
 	serialized, err := json.Marshal(data)
 	if err != nil {
 		return nil, errors.New("could not serialize waiver manifest")

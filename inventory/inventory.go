@@ -49,7 +49,7 @@ type Offers struct {
 func Inventory(home string, cwd string, ignoreNC bool, ignoreR bool) (*Offers, error) {
 	identity, _ := data.ReadIdentity(home)
 	var licenses []data.License
-	var waivers []data.WaiverEnvelope
+	var waivers []data.Waiver
 	if identity != nil {
 		readLicenses, err := data.ReadLicenses(home)
 		if err != nil {
@@ -125,11 +125,12 @@ func haveLicense(offer *Offer, licenses []data.License, identity *data.Identity)
 	return false
 }
 
-func haveWaiver(offer *Offer, waivers []data.WaiverEnvelope, identity *data.Identity) bool {
+func haveWaiver(offer *Offer, waivers []data.Waiver, identity *data.Identity) bool {
 	for _, waiver := range waivers {
+		// TODO: Also compare beneificary e-mails.
 		if waiver.OfferID == offer.OfferID &&
-			waiver.Manifest.Beneficiary.Name == identity.Name &&
-			waiver.Manifest.Beneficiary.Jurisdiction == identity.Jurisdiction {
+			waiver.BeneficiaryName == identity.Name &&
+			waiver.BeneficiaryJurisdiction == identity.Jurisdiction {
 			return true
 		}
 	}
