@@ -20,7 +20,7 @@ type retractResponse struct {
 }
 
 // Retract sends retract API requests.
-func Retract(licensor *data.Licensor, projectID string) error {
+func Retract(licensor *data.LicensorAccount, projectID string) error {
 	bodyData := retractRequest{
 		Action:     "retract",
 		LicensorID: licensor.LicensorID,

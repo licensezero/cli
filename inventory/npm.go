@@ -8,18 +8,18 @@ import "path"
 import "strings"
 
 type packageJSONFile struct {
-	Name      string                    `json:"name"`
-	Version   string                    `json:"version"`
-	Envelopes []ProjectManifestEnvelope `json:"licensezero"`
+	Name     string           `json:"name"`
+	Version  string           `json:"version"`
+	Artifact ArtifactMetadata `json:"licensezero"`
 }
 
-func readNPMProjects(packagePath string) ([]Project, error) {
-	var returned []Project
+func readNPMProjects(packagePath string) ([]DescenderResult, error) {
+	var returned []DescenderResult
 	nodeModules := path.Join(packagePath, "node_modules")
 	entries, err := readAndStatDir(nodeModules)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return []Project{}, nil
+			return []DescenderResult{}, nil
 		}
 		return nil, err
 	}
@@ -29,28 +29,28 @@ func readNPMProjects(packagePath string) ([]Project, error) {
 		if err != nil {
 			return err
 		}
-		for _, envelope := range parsed.Envelopes {
-			if alreadyHaveProject(returned, envelope.Manifest.ProjectID) {
+		for _, offer := range parsed.Artifact.Offers {
+			if alreadyHave(returned, &offer) {
 				continue
 			}
 			anyNewProjects = true
-			project := Project{
-				Type:     "npm",
-				Path:     directory,
-				Name:     parsed.Name,
-				Version:  parsed.Version,
-				Envelope: envelope,
+			result := DescenderResult{
+				Type:    "npm",
+				Path:    directory,
+				Name:    parsed.Name,
+				Version: parsed.Version,
+				Offer:   offer,
 			}
 			realDirectory, err := realpath.Realpath(directory)
 			if err != nil {
-				project.Path = realDirectory
+				result.Path = realDirectory
 			} else {
-				project.Path = directory
+				result.Path = directory
 			}
 			if scope != nil {
-				project.Scope = *scope
+				result.Name = *scope + result.Name
 			}
-			returned = append(returned, project)
+			returned = append(returned, result)
 		}
 		if anyNewProjects {
 			below, recursionError := readNPMProjects(directory)
@@ -112,16 +112,7 @@ func readPackageJSON(directory string) (*packageJSONFile, error) {
 	return &parsed, nil
 }
 
-func alreadyHaveProject(projects []Project, projectID string) bool {
-	for _, other := range projects {
-		if other.Envelope.Manifest.ProjectID == projectID {
-			return true
-		}
-	}
-	return false
-}
-
-func findNPMPackageInfo(directoryPath string) *Project {
+func findNPMPackageInfo(directoryPath string) *DescenderResult {
 	packageJSON := path.Join(directoryPath, "package.json")
 	data, err := ioutil.ReadFile(packageJSON)
 	if err != nil {
@@ -145,7 +136,7 @@ func findNPMPackageInfo(directoryPath string) *Project {
 	} else {
 		name = rawName
 	}
-	return &Project{
+	return &DescenderResult{
 		Type:    "npm",
 		Name:    name,
 		Scope:   scope,

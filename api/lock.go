@@ -23,7 +23,7 @@ type lockResponse struct {
 }
 
 // Lock sends a lock API request.
-func Lock(licensor *data.Licensor, projectID string, unlock string) error {
+func Lock(licensor *data.LicensorAccount, projectID string, unlock string) error {
 	bodyData := lockRequest{
 		Action:     "lock",
 		ProjectID:  projectID,

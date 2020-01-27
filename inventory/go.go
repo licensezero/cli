@@ -4,8 +4,8 @@ import "os/exec"
 import "bytes"
 import "strings"
 
-func readGoDeps(packagePath string) ([]Project, error) {
-	var returned []Project
+func readGoDeps(packagePath string) ([]DescenderResult, error) {
+	var returned []DescenderResult
 	// Read the names of all Go dependencies.
 	deps, err := goListDeps(packagePath)
 	if err != nil {
@@ -28,17 +28,16 @@ func readGoDeps(packagePath string) ([]Project, error) {
 			continue
 		}
 		// Try to read licensezero.json in the package's path.
-		projects, err := ReadLicenseZeroJSON(info.Dir)
+		results, err := ReadLicenseZeroJSON(info.Dir)
 		if err != nil {
 			continue
 		}
-		for _, project := range projects {
-			projectID := project.Envelope.Manifest.ProjectID
-			if alreadyHaveProject(returned, projectID) {
+		for _, result := range results {
+			if alreadyHave(returned, &result.Offer) {
 				continue
 			}
-			project.Type = "go"
-			project.Name = info.Name
+			result.Type = "go"
+			result.Name = info.Name
 		}
 	}
 	return returned, nil

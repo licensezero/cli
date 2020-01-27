@@ -9,9 +9,9 @@ import "net/http"
 import "os"
 import "strconv"
 
-const importDescription = "Import private licenses and waivers."
+const importDescription = "Import receipts."
 
-// Import saves licenses and waivers to the config directory.
+// Import saves receipts to the config directory.
 var Import = &Subcommand{
 	Tag:         "buyer",
 	Description: importDescription,
@@ -44,21 +44,21 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 		Fail("Error reading " + *bundle + ".")
 	}
 	var parsed struct {
-		Licenses []data.LicenseFile `json:"licenses"`
+		Receipts []data.Receipt `json:"receipts"`
 	}
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
-		Fail("Error parsing license bundle.")
+		Fail("Error parsing bundle.")
 	}
 	imported := 0
-	for _, license := range parsed.Licenses {
+	for _, license := range parsed.Receipts {
 		envelope, err := data.LicenseFileToEnvelope(&license)
 		if err != nil {
-			os.Stderr.WriteString("Error parsing license for project ID" + license.ProjectID + ".\n")
+			os.Stderr.WriteString("Error parsing receipt for offer ID" + license.ProjectID + ".\n")
 			continue
 		}
 		projectID := envelope.Manifest.Project.ProjectID
-		licensor, err := api.Project(projectID)
+		licensor, err := api.Offer(offerID)
 		if err != nil {
 			os.Stderr.WriteString("Error fetching project developer information for " + projectID + ": " + err.Error() + "\n")
 			continue
@@ -101,7 +101,7 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 		Fail("Invalid manifest JSON")
 	}
 	if manifestPreview.Form == "private license" {
-		license, err := data.ReadLicense(*filePath)
+		license, err := data.ReadReceipt(*filePath)
 		if err != nil {
 			Fail("Error reading license.")
 		}

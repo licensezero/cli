@@ -6,7 +6,7 @@ import "os/exec"
 import "path"
 import "strings"
 
-func findPythonPackageInfo(directoryPath string) *Project {
+func findPythonPackageInfo(directoryPath string) *DescenderResult {
 	setup := path.Join(directoryPath, "setup.py")
 	_, err := os.Stat(setup)
 	if err != nil {
@@ -23,7 +23,7 @@ func findPythonPackageInfo(directoryPath string) *Project {
 	lines := strings.Split(output, "\n")
 	name := strings.TrimSpace(lines[0])
 	version := strings.TrimSpace(lines[1])
-	return &Project{
+	return &DescenderResult{
 		Type:    "python",
 		Name:    name,
 		Version: version,

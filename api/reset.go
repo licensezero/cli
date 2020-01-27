@@ -19,7 +19,7 @@ type resetResponse struct {
 }
 
 // Reset sends reset API requests.
-func Reset(identity *data.Identity, licensor *data.Licensor) error {
+func Reset(identity *data.Identity, licensor *data.LicensorAccount) error {
 	bodyData := resetRequest{
 		Action:     "reset",
 		LicensorID: licensor.LicensorID,

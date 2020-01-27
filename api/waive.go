@@ -23,7 +23,7 @@ type waiveResponse struct {
 }
 
 // Waive sends waiver API requests.
-func Waive(licensor *data.Licensor, projectID, beneficiary, jurisdiction string, term interface{}) ([]byte, error) {
+func Waive(licensor *data.LicensorAccount, projectID, beneficiary, jurisdiction string, term interface{}) ([]byte, error) {
 	bodyData := waiveRequest{
 		Action:       "waiver",
 		LicensorID:   licensor.LicensorID,

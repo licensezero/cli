@@ -9,25 +9,24 @@ import "bytes"
 import "path"
 import "io/ioutil"
 
-func readCargoCrates(packagePath string) ([]Project, error) {
-	var returned []Project
+func readCargoCrates(packagePath string) ([]DescenderResult, error) {
+	var returned []DescenderResult
 	metadata, err := cargoReadMetadata(packagePath)
 	if err != nil {
 		return nil, err
 	}
 	for _, packageRecord := range metadata.Packages {
 		metadata := packageRecord.Metadata.LicenseZero
-		for _, envelope := range metadata.Envelopes {
-			projectID := envelope.Manifest.ProjectID
-			if alreadyHaveProject(returned, projectID) {
+		for _, offer := range metadata.Offers {
+			if alreadyHave(returned, &offer) {
 				continue
 			}
-			project := Project{
-				Type:     "cargo",
-				Path:     path.Dir(packageRecord.ManifestPath),
-				Name:     packageRecord.Name,
-				Version:  packageRecord.Version,
-				Envelope: envelope,
+			project := DescenderResult{
+				Type:    "cargo",
+				Path:    path.Dir(packageRecord.ManifestPath),
+				Name:    packageRecord.Name,
+				Version: packageRecord.Version,
+				Offer:   offer,
 			}
 			returned = append(returned, project)
 		}
@@ -35,14 +34,8 @@ func readCargoCrates(packagePath string) ([]Project, error) {
 	return returned, nil
 }
 
-// CargoLicenseZeroMap describes metadata for Cargo crates.
-type CargoLicenseZeroMap struct {
-	Version   string                    `json:"version" toml:"version"`
-	Envelopes []ProjectManifestEnvelope `json:"ids" toml:"ids"`
-}
-
 type cargoMetadataMap struct {
-	LicenseZero CargoLicenseZeroMap `json:"licensezero" toml:"licensezero"`
+	LicenseZero ArtifactMetadata `json:"licensezero" toml:"licensezero"`
 }
 
 type cargoMetadataPackage struct {
@@ -84,8 +77,8 @@ type cargoTOMLPackage struct {
 }
 
 // ReadCargoTOML reads metadata from Cargo.toml.
-func ReadCargoTOML(directoryPath string) ([]Project, error) {
-	var returned []Project
+func ReadCargoTOML(directoryPath string) ([]DescenderResult, error) {
+	var returned []DescenderResult
 	cargoTOML := path.Join(directoryPath, "Cargo.toml")
 	data, err := ioutil.ReadFile(cargoTOML)
 	if err != nil {
@@ -95,10 +88,10 @@ func ReadCargoTOML(directoryPath string) ([]Project, error) {
 	if _, err := toml.Decode(string(data), &parsed); err != nil {
 		return nil, errors.New("could not parse Cargo.toml")
 	}
-	for _, envelope := range parsed.Package.Metadata.LicenseZero.Envelopes {
-		project := Project{
-			Path:     directoryPath,
-			Envelope: envelope,
+	for _, offer := range parsed.Package.Metadata.LicenseZero.Offers {
+		project := DescenderResult{
+			Path:  directoryPath,
+			Offer: offer,
 		}
 		realDirectory, err := realpath.Realpath(directoryPath)
 		if err != nil {

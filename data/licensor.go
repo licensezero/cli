@@ -4,31 +4,32 @@ import "encoding/json"
 import "io/ioutil"
 import "path"
 
-// Licensor describes a licensor ID and access token.
-type Licensor struct {
-	Token      string `json:"token"`
+// LicensorAccount contains the licensor's ID at a specific vendor API.
+type LicensorAccount struct {
 	LicensorID string `json:"licensorID"`
+	API        string `json:"api"`
+	Token      string `json:"token"`
 }
 
 func licensorPath(home string) string {
 	return path.Join(ConfigPath(home), "licensor.json")
 }
 
-// ReadLicensor reads the user's licensor ID and access token from disk.
-func ReadLicensor(home string) (*Licensor, error) {
+// ReadLicensorAccounts reads the user's licensor ID and access token from disk.
+func ReadLicensorAccounts(home string) ([]LicensorAccount, error) {
 	path := licensorPath(home)
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	var licensor Licensor
-	json.Unmarshal(data, &licensor)
-	return &licensor, nil
+	var accounts []LicensorAccount
+	json.Unmarshal(data, &accounts)
+	return accounts, nil
 }
 
-// WriteLicensor writes a licensor ID and access token to disk.
-func WriteLicensor(home string, licensor *Licensor) error {
-	data, jsonError := json.Marshal(licensor)
+// WriteLicensorAccounts writes a licensor ID and access token to disk.
+func WriteLicensorAccounts(home string, accounts []LicensorAccount) error {
+	data, jsonError := json.Marshal(accounts)
 	if jsonError != nil {
 		return jsonError
 	}

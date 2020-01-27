@@ -1,69 +1,48 @@
 package api
 
-import "bytes"
-import "encoding/json"
-import "errors"
-import "licensezero.com/cli/data"
-import "io/ioutil"
-import "net/http"
-import "strings"
+import (
+	"encoding/json"
+	"errors"
+	"io/ioutil"
+	"net/http"
+)
 
-// AgencyReference includes the text required in agency terms agreement statements to the API.
-const AgencyReference = "the agency terms at https://licensezero.com/terms/agency"
-const agencyStatement = "I agree to " + AgencyReference + "."
-
-type offerRequest struct {
-	Action      string  `json:"action"`
-	LicensorID  string  `json:"licensorID"`
-	Token       string  `json:"token"`
-	Repository  string  `json:"homepage"`
-	Pricing     Pricing `json:"pricing"`
-	Description string  `json:"description"`
-	Terms       string  `json:"terms"`
+// Offer represents data about an offer from a vendor API.
+type Offer struct {
+	API        string
+	URL        string
+	LicensorID string
+	Pricing    Pricing
 }
 
-type offerResponse struct {
-	Error     interface{} `json:"error"`
-	ProjectID string      `json:"projectID"`
+// Pricing represents pricing for various kinds of licenses.
+type Pricing struct {
+	Single    Price
+	Relicense Price
+	Site      Price
 }
 
-// Offer sends an offer API request.
-func Offer(licensor *data.Licensor, url, description string, private, relicense uint) (string, error) {
-	if !strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://") {
-		url = "http://" + url
-	}
-	bodyData := offerRequest{
-		Action:      "offer",
-		LicensorID:  licensor.LicensorID,
-		Token:       licensor.Token,
-		Description: description,
-		Repository:  url,
-		Pricing: Pricing{
-			Private:   private,
-			Relicense: relicense,
-		},
-		Terms: agencyStatement,
-	}
-	body, err := json.Marshal(bodyData)
+// Price presents a specific price in a specific currency.
+type Price struct {
+	Amount   uint
+	Currency string
+}
+
+// GetOffer fetches information abourt an offer from a vendor API.
+func GetOffer(api string, offerID string) (*Offer, error) {
+	response, err := http.Get(api + "/offers/" + offerID)
 	if err != nil {
-		return "", err
-	}
-	response, err := http.Post("https://licensezero.com/api/v0", "application/json", bytes.NewBuffer(body))
-	if err != nil {
-		return "", errors.New("error sending request")
+		return nil, errors.New("error sending request")
 	}
 	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return "", err
+		return nil, errors.New("error reading response body")
 	}
-	var parsed offerResponse
+	var parsed Offer
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
-		return "", err
+		return nil, errors.New("error parsing response body")
 	}
-	if message, ok := parsed.Error.(string); ok {
-		return "", errors.New(message)
-	}
-	return parsed.ProjectID, nil
+	return &parsed, nil
 }

@@ -21,15 +21,15 @@ type repriceResponse struct {
 }
 
 // Reprice sends reprice API requests.
-func Reprice(licensor *data.Licensor, projectID string, private, relicense uint) error {
+func Reprice(licensor *data.LicensorAccount, projectID string, single, relicense *Price) error {
 	bodyData := repriceRequest{
 		Action:     "reprice",
 		LicensorID: licensor.LicensorID,
 		ProjectID:  projectID,
 		Token:      licensor.Token,
 		Pricing: Pricing{
-			Private:   private,
-			Relicense: relicense,
+			Single:    *single,
+			Relicense: *relicense,
 		},
 	}
 	body, err := json.Marshal(bodyData)
