@@ -17,12 +17,12 @@ func TestReadIdentity(t *testing.T) {
 			0700,
 		)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		result, err := readIdentity(directory)
 		if err != nil {
-			t.Error("read error")
+			t.Fatal("read error")
 		}
 
 		if result.Name != name {

@@ -16,12 +16,12 @@ func TestParseOffer(t *testing.T) {
 	var unstructured interface{}
 	err := json.Unmarshal([]byte(data), &unstructured)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	offer, err := parseOffer(unstructured)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if offer.URL != url {
 		t.Error("failed to parse URL")

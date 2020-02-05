@@ -13,14 +13,14 @@ func TestCompileInventory(t *testing.T) {
 		configDirectory := path.Join(directory, "config")
 		err := os.MkdirAll(configDirectory, 0700)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		projectDirectory := path.Join(directory, "project")
 		depDirectory := path.Join(projectDirectory, "dep")
 		err = os.MkdirAll(depDirectory, 0700)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		api := "https://api.licensezero.com"
@@ -32,12 +32,12 @@ func TestCompileInventory(t *testing.T) {
 			0700,
 		)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		inventory, err := compileInventory(configDirectory, projectDirectory, false, false)
 		if err != nil {
-			t.Error("read error")
+			t.Fatal("read error")
 		}
 
 		licensable := inventory.Licensable

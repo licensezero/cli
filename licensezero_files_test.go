@@ -14,7 +14,7 @@ func TestFindLicenseZeroFiles(t *testing.T) {
 		depDirectory := path.Join(directory, "dep")
 		err := os.MkdirAll(depDirectory, 0700)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		api := "https://api.licensezero.com"
@@ -26,16 +26,16 @@ func TestFindLicenseZeroFiles(t *testing.T) {
 			0700,
 		)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		findings, err := findLicenseZeroFiles(directory)
 		if err != nil {
-			t.Error("read error")
+			t.Fatal("read error")
 		}
 
 		if len(findings) != 1 {
-			t.Error("failed to find one offer")
+			t.Fatal("failed to find one offer")
 		}
 		finding := findings[0]
 		if finding.API != api {
@@ -88,7 +88,7 @@ func TestFindLicenseZeroFilesInNPMPackage(t *testing.T) {
 		}
 
 		if len(findings) != 1 {
-			t.Error("failed to find one offer")
+			t.Fatal("failed to find one offer")
 		}
 		finding := findings[0]
 		if finding.Type != "npm" {

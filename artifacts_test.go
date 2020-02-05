@@ -15,15 +15,15 @@ func TestParseArtifact(t *testing.T) {
 	var unstructured interface{}
 	err := json.Unmarshal([]byte(data), &unstructured)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	artifact, err := parseArtifact(unstructured)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if len(artifact.Offers) != 1 {
-		t.Error("failed to parse one offer")
+		t.Fatal("failed to parse one offer")
 	}
 	offer := artifact.Offers[0]
 	if offer.API != api {

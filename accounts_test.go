@@ -12,7 +12,7 @@ func TestReadAccounts(t *testing.T) {
 		receipts := path.Join(directory, "accounts")
 		err := os.MkdirAll(receipts, 0700)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		account := path.Join(receipts, "first.json")
@@ -25,16 +25,16 @@ func TestReadAccounts(t *testing.T) {
 			0700,
 		)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		results, err := readAccounts(directory)
 		if err != nil {
-			t.Error("read error")
+			t.Fatal("read error")
 		}
 
 		if len(results) != 1 {
-			t.Error("did not find one account")
+			t.Fatal("did not find one account")
 		}
 		result := results[0]
 		if result.API != api {

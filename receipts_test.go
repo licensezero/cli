@@ -16,7 +16,7 @@ func TestReadReceipts(t *testing.T) {
 		receipts := path.Join(directory, "receipts")
 		err := os.MkdirAll(receipts, 0700)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		withVendor := path.Join(receipts, "withVendor.json")
@@ -62,7 +62,7 @@ func TestReadReceipts(t *testing.T) {
 			0700,
 		)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		withoutVendor := path.Join(receipts, "withoutVendor.json")
@@ -97,22 +97,22 @@ func TestReadReceipts(t *testing.T) {
 			0700,
 		)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		invalid := path.Join(receipts, "invalid.json")
 		err = ioutil.WriteFile(invalid, []byte(`{}`), 0700)
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 
 		results, receiptErrors, readError := readReceipts(directory)
 		if readError != nil {
-			t.Error("read error")
+			t.Fatal("read error")
 		}
 
 		if len(results) != 2 {
-			t.Error("did not find receipt")
+			t.Fatal("did not find receipt")
 		}
 
 		first := results[0]
@@ -152,7 +152,7 @@ func TestValidateSignature(t *testing.T) {
 	var valid interface{}
 	err := json.Unmarshal([]byte(validJSON), &valid)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if err := validateSignature(valid); err != nil {
 		t.Error("invalidates invalid signature")
@@ -161,7 +161,7 @@ func TestValidateSignature(t *testing.T) {
 	var invalid interface{}
 	err = json.Unmarshal([]byte(invalidJSON), &invalid)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if err := validateSignature(invalid); err == nil {
 		t.Error("validates invalid signature")
