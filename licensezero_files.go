@@ -28,7 +28,7 @@ func findLicenseZeroFiles(cwd string) (findings []*Finding, err error) {
 				if alreadyHave(findings, finding) {
 					continue
 				}
-				packageInfo := findPackageInfo(cwd)
+				packageInfo := readPackageInfo(cwd)
 				if packageInfo != nil {
 					finding.Type = packageInfo.Type
 					finding.Name = packageInfo.Name
@@ -49,12 +49,12 @@ func findLicenseZeroFiles(cwd string) (findings []*Finding, err error) {
 	return
 }
 
-func findPackageInfo(directoryPath string) *Finding {
+func readPackageInfo(directoryPath string) *Finding {
 	approaches := []func(string) *Finding{
-		findNPMPackageInfo,
-		// TODO: findPythonPackageInfo,
-		// TODO: findMavenPackageInfo,
-		// TODO: findComposerPackageInfo,
+		readNPMPackageInfo,
+		readPythonPackageInfo,
+		readMavenPackageInfo,
+		readComposerPackageInfo,
 	}
 	for _, approach := range approaches {
 		returned := approach(directoryPath)
@@ -95,19 +95,15 @@ func readLicenseZeroJSON(directoryPath string) (findings []*Finding, err error) 
 	json.Unmarshal(data, &unstructured)
 	parsed, err := parseArtifact(unstructured)
 	for _, offer := range parsed.Offers {
-		item := Finding{
-			API:     offer.API,
-			OfferID: offer.OfferID,
-			Path:    directoryPath,
-			Public:  offer.Public,
-		}
+		finding := Finding{Path: directoryPath}
+		addArtifactOfferToFinding(&offer, &finding)
 		realDirectory, err := realpath.Realpath(directoryPath)
 		if err != nil {
-			item.Path = realDirectory
+			finding.Path = realDirectory
 		} else {
-			item.Path = directoryPath
+			finding.Path = directoryPath
 		}
-		findings = append(findings, &item)
+		findings = append(findings, &finding)
 	}
 	return findings, nil
 }

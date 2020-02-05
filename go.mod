@@ -3,6 +3,7 @@ module licensezero.com/licensezero
 go 1.13
 
 require (
+	github.com/BurntSushi/toml v0.3.1
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/yookoala/realpath v1.0.0

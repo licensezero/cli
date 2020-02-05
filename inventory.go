@@ -40,6 +40,12 @@ type Finding struct {
 	OfferID string
 }
 
+func addArtifactOfferToFinding(offer *ArtifactOffer, finding *Finding) {
+	finding.API = offer.API
+	finding.OfferID = offer.OfferID
+	finding.Public = offer.Public
+}
+
 func compileInventory(
 	configPath string,
 	cwd string,
@@ -111,10 +117,10 @@ func compileInventory(
 
 func find(cwd string) (findings []*Finding, err error) {
 	finders := []func(string) ([]*Finding, error){
-		// TODO: findNPMPackages,
-		// TODO: findRubyGems,
-		// TODO: findGoDeps,
-		// TODO: findCargoCrates,
+		findNPMPackages,
+		findRubyGems,
+		findCargoCrates,
+		findGoDeps,
 		findLicenseZeroFiles,
 	}
 	for _, finder := range finders {

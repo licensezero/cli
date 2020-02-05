@@ -8,14 +8,14 @@ import (
 
 // Artifact encodes data about offers for an artifact.
 type Artifact struct {
-	Offers []ArtifactOffer `json:"offers"`
+	Offers []ArtifactOffer `json:"offers" toml:"offers"`
 }
 
 // ArtifactOffer represents an offer relevant to an artifact.
 type ArtifactOffer struct {
-	API     string `json:"api"`
-	OfferID string `json:"offerID"`
-	Public  string `json:"public"`
+	API     string `json:"api" toml:"api"`
+	OfferID string `json:"offerID" toml:"offerID"`
+	Public  string `json:"public" toml:"public"`
 }
 
 func parseArtifact(unstructured interface{}) (a *Artifact, err error) {
