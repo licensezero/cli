@@ -10,7 +10,6 @@ import (
 
 func TestFindLicenseZeroFiles(t *testing.T) {
 	withTestDir(t, func(directory string) {
-		t.Log(directory)
 		depDirectory := path.Join(directory, "dep")
 		err := os.MkdirAll(depDirectory, 0700)
 		if err != nil {
@@ -52,7 +51,6 @@ func TestFindLicenseZeroFiles(t *testing.T) {
 
 func TestFindLicenseZeroFilesInNPMPackage(t *testing.T) {
 	withTestDir(t, func(directory string) {
-		t.Log(directory)
 		depDirectory := path.Join(directory, "node_modules", "dep")
 		err := os.MkdirAll(depDirectory, 0700)
 		if err != nil {
