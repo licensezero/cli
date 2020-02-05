@@ -14,7 +14,7 @@ type Account struct {
 	Token      string `json:"token"`
 }
 
-func readAccounts(configPath string) (accounts []Account, err error) {
+func readAccounts(configPath string) (accounts []*Account, err error) {
 	directoryPath := path.Join(configPath, "accounts")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
@@ -26,11 +26,11 @@ func readAccounts(configPath string) (accounts []Account, err error) {
 	for _, entry := range entries {
 		name := entry.Name()
 		filePath := path.Join(configPath, "accounts", name)
-		receipt, err := readAccount(filePath)
+		account, err := readAccount(filePath)
 		if err != nil {
 			return nil, err
 		}
-		accounts = append(accounts, *receipt)
+		accounts = append(accounts, account)
 	}
 	return
 }
