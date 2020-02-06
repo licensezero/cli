@@ -1,5 +1,6 @@
 package schemas
 
+// Receipt contains the JSON schema for API receipt responses.
 const Receipt = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/receipt.json",

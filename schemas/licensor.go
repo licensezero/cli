@@ -1,5 +1,6 @@
 package schemas
 
+// Licensor contins the JSON schema for API licensor responses.
 const Licensor = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/licensor.json",

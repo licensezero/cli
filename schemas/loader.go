@@ -4,7 +4,10 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-// Loader preloads various subschemas.
+// Loader preloads various subschemas. Preloading the
+// subschemas allows us to compile top-level schemas
+// without making any network calls for the subschemas they
+// reference.
 func Loader() *gojsonschema.SchemaLoader {
 	subschemas := []string{
 		Jurisdiction,

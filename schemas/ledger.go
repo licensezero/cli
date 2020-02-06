@@ -1,5 +1,6 @@
 package schemas
 
+// Ledger contains the JSON schema for API ledger responses.
 const Ledger = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/ledger.json",

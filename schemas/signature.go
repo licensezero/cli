@@ -1,5 +1,7 @@
 package schemas
 
+// Signature contains the JSON subschema for cryptographic
+// signatures.
 const Signature = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/signature.json",

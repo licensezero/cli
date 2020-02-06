@@ -1,5 +1,6 @@
 package schemas
 
+// Currency contains the JSON subschema for currency identifiers.
 const Currency = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/currency.json",
