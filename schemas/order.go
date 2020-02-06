@@ -23,7 +23,7 @@ const Order = `{
           "format": "email"
         },
         "jurisdiction": {
-          "$ref": "iso31662.json"
+          "$ref": "jurisdiction.json"
         },
         "name": {
           "type": "string",

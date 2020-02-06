@@ -10,7 +10,7 @@ const Licensor = `{
   ],
   "properties": {
     "jurisdiction": {
-      "$ref": "iso31662.json"
+      "$ref": "jurisdiction.json"
     },
     "name": {
       "type": "string",
