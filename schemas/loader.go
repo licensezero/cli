@@ -1,17 +1,17 @@
-package cli
+package schemas
 
 import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-func schemaLoader() *gojsonschema.SchemaLoader {
+func Loader() *gojsonschema.SchemaLoader {
 	subschemas := []string{
-		jurisdictionSchema,
-		keySchema,
-		priceSchema,
-		signatureSchema,
-		timeSchema,
-		urlSchema,
+		Jurisdiction,
+		Key,
+		Price,
+		Signature,
+		Time,
+		URL,
 	}
 	loader := gojsonschema.NewSchemaLoader()
 	for _, schema := range subschemas {

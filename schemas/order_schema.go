@@ -1,6 +1,6 @@
-package cli
+package schemas
 
-const orderSchema = `{
+const Order = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/order.json",
   "type": "object",

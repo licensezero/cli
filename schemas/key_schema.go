@@ -1,6 +1,6 @@
-package cli
+package schemas
 
-const keySchema = `{
+const Key = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/key.json",
   "title": "hex-encoded ed25519 public key",

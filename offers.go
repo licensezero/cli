@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/mitchellh/mapstructure"
 	"github.com/xeipuuv/gojsonschema"
+	"licensezero.com/licensezero/schemas"
 )
 
 // Offer represents an offer to sell licenses.
@@ -37,8 +38,8 @@ var offerValidator *gojsonschema.Schema = nil
 
 func validateOffer(unstructured interface{}) bool {
 	if offerValidator == nil {
-		schema, err := schemaLoader().Compile(
-			gojsonschema.NewStringLoader(offerSchema),
+		schema, err := schemas.Loader().Compile(
+			gojsonschema.NewStringLoader(schemas.Offer),
 		)
 		if err != nil {
 			panic(err)

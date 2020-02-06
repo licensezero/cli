@@ -1,6 +1,6 @@
-package cli
+package schemas
 
-const offerSchema = `{
+const Offer = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/offer.json",
   "type": "object",

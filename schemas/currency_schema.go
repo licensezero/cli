@@ -1,6 +1,6 @@
-package cli
+package schemas
 
-const currencySchema = `{
+const Currency = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/currency.json",
   "title": "ISO 4217 codes",

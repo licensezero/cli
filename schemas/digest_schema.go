@@ -1,6 +1,6 @@
-package cli
+package schemas
 
-const digestSchema = `{
+const Digest = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/digest.json",
   "title": "hex-encoded SHA256 digest",

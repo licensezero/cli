@@ -1,6 +1,6 @@
-package cli
+package schemas
 
-const artifactSchema = `{
+const Artifact = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/artifact.json",
   "type": "object",

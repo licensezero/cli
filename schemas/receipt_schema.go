@@ -1,6 +1,6 @@
-package cli
+package schemas
 
-const receiptSchema = `{
+const Receipt = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/receipt.json",
   "title": "license receipt",

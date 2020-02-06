@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/mitchellh/mapstructure"
 	"github.com/xeipuuv/gojsonschema"
+	"licensezero.com/licensezero/schemas"
 )
 
 // Artifact encodes data about offers for an artifact.
@@ -31,8 +32,8 @@ var artifactValidator *gojsonschema.Schema = nil
 
 func validateArtifact(unstructured interface{}) error {
 	if artifactValidator == nil {
-		schema, err := schemaLoader().Compile(
-			gojsonschema.NewStringLoader(artifactSchema),
+		schema, err := schemas.Loader().Compile(
+			gojsonschema.NewStringLoader(schemas.Artifact),
 		)
 		if err != nil {
 			panic(err)

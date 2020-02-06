@@ -1,6 +1,6 @@
-package cli
+package schemas
 
-const licensorSchema = `{
+const Licensor = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/licensor.json",
   "type": "object",

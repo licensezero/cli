@@ -8,6 +8,7 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/crypto/ed25519"
 	"io/ioutil"
+	"licensezero.com/licensezero/schemas"
 	"os"
 	"path"
 )
@@ -66,8 +67,8 @@ var receiptValidator *gojsonschema.Schema = nil
 
 func validateReceipt(unstructured interface{}) error {
 	if receiptValidator == nil {
-		schema, err := schemaLoader().Compile(
-			gojsonschema.NewStringLoader(receiptSchema),
+		schema, err := schemas.Loader().Compile(
+			gojsonschema.NewStringLoader(schemas.Receipt),
 		)
 		if err != nil {
 			panic(err)

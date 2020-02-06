@@ -1,6 +1,6 @@
-package cli
+package schemas
 
-const ledgerSchema = `{
+const Ledger = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/ledger.json",
   "type": "array",
