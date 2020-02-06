@@ -1,4 +1,4 @@
-package cli
+package inventory
 
 type licenseType int
 

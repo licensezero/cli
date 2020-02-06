@@ -1,4 +1,4 @@
-package cli
+package user
 
 import (
 	"bytes"
@@ -24,7 +24,7 @@ type Receipt struct {
 }
 
 // ReadReceipts reads all receipts in the configuration directory.
-func readReceipts(configPath string) (receipts []*Receipt, errors []error, err error) {
+func ReadReceipts(configPath string) (receipts []*Receipt, errors []error, err error) {
 	directoryPath := path.Join(configPath, "receipts")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {

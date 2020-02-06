@@ -1,4 +1,4 @@
-package cli
+package user
 
 import (
 	"encoding/json"
@@ -13,7 +13,8 @@ type Identity struct {
 	Name         string `json:"name"`
 }
 
-func readIdentity(configPath string) (identity *Identity, err error) {
+// ReadIdentity reads the CLI user's identify.
+func ReadIdentity(configPath string) (identity *Identity, err error) {
 	filePath := path.Join(configPath, "identity.json")
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {

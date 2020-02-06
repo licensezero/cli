@@ -1,4 +1,4 @@
-package cli
+package user
 
 import (
 	"encoding/json"
@@ -14,7 +14,9 @@ type Account struct {
 	Token      string `json:"token"`
 }
 
-func readAccounts(configPath string) (accounts []*Account, err error) {
+// ReadAccounts reads all the vendor server accounts saved
+// for the CLI user.
+func ReadAccounts(configPath string) (accounts []*Account, err error) {
 	directoryPath := path.Join(configPath, "accounts")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {

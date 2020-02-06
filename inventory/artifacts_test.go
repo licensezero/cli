@@ -1,4 +1,4 @@
-package cli
+package inventory
 
 import (
 	"encoding/json"

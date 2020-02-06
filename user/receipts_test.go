@@ -1,8 +1,9 @@
-package cli
+package user
 
 import (
 	"encoding/hex"
 	"encoding/json"
+	"github.com/licensezero/helptest"
 	"golang.org/x/crypto/ed25519"
 	"io/ioutil"
 	"os"
@@ -12,17 +13,18 @@ import (
 )
 
 func TestReadReceipts(t *testing.T) {
-	withTestDir(t, func(directory string) {
-		receipts := path.Join(directory, "receipts")
-		err := os.MkdirAll(receipts, 0700)
-		if err != nil {
-			t.Fatal(err)
-		}
+	directory, cleanup := helptest.TempDir(t, "licensezero")
+	defer cleanup()
+	receipts := path.Join(directory, "receipts")
+	err := os.MkdirAll(receipts, 0700)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-		withVendor := path.Join(receipts, "withVendor.json")
-		err = ioutil.WriteFile(
-			withVendor,
-			[]byte(`
+	withVendor := path.Join(receipts, "withVendor.json")
+	err = ioutil.WriteFile(
+		withVendor,
+		[]byte(`
 {
   "key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "signature": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -59,16 +61,16 @@ func TestReadReceipts(t *testing.T) {
   }
 }
 			`),
-			0700,
-		)
-		if err != nil {
-			t.Fatal(err)
-		}
+		0700,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-		withoutVendor := path.Join(receipts, "withoutVendor.json")
-		err = ioutil.WriteFile(
-			withoutVendor,
-			[]byte(`
+	withoutVendor := path.Join(receipts, "withoutVendor.json")
+	err = ioutil.WriteFile(
+		withoutVendor,
+		[]byte(`
 {
   "key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "signature": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -94,48 +96,47 @@ func TestReadReceipts(t *testing.T) {
   }
 }
 			`),
-			0700,
-		)
-		if err != nil {
-			t.Fatal(err)
-		}
+		0700,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-		invalid := path.Join(receipts, "invalid.json")
-		err = ioutil.WriteFile(invalid, []byte(`{}`), 0700)
-		if err != nil {
-			t.Fatal(err)
-		}
+	invalid := path.Join(receipts, "invalid.json")
+	err = ioutil.WriteFile(invalid, []byte(`{}`), 0700)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-		results, receiptErrors, readError := readReceipts(directory)
-		if readError != nil {
-			t.Fatal("read error")
-		}
+	results, receiptErrors, readError := ReadReceipts(directory)
+	if readError != nil {
+		t.Fatal("read error")
+	}
 
-		if len(results) != 2 {
-			t.Fatal("did not find receipt")
-		}
+	if len(results) != 2 {
+		t.Fatal("did not find receipt")
+	}
 
-		first := results[0]
-		if first.API != "https://api.licensezero.com" {
-			t.Error("failed to parse API")
-		}
-		if first.OrderID != "2c743a84-09ce-4549-9f0d-19d8f53462bb" {
-			t.Error("failed to parse orderID")
-		}
-		if first.OfferID != "9aab7058-599a-43db-9449-5fc0971ecbfa" {
-			t.Error("failed to parse orderID")
-		}
-		if first.Effective != "2018-11-13T20:20:39Z" {
-			t.Error("failed to parse effective date")
-		}
-		if first.Expires != "2019-11-13T20:20:39Z" {
-			t.Error("added expiration date")
-		}
+	first := results[0]
+	if first.API != "https://api.licensezero.com" {
+		t.Error("failed to parse API")
+	}
+	if first.OrderID != "2c743a84-09ce-4549-9f0d-19d8f53462bb" {
+		t.Error("failed to parse orderID")
+	}
+	if first.OfferID != "9aab7058-599a-43db-9449-5fc0971ecbfa" {
+		t.Error("failed to parse orderID")
+	}
+	if first.Effective != "2018-11-13T20:20:39Z" {
+		t.Error("failed to parse effective date")
+	}
+	if first.Expires != "2019-11-13T20:20:39Z" {
+		t.Error("added expiration date")
+	}
 
-		if len(receiptErrors) != 1 {
-			t.Error("missing invalid error")
-		}
-	})
+	if len(receiptErrors) != 1 {
+		t.Error("missing invalid error")
+	}
 }
 
 func TestValidateSignature(t *testing.T) {

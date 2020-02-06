@@ -1,6 +1,8 @@
-package cli
+package inventory
 
 import (
+	"licensezero.com/licensezero/api"
+	"licensezero.com/licensezero/user"
 	"os"
 	"path"
 )
@@ -27,7 +29,7 @@ type Item struct {
 	Public  string
 	API     string
 	OfferID string
-	Offer   Offer
+	Offer   api.Offer
 }
 
 // Finding represents information about an artifact that references offers.
@@ -57,11 +59,11 @@ func compileInventory(
 	ignoreReciprocal bool,
 ) (inventory Inventory, err error) {
 	// TODO: Don't ignore receipt read errors.
-	receipts, _, err := readReceipts(configPath)
+	receipts, _, err := user.ReadReceipts(configPath)
 	if err != nil {
 		return
 	}
-	accounts, err := readAccounts(configPath)
+	accounts, err := user.ReadAccounts(configPath)
 	findings, err := findArtifacts(cwd)
 	if err != nil {
 		return
@@ -155,7 +157,7 @@ func alreadyFound(findings []*Finding, finding *Finding) bool {
 	return false
 }
 
-func haveReceipt(item *Item, receipts []*Receipt) bool {
+func haveReceipt(item *Item, receipts []*user.Receipt) bool {
 	api := item.API
 	offerID := item.OfferID
 	for _, account := range receipts {
@@ -166,7 +168,7 @@ func haveReceipt(item *Item, receipts []*Receipt) bool {
 	return false
 }
 
-func ownProject(item *Item, accounts []*Account) bool {
+func ownProject(item *Item, accounts []*user.Account) bool {
 	api := item.API
 	licensorID := item.Offer.LicensorID
 	for _, account := range accounts {
