@@ -20,7 +20,7 @@ func findGoDeps(packagePath string) (findings []*Finding, err error) {
 			continue
 		}
 		// Run `go list` for package information.
-		info, err := goListPackageInfo(dep)
+		info, err := goListPackageInfo(packagePath, dep)
 		if err != nil {
 			continue
 		}
@@ -29,16 +29,17 @@ func findGoDeps(packagePath string) (findings []*Finding, err error) {
 			continue
 		}
 		// Try to read licensezero.json in the package's path.
-		findings, err := readLicenseZeroJSON(info.Dir)
+		offers, err := readLicenseZeroJSON(info.Dir)
 		if err != nil {
 			continue
 		}
-		for _, finding := range findings {
+		for _, finding := range offers {
 			if alreadyHave(findings, finding) {
 				continue
 			}
 			finding.Type = "go"
 			finding.Name = info.Name
+			findings = append(findings, finding)
 		}
 	}
 	return
@@ -68,8 +69,9 @@ type goPackageInfo struct {
 	Standard   bool
 }
 
-func goListPackageInfo(name string) (*goPackageInfo, error) {
+func goListPackageInfo(packagePath string, name string) (*goPackageInfo, error) {
 	list := exec.Command("go", "list", "-f", "{{ .Name }}\n{{ .Dir }}\n{{ .ImportPath }}\n{{ .Standard }}\n", name)
+	list.Dir = packagePath
 	var stdout bytes.Buffer
 	list.Stdout = &stdout
 	err := list.Run()
