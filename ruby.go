@@ -18,8 +18,9 @@ func findRubyGems(packagePath string) (findings []*Finding, err error) {
 		return
 	}
 	namesAndVersions := strings.Split(string(first.Bytes()), "\n")
-	// Run `bundle show --paths` to list dependencies' paths.
-	showPaths := exec.Command("bundle", "show", "--paths")
+	// Run `bundle list --paths` to list dependencies' paths.
+	showPaths := exec.Command("bundle", "list", "--paths")
+	showPaths.Dir = packagePath
 	var second bytes.Buffer
 	showPaths.Stdout = &second
 	err = showPaths.Run()
