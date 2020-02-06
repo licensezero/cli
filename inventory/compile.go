@@ -50,9 +50,9 @@ func addArtifactOfferToFinding(offer *ArtifactOffer, finding *Finding) {
 	finding.Public = offer.Public
 }
 
-// compileInventory is the top-level function for finding License Zero
+// CompileInventory is the top-level function for finding License Zero
 // dependencies of a project.
-func compileInventory(
+func CompileInventory(
 	configPath string,
 	cwd string,
 	ignoreNoncommercial bool,
