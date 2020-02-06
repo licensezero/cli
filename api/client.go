@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 )
@@ -34,7 +35,7 @@ func (c *httpClient) Offer(api string, offerID string) (offer *Offer, err error)
 	var unstructured interface{}
 	err = json.Unmarshal(body, &unstructured)
 	if err != nil {
-		return
+		return nil, errors.New("invalid JSON")
 	}
 	offer, err = parseOffer(unstructured)
 	if err != nil {
@@ -56,7 +57,7 @@ func (c *httpClient) Licensor(api string, licensorID string) (licensor *Licensor
 	var unstructured interface{}
 	err = json.Unmarshal(body, &unstructured)
 	if err != nil {
-		return
+		return nil, errors.New("invalid JSON")
 	}
 	licensor, err = parseLicensor(unstructured)
 	if err != nil {
