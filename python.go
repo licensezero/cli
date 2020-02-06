@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func readPythonPackageInfo(directoryPath string) *Finding {
+func readPythonPackageMetadata(directoryPath string) *Finding {
 	setup := path.Join(directoryPath, "setup.py")
 	_, err := os.Stat(setup)
 	if err != nil {

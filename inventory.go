@@ -5,7 +5,9 @@ import (
 	"path"
 )
 
-// Inventory describes offers to license artifacts in a working directory.
+// Inventory describes offers to license artifacts in a working
+// directory, grouped into categories reflecting whether the user has or
+// needs a license.
 type Inventory struct {
 	Licensable []Item
 	Licensed   []Item
@@ -15,7 +17,7 @@ type Inventory struct {
 	Invalid    []Item
 }
 
-// Item describes an artifact with an offer.
+// Item describes an offer to license work in an artifact.
 type Item struct {
 	Type    string
 	Path    string
@@ -46,6 +48,8 @@ func addArtifactOfferToFinding(offer *ArtifactOffer, finding *Finding) {
 	finding.Public = offer.Public
 }
 
+// compileInventory is the top-level function for finding License Zero
+// dependencies of a project.
 func compileInventory(
 	configPath string,
 	cwd string,
@@ -58,7 +62,7 @@ func compileInventory(
 		return
 	}
 	accounts, err := readAccounts(configPath)
-	findings, err := find(cwd)
+	findings, err := findArtifacts(cwd)
 	if err != nil {
 		return
 	}
@@ -115,12 +119,15 @@ func compileInventory(
 	return
 }
 
-func find(cwd string) (findings []*Finding, err error) {
+// findArtifacts calls functions for all the ways the CLI knows to find
+// dependencies and other artifacts within a project and combines their
+// findings into a single slice.
+func findArtifacts(cwd string) (findings []*Finding, err error) {
 	finders := []func(string) ([]*Finding, error){
-		findRubyGems,
-		findCargoCrates,
-		findGoDeps,
 		findLicenseZeroFiles,
+		findCargoCrates,
+		findRubyGems,
+		findGoDeps,
 	}
 	for _, finder := range finders {
 		found, err := finder(cwd)
@@ -128,7 +135,7 @@ func find(cwd string) (findings []*Finding, err error) {
 			continue
 		}
 		for _, finding := range found {
-			if alreadyHave(findings, finding) {
+			if alreadyFound(findings, finding) {
 				continue
 			}
 			findings = append(findings, finding)
@@ -137,7 +144,7 @@ func find(cwd string) (findings []*Finding, err error) {
 	return
 }
 
-func alreadyHave(findings []*Finding, finding *Finding) bool {
+func alreadyFound(findings []*Finding, finding *Finding) bool {
 	api := finding.API
 	offerID := finding.OfferID
 	for _, other := range findings {

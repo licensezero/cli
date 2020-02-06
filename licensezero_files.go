@@ -2,13 +2,24 @@ package cli
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/yookoala/realpath"
 	"io/ioutil"
 	"os"
 	"path"
 )
 
+// findLicenseZeroFiles recurses projects directories,
+// identifying and processing subdirectories with
+// licensezero.json files in them.
+//
+// licensezero.json files are the primary ways that
+// artifacts within projects indicate that users can byu
+// licenses through License Zero. However, for packaging
+// systems that don't install packages into the project
+// working directory, we need other functions to invoke
+// commands like `go list` or `bundle list`, and work
+// backwards from their output to the user- or system-level
+// paths for dependencies.
 func findLicenseZeroFiles(cwd string) (findings []*Finding, err error) {
 	entries, err := readAndStatDir(cwd)
 	if err != nil {
@@ -25,15 +36,15 @@ func findLicenseZeroFiles(cwd string) (findings []*Finding, err error) {
 				return nil, err
 			}
 			for _, finding := range fromJSON {
-				if alreadyHave(findings, finding) {
+				if alreadyFound(findings, finding) {
 					continue
 				}
-				packageInfo := readPackageInfo(cwd)
-				if packageInfo != nil {
-					finding.Type = packageInfo.Type
-					finding.Name = packageInfo.Name
-					finding.Version = packageInfo.Version
-					finding.Scope = packageInfo.Scope
+				packageMetadata := readArtifactMetadata(cwd)
+				if packageMetadata != nil {
+					finding.Type = packageMetadata.Type
+					finding.Name = packageMetadata.Name
+					finding.Version = packageMetadata.Version
+					finding.Scope = packageMetadata.Scope
 				}
 				findings = append(findings, finding)
 			}
@@ -49,12 +60,16 @@ func findLicenseZeroFiles(cwd string) (findings []*Finding, err error) {
 	return
 }
 
-func readPackageInfo(directoryPath string) *Finding {
+// Given the directory of an artifact, readArtifactMetadata
+// attempts to read package-system-specific metadata,
+// in order to name, version, and other metadata to the
+// finding.
+func readArtifactMetadata(directoryPath string) *Finding {
 	approaches := []func(string) *Finding{
-		readNPMPackageInfo,
-		readPythonPackageInfo,
-		readMavenPackageInfo,
-		readComposerPackageInfo,
+		readNPMPackageMetadata,
+		readPythonPackageMetadata,
+		readMavenPackageMetadata,
+		readComposerPackageMetadata,
 	}
 	for _, approach := range approaches {
 		returned := approach(directoryPath)
@@ -65,26 +80,8 @@ func readPackageInfo(directoryPath string) *Finding {
 	return nil
 }
 
-// localFindings reads project metadata from various files.
-func localFindings(directoryPath string) (findings []*Finding, err error) {
-	var hadFindings = 0
-	var readerFunctions = []func(string) ([]*Finding, error){
-		readLicenseZeroJSON,
-		// ReadCargoTOML,
-	}
-	for _, readerFunction := range readerFunctions {
-		projects, err := readerFunction(directoryPath)
-		if err == nil {
-			hadFindings = hadFindings + 1
-			findings = projects
-		}
-	}
-	if hadFindings > 1 {
-		return nil, errors.New("multiple metadata files")
-	}
-	return
-}
-
+// readLicenseZeroJSON reads the licensezero.json file in a
+// given artifact subdirectory.
 func readLicenseZeroJSON(directoryPath string) (findings []*Finding, err error) {
 	jsonFile := path.Join(directoryPath, "licensezero.json")
 	data, err := ioutil.ReadFile(jsonFile)

@@ -12,7 +12,7 @@ type pom struct {
 	Version    string `xml:"version"`
 }
 
-func readMavenPackageInfo(directoryPath string) *Finding {
+func readMavenPackageMetadata(directoryPath string) *Finding {
 	pomFile := path.Join(directoryPath, "pom.xml")
 	data, err := ioutil.ReadFile(pomFile)
 	if err != nil {

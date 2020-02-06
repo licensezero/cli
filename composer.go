@@ -6,7 +6,7 @@ import (
 	"path"
 )
 
-func readComposerPackageInfo(directoryPath string) *Finding {
+func readComposerPackageMetadata(directoryPath string) *Finding {
 	composerJSON := path.Join(directoryPath, "composer.json")
 	data, err := ioutil.ReadFile(composerJSON)
 	if err != nil {

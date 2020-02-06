@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func readNPMPackageInfo(packagePath string) *Finding {
+func readNPMPackageMetadata(packagePath string) *Finding {
 	packageJSON := path.Join(packagePath, "package.json")
 	data, err := ioutil.ReadFile(packageJSON)
 	if err != nil {

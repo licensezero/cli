@@ -34,7 +34,7 @@ func findGoDeps(packagePath string) (findings []*Finding, err error) {
 			continue
 		}
 		for _, finding := range offers {
-			if alreadyHave(findings, finding) {
+			if alreadyFound(findings, finding) {
 				continue
 			}
 			finding.Type = "go"
