@@ -21,15 +21,16 @@ type Inventory struct {
 
 // Item describes an offer to license work in an artifact.
 type Item struct {
-	Type    string
-	Path    string
-	Scope   string
-	Name    string
-	Version string
-	Public  string
-	API     string
-	OfferID string
-	Offer   api.Offer
+	Type     string
+	Path     string
+	Scope    string
+	Name     string
+	Version  string
+	Public   string
+	API      string
+	OfferID  string
+	Offer    api.Offer
+	Licensor api.Licensor
 }
 
 // Finding represents information about an artifact that references offers.
@@ -57,6 +58,7 @@ func CompileInventory(
 	cwd string,
 	ignoreNoncommercial bool,
 	ignoreReciprocal bool,
+	client api.Client,
 ) (inventory Inventory, err error) {
 	// TODO: Don't ignore receipt read errors.
 	receipts, _, err := user.ReadReceipts(configPath)
@@ -69,34 +71,39 @@ func CompileInventory(
 		return
 	}
 	for _, finding := range findings {
-		// TODO: Add offer data from APIs to inventory results.
-		/*
-			offer, err := getOffer(finding.API, finding.OfferID)
-			var item Item
+		offer, err := client.Offer(finding.API, finding.OfferID)
+		var item Item
+		handleInvalid := func() {
+			inventory.Invalid = append(inventory.Invalid, Item{
+				Type:    finding.Type,
+				Path:    finding.Path,
+				Scope:   finding.Scope,
+				Name:    finding.Name,
+				Version: finding.Version,
+				Public:  finding.Public,
+			})
+		}
+		if err != nil {
+			handleInvalid()
+			continue
+		} else {
+			licensor, err := client.Licensor(finding.API, offer.LicensorID)
 			if err != nil {
-				inventory.Invalid = append(inventory.Invalid, Item{
-					Type:    finding.Type,
-					Path:    finding.Path,
-					Scope:   finding.Scope,
-					Name:    finding.Name,
-					Version: finding.Version,
-					Public:  finding.Public,
-				})
+				handleInvalid()
 				continue
-			} else {
-				// See below.
 			}
-		*/
-		item := Item{
-			Type:    finding.Type,
-			Path:    finding.Path,
-			Scope:   finding.Scope,
-			Name:    finding.Name,
-			Version: finding.Version,
-			Public:  finding.Public,
-			API:     finding.API,
-			OfferID: finding.OfferID,
-			// Offer:   *offer,
+			item = Item{
+				Type:     finding.Type,
+				Path:     finding.Path,
+				Scope:    finding.Scope,
+				Name:     finding.Name,
+				Version:  finding.Version,
+				Public:   finding.Public,
+				API:      finding.API,
+				OfferID:  finding.OfferID,
+				Offer:    *offer,
+				Licensor: *licensor,
+			}
 		}
 		inventory.Licensable = append(inventory.Licensable, item)
 		if haveReceipt(&item, receipts) {

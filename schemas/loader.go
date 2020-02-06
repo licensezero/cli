@@ -4,6 +4,7 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
+// Loader preloads various subschemas.
 func Loader() *gojsonschema.SchemaLoader {
 	subschemas := []string{
 		Jurisdiction,
