@@ -17,6 +17,7 @@ func findCargoCrates(packagePath string) (findings []*Finding, err error) {
 		return nil, err
 	}
 	for _, packageRecord := range metadata.Packages {
+		license := packageRecord.License
 		licenseZeroMetadata := packageRecord.Metadata.LicenseZero
 		artifact, err := parseArtifact(licenseZeroMetadata)
 		if err != nil {
@@ -30,6 +31,9 @@ func findCargoCrates(packagePath string) (findings []*Finding, err error) {
 				Version: packageRecord.Version,
 			}
 			addArtifactOfferToFinding(&offer, &finding)
+			if finding.Public == "" && license != "" {
+				finding.Public = license
+			}
 			findings = append(findings, &finding)
 		}
 	}
@@ -41,6 +45,7 @@ type cargoMetadataOutput struct {
 		Name         string `json:"name"`
 		Version      string `json:"version"`
 		ManifestPath string `json:"manifest_path"`
+		License      string `json:"license"`
 		Metadata     struct {
 			LicenseZero interface{} `json:"licensezero"`
 		} `json:"metadata"`
