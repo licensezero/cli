@@ -117,7 +117,6 @@ func compileInventory(
 
 func find(cwd string) (findings []*Finding, err error) {
 	finders := []func(string) ([]*Finding, error){
-		findNPMPackages,
 		findRubyGems,
 		findCargoCrates,
 		findGoDeps,
