@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/licensezero/helptest"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
 	"net/http"
@@ -46,7 +45,7 @@ func TestCompileInventory(t *testing.T) {
 	licensorName := "Test Licensor"
 	licensorJurisdiction := "US-CA"
 
-	transport := testTransport(func(req *http.Request) *http.Response {
+	transport := helptest.RoundTripFunc(func(req *http.Request) *http.Response {
 		url := req.URL.String()
 		var json string
 		if url == vendorAPI+"/offers/"+offerID {
@@ -64,7 +63,7 @@ func TestCompileInventory(t *testing.T) {
 			`, licensorID, offerURL)
 			return &http.Response{
 				StatusCode: 200,
-				Body:       noopCloser{bytes.NewBufferString(json)},
+				Body:       helptest.NoopCloser{bytes.NewBufferString(json)},
 				Header:     make(http.Header),
 			}
 		} else if url == vendorAPI+"/licensors/"+licensorID {
@@ -75,13 +74,13 @@ func TestCompileInventory(t *testing.T) {
 			)
 			return &http.Response{
 				StatusCode: 200,
-				Body:       noopCloser{bytes.NewBufferString(json)},
+				Body:       helptest.NoopCloser{bytes.NewBufferString(json)},
 				Header:     make(http.Header),
 			}
 		} else {
 			return &http.Response{
 				StatusCode: 404,
-				Body:       noopCloser{bytes.NewBufferString("")},
+				Body:       helptest.NoopCloser{bytes.NewBufferString("")},
 				Header:     make(http.Header),
 			}
 		}
@@ -129,18 +128,4 @@ func TestCompileInventory(t *testing.T) {
 	if finding.Licensor.Name != licensorName {
 		t.Error("did not read licensor name")
 	}
-}
-
-type testTransport func(req *http.Request) *http.Response
-
-func (f testTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	return f(req), nil
-}
-
-type noopCloser struct {
-	io.Reader
-}
-
-func (noopCloser) Close() error {
-	return nil
 }

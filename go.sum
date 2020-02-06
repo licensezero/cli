@@ -2,9 +2,10 @@ github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/licensezero/gopackage v0.0.1/go.mod h1:pQX1AzuMGU4H0g6uERLbeMbsdVz0MXizRFsQV7rtf9U=
 github.com/licensezero/helptest v0.0.0-20200206061328-4d4a6ae3393b h1:JjLEkoa321EEYRwyn92quFw0fTifMJ44TVUUNHN3OZ4=
 github.com/licensezero/helptest v0.0.0-20200206061328-4d4a6ae3393b/go.mod h1:R80pARmOU0woXEgTobn4XED1PI9cy2H30bHj9Nl2a+Q=
+github.com/licensezero/helptest v0.0.1 h1:b1pr/GDzjXWSMzF5XKjYpyRxaZj1p2zXiQNHGeio+0U=
+github.com/licensezero/helptest v0.0.1/go.mod h1:R80pARmOU0woXEgTobn4XED1PI9cy2H30bHj9Nl2a+Q=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
