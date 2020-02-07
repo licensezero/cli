@@ -6,13 +6,13 @@ const Offer = `{
   "$id": "https://schemas.licensezero.com/1.0.0-pre/offer.json",
   "type": "object",
   "required": [
-    "licensorID",
+    "sellerID",
     "pricing",
     "url"
   ],
   "additionalProperties": true,
   "properties": {
-    "licensorID": {
+    "sellerID": {
       "type": "string",
       "format": "uuid"
     },

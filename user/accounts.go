@@ -7,14 +7,14 @@ import (
 	"path"
 )
 
-// Account contains information about a licensor account.
+// Account contains information about a seller account.
 type Account struct {
-	API        string `json:"api"`
-	LicensorID string `json:"licensorID"`
-	Token      string `json:"token"`
+	API      string `json:"api"`
+	SellerID string `json:"sellerID"`
+	Token    string `json:"token"`
 }
 
-// ReadAccounts reads all the vendor server accounts saved
+// ReadAccounts reads all the broker server accounts saved
 // for the CLI user.
 func ReadAccounts(configPath string) (accounts []*Account, err error) {
 	directoryPath := path.Join(configPath, "accounts")

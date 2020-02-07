@@ -1,7 +1,7 @@
 package schemas
 
-// Name contains the JSON subschema for licensor, licenses,
-// and vendor names.
+// Name contains the JSON subschema for seller, licenses,
+// and broker names.
 const Name = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/name.json",

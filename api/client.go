@@ -7,10 +7,10 @@ import (
 	"net/http"
 )
 
-// Client responds to vendor API requests.
+// Client responds to broker API requests.
 type Client interface {
 	Offer(api string, offerID string) (*Offer, error)
-	Licensor(api string, licensorID string) (*Licensor, error)
+	Seller(api string, sellerID string) (*Seller, error)
 }
 
 type httpClient struct {
@@ -44,8 +44,8 @@ func (c *httpClient) Offer(api string, offerID string) (offer *Offer, err error)
 	return
 }
 
-func (c *httpClient) Licensor(api string, licensorID string) (licensor *Licensor, err error) {
-	response, err := c.Client.Get(api + "/licensors/" + licensorID)
+func (c *httpClient) Seller(api string, sellerID string) (seller *Seller, err error) {
+	response, err := c.Client.Get(api + "/sellers/" + sellerID)
 	if err != nil {
 		return
 	}
@@ -59,7 +59,7 @@ func (c *httpClient) Licensor(api string, licensorID string) (licensor *Licensor
 	if err != nil {
 		return nil, errors.New("invalid JSON")
 	}
-	licensor, err = parseLicensor(unstructured)
+	seller, err = parseSeller(unstructured)
 	if err != nil {
 		return
 	}

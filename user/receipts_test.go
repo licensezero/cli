@@ -21,9 +21,9 @@ func TestReadReceipts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	withVendor := path.Join(receipts, "withVendor.json")
+	withBroker := path.Join(receipts, "withBroker.json")
 	err = ioutil.WriteFile(
-		withVendor,
+		withBroker,
 		[]byte(`
 {
   "key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -35,22 +35,22 @@ func TestReadReceipts(t *testing.T) {
       "effective": "2018-11-13T20:20:39Z",
       "expires": "2019-11-13T20:20:39Z",
       "orderID": "2c743a84-09ce-4549-9f0d-19d8f53462bb",
-      "licensee": {
-        "email": "licensee@example.com",
+      "buyer": {
+        "email": "buyer@example.com",
         "jurisdiction": "US-TX",
-        "name": "Joe Licensee"
+        "name": "Joe Buyer"
       },
-      "licensor": {
-        "email": "licensor@example.com",
+      "seller": {
+        "email": "seller@example.com",
         "jurisdiction": "US-CA",
-        "name": "Jane Licensor",
-        "licensorID": "59e70a4d-ffee-4e9d-a526-7a9ff9161664"
+        "name": "Jane Seller",
+        "sellerID": "59e70a4d-ffee-4e9d-a526-7a9ff9161664"
       },
       "price": {
         "amount": 1000,
         "currency": "USD"
       },
-      "vendor": {
+      "broker": {
         "email": "support@artlessdevices.com",
         "name": "Artless Devices LLC",
         "jurisdiction": "US-CA",
@@ -67,9 +67,9 @@ func TestReadReceipts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	withoutVendor := path.Join(receipts, "withoutVendor.json")
+	withoutBroker := path.Join(receipts, "withoutBroker.json")
 	err = ioutil.WriteFile(
-		withoutVendor,
+		withoutBroker,
 		[]byte(`
 {
   "key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -80,16 +80,16 @@ func TestReadReceipts(t *testing.T) {
       "offerID": "9aab7058-599a-43db-9449-5fc0971ecbfa",
       "effective": "2018-11-13T20:20:39Z",
       "orderID": "2c743a84-09ce-4549-9f0d-19d8f53462bb",
-      "licensee": {
-        "email": "licensee@example.com",
+      "buyer": {
+        "email": "buyer@example.com",
         "jurisdiction": "US-TX",
-        "name": "Joe Licensee"
+        "name": "Joe Buyer"
       },
-      "licensor": {
-        "email": "licensor@example.com",
+      "seller": {
+        "email": "seller@example.com",
         "jurisdiction": "US-CA",
-        "name": "Jane Licensor",
-        "licensorID": "59e70a4d-ffee-4e9d-a526-7a9ff9161664"
+        "name": "Jane Seller",
+        "sellerID": "59e70a4d-ffee-4e9d-a526-7a9ff9161664"
       }
     },
     "form": "Test license form."
@@ -141,7 +141,7 @@ func TestReadReceipts(t *testing.T) {
 
 func TestValidateSignature(t *testing.T) {
 	publicKey, privateKey, _ := ed25519.GenerateKey(nil)
-	message := `{"form":"Test license form.","values":{"api":"https://api.licensezero.com","effective":"2018-11-13T20:20:39Z","licensee":{"email":"licensee@example.com","jurisdiction":"US-TX","name":"Joe"},"licensor":{"email":"licensor@example.com","jurisdiction":"US-CA","licensorID":"59e70a4d-ffee-4e9d-a526-7a9ff9161664","name":"Jane"},"offerID":"9aab7058-599a-43db-9449-5fc0971ecbfa","orderID":"2c743a84-09ce-4549-9f0d-19d8f53462bb"}}`
+	message := `{"form":"Test license form.","values":{"api":"https://api.licensezero.com","buyer":{"email":"buyer@example.com","jurisdiction":"US-TX","name":"Joe"},"effective":"2018-11-13T20:20:39Z","offerID":"9aab7058-599a-43db-9449-5fc0971ecbfa","orderID":"2c743a84-09ce-4549-9f0d-19d8f53462bb","seller":{"email":"seller@example.com","jurisdiction":"US-CA","name":"Jane","sellerID":"59e70a4d-ffee-4e9d-a526-7a9ff9161664"}}}`
 	signature := ed25519.Sign(privateKey, []byte(message))
 	signatureHex := hex.EncodeToString(signature)
 	publicKeyHex := hex.EncodeToString(publicKey)

@@ -28,30 +28,30 @@ func TestCompileInventory(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	vendorAPI := "https://api.licensezero.com"
+	brokerAPI := "https://api.licensezero.com"
 	offerID := "186d34a9-c8f7-414c-91bc-a34b4553b91d"
 	public := "Parity-7.0.0"
 	offerURL := "http://example.com"
 	err = ioutil.WriteFile(
 		path.Join(depDirectory, "licensezero.json"),
-		[]byte(fmt.Sprintf(`{"offers": [ { "api": "%v", "offerID": "%v", "public": "%v" } ] }`, vendorAPI, offerID, public)),
+		[]byte(fmt.Sprintf(`{"offers": [ { "api": "%v", "offerID": "%v", "public": "%v" } ] }`, brokerAPI, offerID, public)),
 		0700,
 	)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	licensorID := "902d42b2-77ee-4e67-aeb6-6dac3de8bb5a"
-	licensorName := "Test Licensor"
-	licensorJurisdiction := "US-CA"
+	sellerID := "902d42b2-77ee-4e67-aeb6-6dac3de8bb5a"
+	sellerName := "Test Seller"
+	sellerJurisdiction := "US-CA"
 
 	transport := helptest.RoundTripFunc(func(req *http.Request) *http.Response {
 		url := req.URL.String()
 		var json string
-		if url == vendorAPI+"/offers/"+offerID {
+		if url == brokerAPI+"/offers/"+offerID {
 			json = fmt.Sprintf(`
 {
-	"licensorID": "%v",
+	"sellerID": "%v",
 	"pricing": {
 		"single": {
 			"amount": 1000,
@@ -60,17 +60,17 @@ func TestCompileInventory(t *testing.T) {
 	},
 	"url": "%v"
 }
-			`, licensorID, offerURL)
+			`, sellerID, offerURL)
 			return &http.Response{
 				StatusCode: 200,
 				Body:       helptest.NoopCloser{bytes.NewBufferString(json)},
 				Header:     make(http.Header),
 			}
-		} else if url == vendorAPI+"/licensors/"+licensorID {
+		} else if url == brokerAPI+"/sellers/"+sellerID {
 			json = fmt.Sprintf(
 				`{ "name": "%v", "jurisdiction": "%v" }`,
-				licensorName,
-				licensorJurisdiction,
+				sellerName,
+				sellerJurisdiction,
 			)
 			return &http.Response{
 				StatusCode: 200,
@@ -104,7 +104,7 @@ func TestCompileInventory(t *testing.T) {
 		t.Fatal("did not find one licensable offer")
 	}
 	finding := licensable[0]
-	if finding.API != vendorAPI {
+	if finding.API != brokerAPI {
 		t.Error("did not read API")
 	}
 	if finding.OfferID != offerID {
@@ -113,8 +113,8 @@ func TestCompileInventory(t *testing.T) {
 	if finding.Public != public {
 		t.Error("did not read public license")
 	}
-	if finding.Offer.LicensorID != licensorID {
-		t.Error("did not read licensorID")
+	if finding.Offer.SellerID != sellerID {
+		t.Error("did not read sellerID")
 	}
 	if finding.Offer.Pricing.Single.Amount != 1000 {
 		t.Error("did not read offer single price amount")
@@ -125,7 +125,7 @@ func TestCompileInventory(t *testing.T) {
 	if finding.Offer.URL != offerURL {
 		t.Error("did not read offer URL")
 	}
-	if finding.Licensor.Name != licensorName {
-		t.Error("did not read licensor name")
+	if finding.Seller.Name != sellerName {
+		t.Error("did not read seller name")
 	}
 }

@@ -15,7 +15,7 @@ const Receipt = `{
   "additionalProperties": false,
   "properties": {
     "key": {
-      "title": "public signing key of the license vendor",
+      "title": "public signing key of the license broker",
       "$ref": "key.json"
     },
     "license": {
@@ -36,8 +36,8 @@ const Receipt = `{
           "required": [
             "api",
             "effective",
-            "licensee",
-            "licensor",
+            "buyer",
+            "seller",
             "offerID",
             "orderID"
           ],
@@ -69,9 +69,9 @@ const Receipt = `{
               "title": "purchase price",
               "$ref": "price.json"
             },
-            "licensee": {
-              "title": "licensee",
-              "comment": "The licensee is the one receiving the license.",
+            "buyer": {
+              "title": "buyer",
+              "comment": "The buyer is the one receiving the license.",
               "type": "object",
               "required": [
                 "email",
@@ -89,19 +89,19 @@ const Receipt = `{
                 "name": {
                   "$ref": "name.json",
                   "examples": [
-                    "Joe Licensee"
+                    "Joe Buyer"
                   ]
                 }
               }
             },
-            "licensor": {
-              "title": "licensor",
-              "comment": "The licensor is the one giving the license.",
+            "seller": {
+              "title": "seller",
+              "comment": "The seller is the one giving the license.",
               "type": "object",
               "required": [
                 "email",
                 "jurisdiction",
-                "licensorID",
+                "sellerID",
                 "name"
               ],
               "properties": {
@@ -112,22 +112,22 @@ const Receipt = `{
                 "jurisdiction": {
                   "$ref": "jurisdiction.json"
                 },
-                "licensorID": {
-                  "title": "licensor identifier",
+                "sellerID": {
+                  "title": "seller identifier",
                   "type": "string",
                   "format": "uuid"
                 },
                 "name": {
                   "$ref": "name.json",
                   "examples": [
-                    "Joe Licensor"
+                    "Joe Seller"
                   ]
                 }
               }
             },
-            "vendor": {
-              "title": "licesne vendor",
-              "comment": "information on the party that sold the license, such as an agent or reseller, if the licensor did not sell the license themself",
+            "broker": {
+              "title": "licesne broker",
+              "comment": "information on the party that sold the license, such as an agent or reseller, if the seller did not sell the license themself",
               "type": "object",
               "required": [
                 "email",
@@ -160,7 +160,7 @@ const Receipt = `{
       }
     },
     "signature": {
-      "title": "signature of the license vendor",
+      "title": "signature of the license broker",
       "$ref": "signature.json"
     }
   }

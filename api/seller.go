@@ -7,15 +7,15 @@ import (
 	"licensezero.com/licensezero/schemas"
 )
 
-// Licensor contains data about a licensor from a vendor API.
-type Licensor struct {
+// Seller contains data about a licensor from a vendor API.
+type Seller struct {
 	Jurisdiction string
 	Name         string
 }
 
-func parseLicensor(unstructured interface{}) (l *Licensor, err error) {
-	if !validateLicensor(unstructured) {
-		return nil, errors.New("invalid licensor")
+func parseSeller(unstructured interface{}) (l *Seller, err error) {
+	if !validateSeller(unstructured) {
+		return nil, errors.New("invalid seller")
 	}
 	err = mapstructure.Decode(unstructured, &l)
 	return
@@ -23,10 +23,10 @@ func parseLicensor(unstructured interface{}) (l *Licensor, err error) {
 
 var licensorValidator *gojsonschema.Schema = nil
 
-func validateLicensor(unstructured interface{}) bool {
+func validateSeller(unstructured interface{}) bool {
 	if licensorValidator == nil {
 		schema, err := schemas.Loader().Compile(
-			gojsonschema.NewStringLoader(schemas.Licensor),
+			gojsonschema.NewStringLoader(schemas.Seller),
 		)
 		if err != nil {
 			panic(err)

@@ -21,16 +21,16 @@ type Inventory struct {
 
 // Item describes an offer to license work in an artifact.
 type Item struct {
-	Type     string
-	Path     string
-	Scope    string
-	Name     string
-	Version  string
-	Public   string
-	API      string
-	OfferID  string
-	Offer    api.Offer
-	Licensor api.Licensor
+	Type    string
+	Path    string
+	Scope   string
+	Name    string
+	Version string
+	Public  string
+	API     string
+	OfferID string
+	Offer   api.Offer
+	Seller  api.Seller
 }
 
 // Finding represents information about an artifact that references offers.
@@ -87,22 +87,22 @@ func CompileInventory(
 			handleInvalid()
 			continue
 		} else {
-			licensor, err := client.Licensor(finding.API, offer.LicensorID)
+			seller, err := client.Seller(finding.API, offer.SellerID)
 			if err != nil {
 				handleInvalid()
 				continue
 			}
 			item = Item{
-				Type:     finding.Type,
-				Path:     finding.Path,
-				Scope:    finding.Scope,
-				Name:     finding.Name,
-				Version:  finding.Version,
-				Public:   finding.Public,
-				API:      finding.API,
-				OfferID:  finding.OfferID,
-				Offer:    *offer,
-				Licensor: *licensor,
+				Type:    finding.Type,
+				Path:    finding.Path,
+				Scope:   finding.Scope,
+				Name:    finding.Name,
+				Version: finding.Version,
+				Public:  finding.Public,
+				API:     finding.API,
+				OfferID: finding.OfferID,
+				Offer:   *offer,
+				Seller:  *seller,
 			}
 		}
 		inventory.Licensable = append(inventory.Licensable, item)
@@ -177,9 +177,9 @@ func haveReceipt(item *Item, receipts []*user.Receipt) bool {
 
 func ownProject(item *Item, accounts []*user.Account) bool {
 	api := item.API
-	licensorID := item.Offer.LicensorID
+	sellerID := item.Offer.SellerID
 	for _, account := range accounts {
-		if account.API == api && account.LicensorID == licensorID {
+		if account.API == api && account.SellerID == sellerID {
 			return true
 		}
 	}

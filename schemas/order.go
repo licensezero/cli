@@ -6,11 +6,11 @@ const Order = `{
   "$id": "https://schemas.licensezero.com/1.0.0-pre/order.json",
   "type": "object",
   "required": [
-    "licensee",
+    "buyer",
     "offerIDs"
   ],
   "properties": {
-    "licensee": {
+    "buyer": {
       "type": "object",
       "required": [
         "email",

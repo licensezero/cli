@@ -9,9 +9,9 @@ import (
 
 // Offer represents an offer to sell licenses.
 type Offer struct {
-	URL        string  `json:"url"`
-	LicensorID string  `json:"licensorID"`
-	Pricing    Pricing `json:"pricing"`
+	URL      string  `json:"url"`
+	SellerID string  `json:"sellerID"`
+	Pricing  Pricing `json:"pricing"`
 }
 
 // Pricing represents a price list.

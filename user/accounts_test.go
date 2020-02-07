@@ -19,11 +19,11 @@ func TestReadAccounts(t *testing.T) {
 
 	account := path.Join(receipts, "first.json")
 	api := "https://api.commonform.com"
-	licensorID := "71ea37d7-6a1a-4072-a64b-84d0236edfe6"
+	sellerID := "71ea37d7-6a1a-4072-a64b-84d0236edfe6"
 	token := "xxxxxx"
 	err = ioutil.WriteFile(
 		account,
-		[]byte("{\"api\": \""+api+"\", \"licensorID\": \""+licensorID+"\", \"token\": \""+token+"\"}"),
+		[]byte("{\"api\": \""+api+"\", \"sellerID\": \""+sellerID+"\", \"token\": \""+token+"\"}"),
 		0700,
 	)
 	if err != nil {
@@ -42,7 +42,7 @@ func TestReadAccounts(t *testing.T) {
 	if result.API != api {
 		t.Error("did not read API")
 	}
-	if result.LicensorID != licensorID {
-		t.Error("did not read licensor ID")
+	if result.SellerID != sellerID {
+		t.Error("did not read seller ID")
 	}
 }
