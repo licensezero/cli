@@ -1,6 +1,6 @@
 package schemas
 
-// Order contains the JSON schema for API order responses.
+// Order is a JSON schema.
 const Order = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/order.json",

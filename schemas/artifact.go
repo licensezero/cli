@@ -1,6 +1,6 @@
 package schemas
 
-// Artifact contains the JSON schema for licensezero.json files and other artifact metadata records.
+// Artifact is a JSON schema.
 const Artifact = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/artifact.json",

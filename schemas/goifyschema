@@ -1,0 +1,15 @@
+#!/bin/bash
+identifier="$1"
+url="$2"
+if [ -z "$url" ] || [ -z "$url" ]; then
+  echo "Usage: <identifier> <url>"
+  exit 1
+fi
+
+base=$(echo -n "$identifier" | tr "[:upper:]" "[:lower:]")
+cat >"$base.go" <<TEMPLATE
+package schemas
+
+// $identifier is a JSON schema.
+const $identifier = \`$(curl --silent "$url")\`
+TEMPLATE

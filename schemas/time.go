@@ -1,6 +1,6 @@
 package schemas
 
-// Time contains the JSON subschema for times.
+// Time is a JSON schema.
 const Time = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/time.json",

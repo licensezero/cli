@@ -1,6 +1,6 @@
 package schemas
 
-// Key contains the JSON subschema for signing keys.
+// Key is a JSON schema.
 const Key = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/key.json",

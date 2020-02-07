@@ -1,6 +1,6 @@
 package schemas
 
-// Receipt contains the JSON schema for API receipt responses.
+// Receipt is a JSON schema.
 const Receipt = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/receipt.json",
@@ -15,7 +15,7 @@ const Receipt = `{
   "additionalProperties": false,
   "properties": {
     "key": {
-      "title": "public signing key of the license broker",
+      "title": "public signing key of the broker server",
       "$ref": "key.json"
     },
     "license": {
@@ -126,7 +126,7 @@ const Receipt = `{
               }
             },
             "broker": {
-              "title": "licesne broker",
+              "title": "license broker",
               "comment": "information on the party that sold the license, such as an agent or reseller, if the seller did not sell the license themself",
               "type": "object",
               "required": [
@@ -160,7 +160,7 @@ const Receipt = `{
       }
     },
     "signature": {
-      "title": "signature of the license broker",
+      "title": "signature of the license broker server",
       "$ref": "signature.json"
     }
   }
