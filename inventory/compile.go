@@ -168,7 +168,8 @@ func haveReceipt(item *Item, receipts []*user.Receipt) bool {
 	api := item.API
 	offerID := item.OfferID
 	for _, account := range receipts {
-		if account.API == api && account.OfferID == offerID {
+		if account.License.Values.API == api &&
+			account.License.Values.OfferID == offerID {
 			return true
 		}
 	}

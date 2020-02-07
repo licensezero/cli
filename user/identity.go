@@ -15,11 +15,27 @@ type Identity struct {
 
 // ReadIdentity reads the CLI user's identify.
 func ReadIdentity(configPath string) (identity *Identity, err error) {
-	filePath := path.Join(configPath, "identity.json")
-	data, err := ioutil.ReadFile(filePath)
+	data, err := ioutil.ReadFile(identityPath(configPath))
 	if err != nil {
 		return nil, err
 	}
 	err = json.Unmarshal(data, &identity)
 	return
+}
+
+// WriteIdentity writes the CLI user's identity data to disk.
+func WriteIdentity(configPath string, i *Identity) (err error) {
+	data, jsonError := json.Marshal(i)
+	if jsonError != nil {
+		return jsonError
+	}
+	directoryError := makeConfigDirectory(configPath)
+	if directoryError != nil {
+		return directoryError
+	}
+	return ioutil.WriteFile(identityPath(configPath), data, 0644)
+}
+
+func identityPath(configPath string) string {
+	return path.Join(configPath, "identity.json")
 }

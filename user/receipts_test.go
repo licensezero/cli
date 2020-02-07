@@ -117,7 +117,7 @@ func TestReadReceipts(t *testing.T) {
 		t.Fatal("did not find receipt")
 	}
 
-	first := results[0]
+	first := results[0].License.Values
 	if first.API != "https://api.licensezero.com" {
 		t.Error("failed to parse API")
 	}
@@ -150,21 +150,21 @@ func TestValidateSignature(t *testing.T) {
 		",\"signature\":" + "\"" + signatureHex + "\"" +
 		",\"license\":" + message +
 		"}"
-	var valid interface{}
+	var valid Receipt
 	err := json.Unmarshal([]byte(validJSON), &valid)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := validateSignature(valid); err != nil {
+	if err := ValidateSignature(&valid); err != nil {
 		t.Error("invalidates invalid signature")
 	}
 	invalidJSON := strings.Replace(validJSON, publicKeyHex, strings.Repeat("a", 64), 1)
-	var invalid interface{}
+	var invalid Receipt
 	err = json.Unmarshal([]byte(invalidJSON), &invalid)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := validateSignature(invalid); err == nil {
+	if err := ValidateSignature(&invalid); err == nil {
 		t.Error("validates invalid signature")
 	}
 }
