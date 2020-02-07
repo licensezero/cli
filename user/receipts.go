@@ -1,7 +1,6 @@
 package user
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -18,68 +17,9 @@ import (
 type Receipt struct {
 	// Fields of this struct must be sorted by JSON key, in
 	// order to serialize correctly for signature.
-	Key       Key       `json:"key"`
-	License   License   `json:"license"`
-	Signature Signature `json:"signature"`
-}
-
-// Key represents a cryptographic signing public key.
-type Key []byte
-
-// Signature represents a cryptographic signature.
-type Signature []byte
-
-func toJSONHex(binary []byte) []byte {
-	buffer := bytes.NewBufferString("\"")
-	encoded := make([]byte, hex.EncodedLen(len(binary)))
-	hex.Encode(encoded, binary)
-	buffer.Write(encoded)
-	buffer.WriteString("\"")
-	return buffer.Bytes()
-}
-
-func fromJSONHex(data []byte) ([]byte, error) {
-	var asString string
-	err := json.Unmarshal(data, &asString)
-	if err != nil {
-		return nil, err
-	}
-	decoded := make([]byte, hex.DecodedLen(len(asString)))
-	_, err = hex.Decode(decoded, []byte(asString))
-	if err != nil {
-		return nil, err
-	}
-	return decoded, nil
-}
-
-// MarshalJSON overrides default JSON serialization.
-func (k *Key) MarshalJSON() ([]byte, error) {
-	return toJSONHex(*k), nil
-}
-
-// UnmarshalJSON overrides default JSON serialization.
-func (k *Key) UnmarshalJSON(data []byte) (err error) {
-	bytes, err := fromJSONHex(data)
-	if err != nil {
-		return
-	}
-	*k = bytes
-	return
-}
-
-// MarshalJSON overrides default JSON serialization.
-func (s *Signature) MarshalJSON() ([]byte, error) {
-	return toJSONHex(*s), nil
-}
-
-// UnmarshalJSON overrides default JSON serialization.
-func (s *Signature) UnmarshalJSON(data []byte) (err error) {
-	bytes, err := fromJSONHex(data)
-	if err != nil {
-		return
-	}
-	*s = bytes
-	return
+	KeyHex       string  `json:"key"`
+	License      License `json:"license"`
+	SignatureHex string  `json:"signature"`
 }
 
 // License holds data about the license a receipt documents.
@@ -94,15 +34,15 @@ type License struct {
 type Values struct {
 	// Fields of this struct must be sorted by JSON key, in
 	// order to serialize correctly for signature.
-	API       string `json:"api"`
-	Broker    Broker `json:"broker"`
-	Buyer     Buyer  `json:"buyer"`
-	Effective string `json:"effective"`
-	Expires   string `json:"expires"`
-	OfferID   string `json:"offerID"`
-	OrderID   string `json:"orderID"`
-	Price     Price  `json:"price"`
-	Seller    Seller `json:"seller"`
+	API       string  `json:"api"`
+	Broker    *Broker `json:"broker,omitempty"`
+	Buyer     *Buyer  `json:"buyer"`
+	Effective string  `json:"effective"`
+	Expires   string  `json:"expires,omitempty"`
+	OfferID   string  `json:"offerID"`
+	OrderID   string  `json:"orderID"`
+	Price     *Price  `json:"price,omitempty"`
+	Seller    *Seller `json:"seller"`
 }
 
 // Broker represents a party selling a license on behalf of a Seller.
@@ -203,7 +143,11 @@ func ValidateReceipt(receipt *Receipt) error {
 		}
 		receiptValidator = schema
 	}
-	dataLoader := gojsonschema.NewGoLoader(receipt)
+	marshaled, err := json.Marshal(receipt)
+	if err != nil {
+		return err
+	}
+	dataLoader := gojsonschema.NewBytesLoader(marshaled)
 	result, err := receiptValidator.Validate(dataLoader)
 	if err != nil {
 		return err
@@ -220,14 +164,24 @@ func ValidateSignature(r *Receipt) error {
 	if err != nil {
 		return err
 	}
-	return checkSignature(r.Key, r.Signature, serialized)
+	return checkSignature(r.KeyHex, r.SignatureHex, serialized)
 }
 
-func checkSignature(publicKey []byte, signature []byte, json []byte) error {
+func checkSignature(publicKey string, signature string, json []byte) error {
+	signatureBytes := make([]byte, hex.DecodedLen(len(signature)))
+	_, err := hex.Decode(signatureBytes, []byte(signature))
+	if err != nil {
+		return errors.New("invalid signature")
+	}
+	publicKeyBytes := make([]byte, hex.DecodedLen(len(publicKey)))
+	_, err = hex.Decode(publicKeyBytes, []byte(publicKey))
+	if err != nil {
+		return errors.New("invalid public key")
+	}
 	signatureValid := ed25519.Verify(
-		publicKey,
+		publicKeyBytes,
 		json,
-		signature,
+		signatureBytes,
 	)
 	if !signatureValid {
 		return errors.New("invalid signature")
