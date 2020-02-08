@@ -12,28 +12,13 @@ import (
 var Rev string
 
 var commands = map[string]*subcommands.Subcommand{
-	"backup":    subcommands.Backup,
-	"buy":       subcommands.Buy,
-	"bugs":      subcommands.Bugs,
-	"identify":  subcommands.Identify,
-	"import":    subcommands.Import,
-	"license":   subcommands.License,
-	"latest":    subcommands.Latest,
-	"lock":      subcommands.Lock,
-	"offer":     subcommands.Offer,
-	"quote":     subcommands.Quote,
-	"projects":  subcommands.Projects,
-	"readme":    subcommands.README,
-	"register":  subcommands.Register,
-	"relicense": subcommands.Relicense,
-	"reprice":   subcommands.Reprice,
-	"reset":     subcommands.Reset,
-	"retract":   subcommands.Retract,
-	"sponsor":   subcommands.Sponsor,
-	"token":     subcommands.Token,
-	"version":   subcommands.Version,
-	"waive":     subcommands.Waive,
-	"whoami":    subcommands.WhoAmI,
+	"backup":   subcommands.Backup,
+	"bugs":     subcommands.Bugs,
+	"identify": subcommands.Identify,
+	"import":   subcommands.Import,
+	"latest":   subcommands.Latest,
+	"version":  subcommands.Version,
+	"whoami":   subcommands.WhoAmI,
 }
 
 func main() {
