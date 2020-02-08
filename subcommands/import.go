@@ -45,34 +45,29 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 	if err != nil {
 		Fail("Error reading " + *bundle + ".")
 	}
-	var parsed struct {
-		Licenses []user.LicenseFile `json:"licenses"`
-	}
+	var parsed []user.Receipt
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		Fail("Error parsing license bundle.")
 	}
+	client := api.NewClient(http.DefaultTransport)
 	imported := 0
-	for _, license := range parsed.Licenses {
-		envelope, err := user.LicenseFileToEnvelope(&license)
+	for _, receipt := range parsed {
+		err = receipt.VerifySignature()
+		server := receipt.License.Values.API
+		offerID := receipt.License.Values.OfferID
 		if err != nil {
-			os.Stderr.WriteString("Error parsing license for project ID" + license.ProjectID + ".\n")
+			os.Stderr.WriteString("Invalid signature for " + server + "/offers/" + offerID + "\n")
 			continue
 		}
-		projectID := envelope.Manifest.Project.ProjectID
-		licensor, err := api.Project(projectID)
+		_, err := client.Offer(server, offerID)
 		if err != nil {
-			os.Stderr.WriteString("Error fetching project developer information for " + projectID + ": " + err.Error() + "\n")
+			os.Stderr.WriteString("Error fetching offer.\n")
 			continue
 		}
-		err = user.CheckLicenseSignature(envelope, licensor.PublicKey)
+		err = receipt.Save(paths.Home)
 		if err != nil {
-			os.Stderr.WriteString("Invalid license signature for project " + projectID + ".\n")
-			continue
-		}
-		err = user.WriteLicense(paths.Home, envelope)
-		if err != nil {
-			os.Stderr.WriteString("Error writing license for project ID" + license.ProjectID + ".\n")
+			os.Stderr.WriteString("Error saving receipt for " + server + "/offers/" + offerID + "\n")
 			continue
 		}
 		imported++
@@ -88,27 +83,18 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 	if err != nil {
 		Fail("Could not read file.")
 	}
-	var unstructured interface{}
-	err = json.Unmarshal(data, &unstructured)
-	if err != nil {
-		Fail("Invalid JSON.")
-	}
-	err = user.ValidateReceipt(unstructured)
+	var receipt user.Receipt
+	err = json.Unmarshal(data, &receipt)
 	if err != nil {
 		Fail("Invalid receipt.")
 	}
-	err = user.ValidateSignature(unstructured)
+	err = receipt.VerifySignature()
 	if err != nil {
 		Fail("Invalid signature.")
 	}
-	receipt := user.ParseReceipt(unstructured)
-	err = ioutil.WriteFile(
-		user.ReceiptPath(paths.Home, receipt.API, receipt.OfferID),
-		data,
-		0700,
-	)
+	err = receipt.Save(paths.Home)
 	if err != nil {
-		Fail("Error writing file.")
+		Fail("Error saving receipt.")
 	}
 	os.Exit(0)
 }
