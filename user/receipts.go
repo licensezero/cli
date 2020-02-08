@@ -158,8 +158,8 @@ func ValidateReceipt(receipt *Receipt) error {
 	return nil
 }
 
-// ValidateSignature validates the broker signature on a receipt.
-func ValidateSignature(r *Receipt) error {
+// VerifySignature validates the broker signature on a receipt.
+func (r *Receipt) VerifySignature() error {
 	serialized, err := json.Marshal(r.License)
 	if err != nil {
 		return err
@@ -189,8 +189,8 @@ func checkSignature(publicKey string, signature string, json []byte) error {
 	return nil
 }
 
-// WriteReceipt writes a receipt to the CLI configuration directory.
-func WriteReceipt(configPath string, receipt *Receipt) error {
+// Save writes a receipt to the CLI configuration directory.
+func (receipt *Receipt) Save(configPath string) error {
 	json, err := json.Marshal(receipt)
 	if err != nil {
 		return err
@@ -199,7 +199,7 @@ func WriteReceipt(configPath string, receipt *Receipt) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(receiptPath(configPath, receipt), json, 0644)
+	return ioutil.WriteFile(receipt.Path(configPath), json, 0644)
 }
 
 func receiptBasename(api string, offerID string) string {
@@ -208,8 +208,8 @@ func receiptBasename(api string, offerID string) string {
 	return hex.EncodeToString(digest.Sum(nil))
 }
 
-// ReceiptPath calculates the file path for a receipt.
-func receiptPath(configPath string, receipt *Receipt) string {
+// Path calculates the file path for a receipt.
+func (receipt *Receipt) Path(configPath string) string {
 	basename := receiptBasename(
 		receipt.License.Values.API,
 		receipt.License.Values.OfferID,
