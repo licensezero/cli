@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/xeipuuv/gojsonschema"
 	"licensezero.com/licensezero/schemas"
+	"time"
 )
 
 // Keys represents a register of broker signing keys.
@@ -15,8 +16,32 @@ type Keys struct {
 
 // Timeframe represents the period of time when a key is valid.
 type Timeframe struct {
-	From    string `json:"from"`
-	Through string `json:"through"`
+	From    *KeyTime `json:"from"`
+	Through *KeyTime `json:"through,omitempty"`
+}
+
+type KeyTime struct{ time.Time }
+
+func (kt *KeyTime) format() string {
+	return kt.UTC().Format(time.RFC3339)
+}
+
+func (kt *KeyTime) UnmarshalJSON(b []byte) (err error) {
+	var asString string
+	err = json.Unmarshal(b, &asString)
+	if err != nil {
+		return
+	}
+	t, err := time.Parse(time.RFC3339, asString)
+	if err != nil {
+		return
+	}
+	*kt = KeyTime{t}
+	return
+}
+
+func (kt *KeyTime) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + kt.format() + "\""), nil
 }
 
 // ErrInvalidKeys indicates that a Keys struct does not conform
