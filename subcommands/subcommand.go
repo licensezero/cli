@@ -2,7 +2,7 @@ package subcommands
 
 import (
 	"io"
-	"licensezero.com/licensezero/api"
+	"net/http"
 )
 
 // Subcommand describes a CLI subcommand.
@@ -13,6 +13,6 @@ type Subcommand struct {
 		args []string, stdin InputDevice,
 		stdout io.StringWriter,
 		stderr io.StringWriter,
-		client api.Client,
+		client *http.Client,
 	) int
 }

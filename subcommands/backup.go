@@ -3,8 +3,8 @@ package subcommands
 import (
 	"github.com/mholt/archiver/v3"
 	"io"
-	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
+	"net/http"
 	"time"
 )
 
@@ -14,7 +14,7 @@ const backupDescription = "Create a tarball of your data."
 var Backup = &Subcommand{
 	Tag:         "misc",
 	Description: backupDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
 		now := time.Now()
 		fileName := "licensezero-backup-" + now.Format(time.RFC3339) + ".tar"
 		tar := archiver.NewTar()

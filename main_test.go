@@ -1,8 +1,19 @@
 package main
 
 import (
+	"bytes"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"github.com/google/uuid"
+	"golang.org/x/crypto/ed25519"
+	"io/ioutil"
+	"licensezero.com/licensezero/api"
+	"os"
+	"path"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestSanity(t *testing.T) {
@@ -64,18 +75,150 @@ func TestWhoAmIWithIdentity(t *testing.T) {
 func TestImportGoodFile(t *testing.T) {
 	writeGoodReceipt(t)
 	defer withTempConfig(t)
-	output, _, _ := runCommand(t, []string{"import", "--file", "testdata/receipts/good.json"})
+	output, errorOutput, _ := runCommand(t, []string{"import", "--file", "testdata/good-receipt.json"})
+	t.Log(errorOutput)
 	if !strings.Contains(output, "Imported") {
 		t.Error("does not say imported")
+	}
+}
+
+func writeGoodReceipt(t *testing.T) {
+	t.Helper()
+	if !*update {
+		return
+	}
+	publicKey, privateKey, _ := ed25519.GenerateKey(nil)
+	offerID := uuid.New().String()
+	orderID := uuid.New().String()
+	sellerID := uuid.New().String()
+	effective := time.Now().UTC().Format(time.RFC3339)
+	license := api.License{
+		Form: "test form",
+		Values: api.Values{
+			API: "https://api.licensezero.com",
+			Buyer: &api.Buyer{
+				EMail:        "buyer@example.com",
+				Jurisdiction: "US-TX",
+				Name:         "Buyer",
+			},
+			Effective: effective,
+			OfferID:   offerID,
+			OrderID:   orderID,
+			SellerID:  sellerID,
+			Seller: &api.Seller{
+				EMail:        "seller@example.com",
+				Jurisdiction: "US-CA",
+				Name:         "Seller",
+			},
+		},
+	}
+	licenseJSON, err := json.Marshal(license)
+	if err != nil {
+		t.Fatal(err)
+	}
+	compactedLicenseJSON := bytes.NewBuffer([]byte{})
+	err = json.Compact(compactedLicenseJSON, []byte(licenseJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+	publicKeyHex := hex.EncodeToString(publicKey)
+	signature := ed25519.Sign(privateKey, compactedLicenseJSON.Bytes())
+	signatureHex := hex.EncodeToString(signature)
+	receipt := api.Receipt{
+		KeyHex:       publicKeyHex,
+		License:      license,
+		SignatureHex: signatureHex,
+	}
+	receiptJSON, err := json.Marshal(receipt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = os.MkdirAll("testdata", 0755)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = ioutil.WriteFile(
+		path.Join("testdata", "good-receipt.json"),
+		receiptJSON,
+		0644,
+	)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
 func TestImportBadFile(t *testing.T) {
 	writeBadReceipt(t)
 	defer withTempConfig(t)
-	_, errorOutput, _ := runCommand(t, []string{"import", "--file", "testdata/receipts/bad.json"})
+	_, errorOutput, _ := runCommand(t, []string{"import", "--file", "testdata/bad-receipt.json"})
 	if !strings.Contains(errorOutput, "Invalid signature.") {
 		t.Error("does not report invalid")
+	}
+}
+
+func writeBadReceipt(t *testing.T) {
+	t.Helper()
+	if !*update {
+		return
+	}
+	publicKey, privateKey, _ := ed25519.GenerateKey(nil)
+	offerID := uuid.New().String()
+	orderID := uuid.New().String()
+	sellerID := uuid.New().String()
+	effective := time.Now().UTC().Format(time.RFC3339)
+	license := api.License{
+		Form: "test form",
+		Values: api.Values{
+			API: "https://api.licensezero.com",
+			Buyer: &api.Buyer{
+				EMail:        "buyer@example.com",
+				Jurisdiction: "US-TX",
+				Name:         "Buyer",
+			},
+			Effective: effective,
+			OfferID:   offerID,
+			OrderID:   orderID,
+			SellerID:  sellerID,
+			Seller: &api.Seller{
+				EMail:        "seller@example.com",
+				Jurisdiction: "US-CA",
+				Name:         "Seller",
+			},
+		},
+	}
+	licenseJSON, err := json.Marshal(license)
+	if err != nil {
+		t.Fatal(err)
+	}
+	compactedLicenseJSON := bytes.NewBuffer([]byte{})
+	err = json.Compact(compactedLicenseJSON, []byte(licenseJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+	publicKeyHex := hex.EncodeToString(publicKey)
+	signature := ed25519.Sign(privateKey, compactedLicenseJSON.Bytes())
+	signatureHex := hex.EncodeToString(signature)
+	invalidSignatureHex := strings.Repeat("0", len(signatureHex))
+	receipt := api.Receipt{
+		KeyHex:       publicKeyHex,
+		License:      license,
+		SignatureHex: invalidSignatureHex,
+	}
+	receiptJSON, err := json.Marshal(receipt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = os.MkdirAll("testdata", 0755)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = ioutil.WriteFile(
+		path.Join("testdata", "bad-receipt.json"),
+		receiptJSON,
+		0644,
+	)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -88,30 +231,79 @@ func TestImportNonexistentFile(t *testing.T) {
 }
 
 func TestImportGoodBundle(t *testing.T) {
-	writeGoodBundle(t)
 	defer withTempConfig(t)
-	defer withTestDataServer(t)
-	output, errorOutput, _ := runCommand(t, []string{"import", "--bundle", "http://:" + port + "/bundles/good.json"})
-	if errorOutput != "" {
-		t.Error("error output")
+
+	// Generate receipt and other records.
+	publicKey, privateKey, _ := ed25519.GenerateKey(nil)
+	brokerAPI := "https://api.licensezero.com"
+	offerID := uuid.New().String()
+	orderID := uuid.New().String()
+	sellerID := uuid.New().String()
+	bundleID := uuid.New().String()
+	bundleURL := brokerAPI + "/receipts/" + bundleID
+	effective := time.Now().UTC().Format(time.RFC3339)
+	license := api.License{
+		Form: "test form",
+		Values: api.Values{
+			API: brokerAPI,
+			Buyer: &api.Buyer{
+				EMail:        "buyer@example.com",
+				Jurisdiction: "US-TX",
+				Name:         "Buyer",
+			},
+			Effective: effective,
+			OfferID:   offerID,
+			OrderID:   orderID,
+			SellerID:  sellerID,
+			Seller: &api.Seller{
+				EMail:        "seller@example.com",
+				Jurisdiction: "US-CA",
+				Name:         "Seller",
+			},
+		},
 	}
-	if !strings.Contains(output, "Imported 1 licenses.") {
+	licenseJSON, err := json.Marshal(license)
+	if err != nil {
+		t.Fatal(err)
+	}
+	compactedLicenseJSON := bytes.NewBuffer([]byte{})
+	err = json.Compact(compactedLicenseJSON, []byte(licenseJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+	signature := ed25519.Sign(privateKey, compactedLicenseJSON.Bytes())
+	signatureHex := hex.EncodeToString(signature)
+	publicKeyHex := hex.EncodeToString(publicKey)
+	receipt := api.Receipt{
+		KeyHex:       publicKeyHex,
+		License:      license,
+		SignatureHex: signatureHex,
+	}
+	receiptJSON, err := json.Marshal(receipt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Run import subcommand.
+	input := &failingInputDevice{}
+	stdout := bytes.NewBuffer([]byte{})
+	stderr := bytes.NewBuffer([]byte{})
+	arguments := []string{"import", "--bundle", bundleURL}
+	client := mockClient(t, map[string]string{
+		bundleURL: fmt.Sprintf(
+			`{ "created": "%v", "receipts": [%v] }`,
+			effective, string(receiptJSON),
+		),
+	})
+	code := run(arguments, input, stdout, stderr, client)
+	output := string(stdout.Bytes())
+	if code != 0 {
+		t.Error("exited non-zero")
+	}
+	if strings.Contains(output, "Imported 1 receipt.") {
 		t.Error("does not report imported")
 	}
 }
 
 func TestImportBundleBadSignature(t *testing.T) {
-	writeBadBundle(t)
-	defer withTempConfig(t)
-	defer withTestDataServer(t)
-	output, errorOutput, code := runCommand(t, []string{"import", "--bundle", "http://:" + port + "/receipts/bad.json"})
-	if code != 0 {
-		t.Error("exited non-zero")
-	}
-	if !strings.Contains(output, "Imported 0 licenses.") {
-		t.Error("does not report imported")
-	}
-	if !strings.Contains(errorOutput, "Invalid license signature") {
-		t.Error("does not report invalid signature")
-	}
 }

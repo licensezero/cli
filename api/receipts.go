@@ -94,6 +94,10 @@ func (receipt *Receipt) Validate() error {
 	return nil
 }
 
+// ErrInvalidSignaure indicates that the siganture to a Receipt
+// cannot be verified.
+var ErrInvalidSignaure = errors.New("invalid signature")
+
 // VerifySignature validates the broker signature on a receipt.
 func (receipt *Receipt) VerifySignature() error {
 	serialized, err := json.Marshal(receipt.License)
@@ -107,12 +111,12 @@ func checkSignature(publicKey string, signature string, json []byte) error {
 	signatureBytes := make([]byte, hex.DecodedLen(len(signature)))
 	_, err := hex.Decode(signatureBytes, []byte(signature))
 	if err != nil {
-		return errors.New("invalid signature")
+		return errors.New("bad signature")
 	}
 	publicKeyBytes := make([]byte, hex.DecodedLen(len(publicKey)))
 	_, err = hex.Decode(publicKeyBytes, []byte(publicKey))
 	if err != nil {
-		return errors.New("invalid public key")
+		return errors.New("bad public key")
 	}
 	signatureValid := ed25519.Verify(
 		publicKeyBytes,
@@ -120,7 +124,7 @@ func checkSignature(publicKey string, signature string, json []byte) error {
 		signatureBytes,
 	)
 	if !signatureValid {
-		return errors.New("invalid signature")
+		return ErrInvalidSignaure
 	}
 	return nil
 }

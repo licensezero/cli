@@ -6,8 +6,8 @@ import (
 	"flag"
 	"github.com/licensezero/helptest"
 	"io"
-	"licensezero.com/licensezero/api"
 	"net/http"
+	"os"
 	"testing"
 )
 
@@ -30,29 +30,42 @@ func runCommand(t *testing.T, args []string) (output string, errorOutput string,
 	transport := helptest.RoundTripFunc(func(req *http.Request) *http.Response {
 		return &http.Response{
 			StatusCode: 404,
-			Body:       helptest.NoopCloser{bytes.NewBufferString("")},
+			Body:       helptest.NoopCloser{Reader: bytes.NewBufferString("")},
 			Header:     make(http.Header),
 		}
 	})
-	client := api.NewClient(transport)
-	code = run(args, input, stdout, stderr, client)
+	client := http.Client{Transport: transport}
+	code = run(args, input, stdout, stderr, &client)
 	output = string(stdout.Bytes())
 	errorOutput = string(stderr.Bytes())
 	return
 }
 
-const port = "8888"
+func mockClient(t *testing.T, responses map[string]string) *http.Client {
+	transport := helptest.RoundTripFunc(func(req *http.Request) *http.Response {
+		url := req.URL.String()
+		json, ok := responses[url]
+		if !ok {
+			return &http.Response{
+				StatusCode: 404,
+				Body:       helptest.NoopCloser{Reader: bytes.NewBufferString("")},
+				Header:     make(http.Header),
+			}
+		}
+		return &http.Response{
+			StatusCode: 200,
+			Body:       helptest.NoopCloser{Reader: bytes.NewBufferString(json)},
+			Header:     make(http.Header),
+		}
+	})
+	return &http.Client{Transport: transport}
+}
 
-func withTestDataServer(t *testing.T) func() {
+func withTempConfig(t *testing.T) func() {
 	t.Helper()
-	server := http.Server{
-		Addr:    ":" + port,
-		Handler: http.FileServer(http.Dir("testdata")),
-	}
-	go func() {
-		server.ListenAndServe()
-	}()
+	directory, cleanup := helptest.TempDir(t, "licensezero")
+	os.Setenv("LICENSEZERO_CONFIG", directory)
 	return func() {
-		server.Shutdown(nil)
+		cleanup()
 	}
 }

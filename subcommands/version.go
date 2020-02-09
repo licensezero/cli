@@ -2,7 +2,7 @@ package subcommands
 
 import (
 	"io"
-	"licensezero.com/licensezero/api"
+	"net/http"
 )
 
 const versionDescription = "Print version."
@@ -11,7 +11,7 @@ const versionDescription = "Print version."
 var Version = &Subcommand{
 	Tag:         "misc",
 	Description: versionDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
 		if args[0] == "" {
 			stdout.WriteString("Development Build\n")
 		} else {

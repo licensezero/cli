@@ -63,7 +63,7 @@ func TestCompileInventory(t *testing.T) {
 			`, sellerID, offerURL)
 			return &http.Response{
 				StatusCode: 200,
-				Body:       helptest.NoopCloser{bytes.NewBufferString(json)},
+				Body:       helptest.NoopCloser{Reader: bytes.NewBufferString(json)},
 				Header:     make(http.Header),
 			}
 		} else if url == brokerAPI+"/sellers/"+sellerID {
@@ -74,13 +74,13 @@ func TestCompileInventory(t *testing.T) {
 			)
 			return &http.Response{
 				StatusCode: 200,
-				Body:       helptest.NoopCloser{bytes.NewBufferString(json)},
+				Body:       helptest.NoopCloser{Reader: bytes.NewBufferString(json)},
 				Header:     make(http.Header),
 			}
 		} else {
 			return &http.Response{
 				StatusCode: 404,
-				Body:       helptest.NoopCloser{bytes.NewBufferString("")},
+				Body:       helptest.NoopCloser{Reader: bytes.NewBufferString("")},
 				Header:     make(http.Header),
 			}
 		}

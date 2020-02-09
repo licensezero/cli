@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/subcommands"
 	"net/http"
 	"os"
@@ -29,12 +28,12 @@ func main() {
 		&subcommands.StandardInputDevice{File: os.Stdin},
 		os.Stdout,
 		os.Stderr,
-		api.NewClient(http.DefaultTransport),
+		&http.Client{Transport: http.DefaultTransport},
 	)
 	os.Exit(code)
 }
 
-func run(arguments []string, input subcommands.InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
+func run(arguments []string, input subcommands.InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
 	if len(arguments) > 0 {
 		subcommand := arguments[0]
 		if value, ok := commands[subcommand]; ok {

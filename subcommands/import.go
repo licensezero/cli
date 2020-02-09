@@ -2,6 +2,7 @@ package subcommands
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"io"
 	"io/ioutil"
@@ -27,7 +28,7 @@ var importUsage = importDescription + "\n\n" +
 var Import = &Subcommand{
 	Tag:         "buyer",
 	Description: importDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
 		flagSet := flag.NewFlagSet("import", flag.ExitOnError)
 		filePath := flagSet.String("file", "", "")
 		bundle := flagSet.String("bundle", "", "")
@@ -51,10 +52,11 @@ var Import = &Subcommand{
 	},
 }
 
-func importBundle(bundle *string, silent *bool, stdout, stderr io.StringWriter, client api.Client) int {
-	response, err := http.Get(*bundle)
+func importBundle(bundle *string, silent *bool, stdout, stderr io.StringWriter, client *http.Client) int {
+	response, err := client.Get(*bundle)
 	if err != nil {
 		stderr.WriteString("Error getting bundle.\n")
+		stderr.WriteString(err.Error() + "\n")
 		return 1
 	}
 	defer response.Body.Close()
@@ -71,32 +73,25 @@ func importBundle(bundle *string, silent *bool, stdout, stderr io.StringWriter, 
 	}
 	imported := 0
 	for _, receipt := range parsed.Receipts {
-		err = receipt.VerifySignature()
-		server := receipt.License.Values.API
-		offerID := receipt.License.Values.OfferID
+		err = importReceipt(&receipt)
 		if err != nil {
-			stderr.WriteString("Invalid signature for " + server + "/offers/" + offerID + "\n")
-			continue
-		}
-		_, err := client.Offer(server, offerID)
-		if err != nil {
-			stderr.WriteString("Error fetching offer.\n")
-			continue
-		}
-		err = user.SaveReceipt(&receipt)
-		if err != nil {
-			stderr.WriteString("Error saving receipt for " + server + "/offers/" + offerID + "\n")
+			displayError(err, stderr)
 			continue
 		}
 		imported++
 	}
 	if !*silent {
-		stdout.WriteString("Imported " + strconv.Itoa(imported) + " licenses.\n")
+		stdout.WriteString("Imported " + strconv.Itoa(imported))
+		if imported == 1 {
+			stdout.WriteString(" license.\n")
+		} else {
+			stdout.WriteString(" licenses.\n")
+		}
 	}
 	return 0
 }
 
-func importFile(filePath *string, silent *bool, stdout, stderr io.StringWriter, client api.Client) int {
+func importFile(filePath *string, silent *bool, stdout, stderr io.StringWriter, client *http.Client) int {
 	data, err := ioutil.ReadFile(*filePath)
 	if err != nil {
 		stderr.WriteString("Could not read file.\n")
@@ -108,23 +103,38 @@ func importFile(filePath *string, silent *bool, stdout, stderr io.StringWriter, 
 		stderr.WriteString("Invalid JSON.\n")
 		return 1
 	}
-	err = receipt.Validate()
+	err = importReceipt(&receipt)
 	if err != nil {
-		stderr.WriteString("Invalid receipt.\n")
-		return 1
-	}
-	err = receipt.VerifySignature()
-	if err != nil {
-		stderr.WriteString("Invalid signature.\n")
-		return 1
-	}
-	err = user.SaveReceipt(&receipt)
-	if err != nil {
-		stderr.WriteString("Error saving receipt.\n")
+		displayError(err, stderr)
 		return 1
 	}
 	if !*silent {
 		stdout.WriteString("Imported " + *filePath + ".\n")
 	}
 	return 0
+}
+
+func displayError(err error, stderr io.StringWriter) {
+	switch {
+	case errors.Is(err, api.ErrInvalidReceipt):
+		stderr.WriteString("Invalid receipt.")
+	case errors.Is(err, api.ErrInvalidSignaure):
+		stderr.WriteString("Invalid signature.")
+	default:
+		stderr.WriteString(err.Error())
+	}
+	stderr.WriteString("\n")
+}
+
+func importReceipt(receipt *api.Receipt) (err error) {
+	err = receipt.Validate()
+	if err != nil {
+		return
+	}
+	err = receipt.VerifySignature()
+	if err != nil {
+		return
+	}
+	err = user.SaveReceipt(receipt)
+	return
 }

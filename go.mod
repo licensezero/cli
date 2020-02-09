@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/badoux/checkmail v0.0.0-20181210160741-9661bd69e9ad
+	github.com/google/uuid v1.1.1
 	github.com/licensezero/helptest v0.0.1
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/mholt/archiver/v3 v3.3.0

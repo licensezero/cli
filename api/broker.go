@@ -7,23 +7,14 @@ import (
 	"net/http"
 )
 
-// Client responds to broker API requests.
-type Client interface {
-	Offer(api string, offerID string) (*Offer, error)
-	Seller(api string, sellerID string) (*Seller, error)
-}
-
-type httpClient struct {
+// BrokerServer responds to broker API requests.
+type BrokerServer struct {
 	Client *http.Client
+	Base   string
 }
 
-// NewClient reutrns a client using the given Transport.
-func NewClient(t http.RoundTripper) Client {
-	return &httpClient{Client: &http.Client{Transport: t}}
-}
-
-func (c *httpClient) Offer(api string, offerID string) (offer *Offer, err error) {
-	response, err := c.Client.Get(api + "/offers/" + offerID)
+func (b *BrokerServer) Offer(offerID string) (offer *Offer, err error) {
+	response, err := b.Client.Get(b.Base + "/offers/" + offerID)
 	if err != nil {
 		return
 	}
@@ -43,8 +34,8 @@ func (c *httpClient) Offer(api string, offerID string) (offer *Offer, err error)
 	return
 }
 
-func (c *httpClient) Seller(api string, sellerID string) (seller *Seller, err error) {
-	response, err := c.Client.Get(api + "/sellers/" + sellerID)
+func (b *BrokerServer) Seller(sellerID string) (seller *Seller, err error) {
+	response, err := b.Client.Get(b.Base + "/sellers/" + sellerID)
 	if err != nil {
 		return
 	}
