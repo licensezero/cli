@@ -31,6 +31,8 @@ var artifactValidator *gojsonschema.Schema = nil
 // conform to the JSON schema for artifact metadata.
 var ErrInvalidArtifact = errors.New("invalid artifact")
 
+// Validate checks that the Artifact conforms to the
+// JSON schema for artifact metadata.
 func (artifact *Artifact) Validate() error {
 	if artifactValidator == nil {
 		schema, err := schemas.Loader().Compile(
