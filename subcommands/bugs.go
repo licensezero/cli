@@ -2,8 +2,8 @@ package subcommands
 
 import (
 	"flag"
+	"io"
 	"io/ioutil"
-	"os"
 )
 
 const bugsDescription = "Open the CLI bug tracker page."
@@ -12,7 +12,7 @@ const bugsDescription = "Open the CLI bug tracker page."
 var Bugs = &Subcommand{
 	Tag:         "misc",
 	Description: bugsDescription,
-	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
 		flagSet := flag.NewFlagSet("bugs", flag.ExitOnError)
 		doNotOpen := doNotOpenFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)

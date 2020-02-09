@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/licensezero/helptest"
 	"golang.org/x/crypto/ed25519"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -19,15 +21,30 @@ import (
 
 var update = flag.Bool("update", false, "update test fixtures")
 
+type failingInputDevice struct{}
+
+func (f *failingInputDevice) Confirm(string, io.StringWriter) (bool, error) {
+	return false, errors.New("test input device")
+}
+
+func (f *failingInputDevice) SecretPrompt(string, io.StringWriter) (string, error) {
+	return "", errors.New("test input device")
+}
+
 func TestSanity(t *testing.T) {
-	command := exec.Command("./licensezero")
-	var stdout bytes.Buffer
-	command.Stdout = &stdout
-	err := command.Run()
-	if err != nil {
-		t.Fatal(err)
-	}
+	input := &failingInputDevice{}
+	stdout := bytes.NewBuffer([]byte{})
+	stderr := bytes.NewBuffer([]byte{})
+	code := run(
+		[]string{},
+		input,
+		stdout,
+		stderr,
+	)
 	output := string(stdout.Bytes())
+	if code != 0 {
+		t.Error("exited with non-zero status")
+	}
 	if !strings.Contains(output, "Subcommands:") {
 		t.Error("does not list subcommands")
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"licensezero.com/licensezero/subcommands"
 	"os"
 	"sort"
@@ -21,29 +22,29 @@ var commands = map[string]*subcommands.Subcommand{
 }
 
 func main() {
-	os.Exit(run(os.Args, os.Stdin, os.Stdout, os.Stderr))
+	os.Exit(run(os.Args, &subcommands.StandardInputDevice{File: os.Stdin}, os.Stdout, os.Stderr))
 }
 
-func run(arguments []string, stdin, stdout, stderr *os.File) int {
+func run(arguments []string, input subcommands.InputDevice, stdout, stderr io.StringWriter) int {
 	if len(arguments) > 1 {
 		subcommand := arguments[1]
 		if value, ok := commands[subcommand]; ok {
 			if subcommand == "version" || subcommand == "latest" {
-				value.Handler([]string{Rev}, stdin, stdout, stderr)
+				value.Handler([]string{Rev}, input, stdout, stderr)
 			} else {
-				return value.Handler(arguments[2:], stdin, stdout, stderr)
+				return value.Handler(arguments[2:], input, stdout, stderr)
 			}
 		} else {
-			showUsage()
+			showUsage(stdout)
 			return 1
 		}
 	}
-	showUsage()
+	showUsage(stdout)
 	return 0
 }
 
-func showUsage() {
-	os.Stdout.WriteString("Manage License Zero projects and dependencies.\n\nSubcommands:\n")
+func showUsage(stdout io.StringWriter) {
+	stdout.WriteString("Manage License Zero projects and dependencies.\n\nSubcommands:\n")
 	buyer := map[string]*subcommands.Subcommand{}
 	seller := map[string]*subcommands.Subcommand{}
 	misc := map[string]*subcommands.Subcommand{}
@@ -57,13 +58,13 @@ func showUsage() {
 			misc[key] = value
 		}
 	}
-	listSubcommands("For Buyers", buyer)
-	listSubcommands("For Sellers", seller)
-	listSubcommands("Miscellaneous", misc)
+	listSubcommands(stdout, "For Buyers", buyer)
+	listSubcommands(stdout, "For Sellers", seller)
+	listSubcommands(stdout, "Miscellaneous", misc)
 }
 
-func listSubcommands(header string, list map[string]*subcommands.Subcommand) {
-	os.Stdout.WriteString("\n  " + header + ":\n\n")
+func listSubcommands(stdout io.StringWriter, header string, list map[string]*subcommands.Subcommand) {
+	stdout.WriteString("\n  " + header + ":\n\n")
 	longestSubcommand := 0
 	var names []string
 	for name := range list {
@@ -76,6 +77,8 @@ func listSubcommands(header string, list map[string]*subcommands.Subcommand) {
 	sort.Strings(names)
 	for _, name := range names {
 		info := list[name]
-		fmt.Printf("  %-"+fmt.Sprintf("%d", longestSubcommand)+"s %s\n", name, info.Description)
+		stdout.WriteString(
+			fmt.Sprintf("  %-"+fmt.Sprintf("%d", longestSubcommand)+"s %s\n", name, info.Description),
+		)
 	}
 }

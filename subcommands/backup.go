@@ -2,8 +2,8 @@ package subcommands
 
 import (
 	"github.com/mholt/archiver/v3"
+	"io"
 	"licensezero.com/licensezero/user"
-	"os"
 	"time"
 )
 
@@ -13,7 +13,7 @@ const backupDescription = "Create a tarball of your data."
 var Backup = &Subcommand{
 	Tag:         "misc",
 	Description: backupDescription,
-	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
 		now := time.Now()
 		fileName := "licensezero-backup-" + now.Format(time.RFC3339) + ".tar"
 		tar := archiver.NewTar()

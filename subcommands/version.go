@@ -1,7 +1,7 @@
 package subcommands
 
 import (
-	"os"
+	"io"
 )
 
 const versionDescription = "Print version."
@@ -10,7 +10,7 @@ const versionDescription = "Print version."
 var Version = &Subcommand{
 	Tag:         "misc",
 	Description: versionDescription,
-	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
 		if args[0] == "" {
 			stdout.WriteString("Development Build\n")
 		} else {

@@ -2,9 +2,9 @@ package subcommands
 
 import (
 	"flag"
+	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/user"
-	"os"
 )
 
 const identifyDescription = "Save your identity information."
@@ -24,7 +24,7 @@ var identifyUsage = identifyDescription + "\n\n" +
 var Identify = &Subcommand{
 	Tag:         "misc",
 	Description: identifyDescription,
-	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
 		flagSet := flag.NewFlagSet("identify", flag.ContinueOnError)
 		jurisdiction := flagSet.String("jurisdiction", "", "")
 		name := flagSet.String("name", "", "")
@@ -49,7 +49,7 @@ var Identify = &Subcommand{
 		}
 		existingIdentity, _ := user.ReadIdentity()
 		if existingIdentity != nil && *existingIdentity != newIdentity {
-			confirmed, err := confirm("Overwrite existing identity?", stdin, stdout)
+			confirmed, err := stdin.Confirm("Overwrite existing identity?", stdout)
 			if err != nil {
 				return 1
 			}

@@ -1,9 +1,9 @@
 package subcommands
 
 import (
+	"io"
 	"io/ioutil"
 	"net/http"
-	"os"
 )
 
 const latestDescription = "Check for a newer version."
@@ -12,7 +12,7 @@ const latestDescription = "Check for a newer version."
 var Latest = &Subcommand{
 	Tag:         "misc",
 	Description: latestDescription,
-	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
 		var running string
 		if args[0] == "" {
 			running = "Development Build"

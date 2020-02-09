@@ -3,15 +3,28 @@ package subcommands
 import (
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
+	"io"
 	"licensezero.com/licensezero/api"
 	"os"
 	"strings"
 )
 
-func confirm(prompt string, stdin, stdout *os.File) (bool, error) {
+// InputDevice abstacts over stdin so we can mock it in tests.
+type InputDevice interface {
+	Confirm(prompt string, stdout io.StringWriter) (bool, error)
+	SecretPrompt(prompt string, stdout io.StringWriter) (string, error)
+}
+
+// StandardInputDevice is an InputDevice based on an actual file.
+type StandardInputDevice struct {
+	File *os.File
+}
+
+// Confirm prompts by scanning d.File.
+func (d *StandardInputDevice) Confirm(prompt string, stdout io.StringWriter) (bool, error) {
 	var response string
 	stdout.WriteString(prompt + " (y/n): ")
-	_, err := fmt.Scan(stdin, &response)
+	_, err := fmt.Scan(d.File, &response)
 	if err != nil {
 		return false, err
 	}
@@ -21,13 +34,14 @@ func confirm(prompt string, stdin, stdout *os.File) (bool, error) {
 	} else if response == "n" {
 		return false, nil
 	} else {
-		return confirm(prompt, stdin, stdout)
+		return d.Confirm(prompt, stdout)
 	}
 }
 
-func secretPrompt(prompt string, stdin, stdout *os.File) (response string, err error) {
+// SecretPrompt prompts with terminal.ReadPassword.
+func (d *StandardInputDevice) SecretPrompt(prompt string, stdout io.StringWriter) (response string, err error) {
 	stdout.WriteString(prompt)
-	data, err := terminal.ReadPassword(int(stdin.Fd()))
+	data, err := terminal.ReadPassword(int(d.File.Fd()))
 	if err != nil {
 		return
 	}
@@ -38,12 +52,12 @@ func secretPrompt(prompt string, stdin, stdout *os.File) (response string, err e
 
 const termsPrompt = "Do you agree to " + api.TermsReference + "?"
 
-func confirmTermsOfService(stdin, stdout *os.File) (bool, error) {
-	return confirm(termsPrompt, stdin, stdout)
+func confirmTermsOfService(input InputDevice, stdout io.StringWriter) (bool, error) {
+	return input.Confirm(termsPrompt, stdout)
 }
 
 const agencyPrompt = "Do you agree to " + api.AgencyReference + "?"
 
-func confirmAgencyTerms(stdin, stdout *os.File) (bool, error) {
-	return confirm(agencyPrompt, stdin, stdout)
+func confirmAgencyTerms(input InputDevice, stdout io.StringWriter) (bool, error) {
+	return input.Confirm(agencyPrompt, stdout)
 }

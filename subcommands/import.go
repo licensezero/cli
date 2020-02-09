@@ -3,11 +3,11 @@ package subcommands
 import (
 	"encoding/json"
 	"flag"
+	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -27,7 +27,7 @@ var importUsage = importDescription + "\n\n" +
 var Import = &Subcommand{
 	Tag:         "buyer",
 	Description: importDescription,
-	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
 		flagSet := flag.NewFlagSet("import", flag.ExitOnError)
 		filePath := flagSet.String("file", "", "")
 		bundle := flagSet.String("bundle", "", "")
@@ -51,7 +51,7 @@ var Import = &Subcommand{
 	},
 }
 
-func importBundle(bundle *string, silent *bool, stdout, stderr *os.File) int {
+func importBundle(bundle *string, silent *bool, stdout, stderr io.StringWriter) int {
 	response, err := http.Get(*bundle)
 	if err != nil {
 		stderr.WriteString("Error getting bundle.\n")
@@ -97,7 +97,7 @@ func importBundle(bundle *string, silent *bool, stdout, stderr *os.File) int {
 	return 0
 }
 
-func importFile(filePath *string, silent *bool, stdout, stderr *os.File) int {
+func importFile(filePath *string, silent *bool, stdout, stderr io.StringWriter) int {
 	data, err := ioutil.ReadFile(*filePath)
 	if err != nil {
 		stderr.WriteString("Could not read file.\n")
