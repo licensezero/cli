@@ -159,12 +159,12 @@ func (receipt *Receipt) Validate() error {
 }
 
 // VerifySignature validates the broker signature on a receipt.
-func (r *Receipt) VerifySignature() error {
-	serialized, err := json.Marshal(r.License)
+func (receipt *Receipt) VerifySignature() error {
+	serialized, err := json.Marshal(receipt.License)
 	if err != nil {
 		return err
 	}
-	return checkSignature(r.KeyHex, r.SignatureHex, serialized)
+	return checkSignature(receipt.KeyHex, receipt.SignatureHex, serialized)
 }
 
 func checkSignature(publicKey string, signature string, json []byte) error {
