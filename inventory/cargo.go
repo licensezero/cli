@@ -19,7 +19,8 @@ func findCargoCrates(packagePath string) (findings []*Finding, err error) {
 	for _, packageRecord := range metadata.Packages {
 		license := packageRecord.License
 		licenseZeroMetadata := packageRecord.Metadata.LicenseZero
-		artifact, err := parseArtifact(licenseZeroMetadata)
+		var artifact Artifact
+		artifact, err := mapToArtifact(licenseZeroMetadata)
 		if err != nil {
 			continue
 		}
@@ -91,7 +92,7 @@ func readCargoTOML(directoryPath string) (findings []*Finding, err error) {
 	if _, err := toml.Decode(string(data), &parsed); err != nil {
 		return nil, errors.New("could not parse Cargo.toml")
 	}
-	artifact, err := parseArtifact(parsed.Package.Metadata.LicenseZero)
+	artifact, err := mapToArtifact(parsed.Package.Metadata.LicenseZero)
 	if err != nil {
 		return
 	}

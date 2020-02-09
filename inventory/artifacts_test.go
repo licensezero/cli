@@ -18,7 +18,7 @@ func TestParseArtifact(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	artifact, err := parseArtifact(unstructured)
+	artifact, err := mapToArtifact(unstructured)
 	if err != nil {
 		t.Fatal(err)
 	}

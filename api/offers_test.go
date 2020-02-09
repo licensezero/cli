@@ -13,16 +13,12 @@ func TestParseOffer(t *testing.T) {
 	currency := "USD"
 	data := fmt.Sprintf(`{"url": "%v", "sellerID": "%v", "pricing": { "single": { "amount": %v, "currency": "%v" } } }`, url, sellerID, amount, currency)
 
-	var unstructured interface{}
-	err := json.Unmarshal([]byte(data), &unstructured)
+	var offer Offer
+	err := json.Unmarshal([]byte(data), &offer)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	offer, err := parseOffer(unstructured)
-	if err != nil {
-		t.Fatal(err)
-	}
 	if offer.URL != url {
 		t.Error("failed to parse URL")
 	}

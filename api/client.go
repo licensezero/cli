@@ -32,14 +32,13 @@ func (c *httpClient) Offer(api string, offerID string) (offer *Offer, err error)
 	if err != nil {
 		return
 	}
-	var unstructured interface{}
-	err = json.Unmarshal(body, &unstructured)
+	err = json.Unmarshal(body, &offer)
 	if err != nil {
 		return nil, errors.New("invalid JSON")
 	}
-	offer, err = parseOffer(unstructured)
+	err = offer.Validate()
 	if err != nil {
-		return
+		return nil, errors.New("invalid offer")
 	}
 	return
 }
@@ -54,14 +53,13 @@ func (c *httpClient) Seller(api string, sellerID string) (seller *Seller, err er
 	if err != nil {
 		return
 	}
-	var unstructured interface{}
-	err = json.Unmarshal(body, &unstructured)
+	err = json.Unmarshal(body, &seller)
 	if err != nil {
 		return nil, errors.New("invalid JSON")
 	}
-	seller, err = parseSeller(unstructured)
+	err = seller.Validate()
 	if err != nil {
-		return
+		return nil, errors.New("invalid seller")
 	}
 	return
 }

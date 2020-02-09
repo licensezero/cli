@@ -90,7 +90,7 @@ func readLicenseZeroJSON(directoryPath string) (findings []*Finding, err error) 
 	}
 	var unstructured interface{}
 	json.Unmarshal(data, &unstructured)
-	parsed, err := parseArtifact(unstructured)
+	parsed, err := mapToArtifact(unstructured)
 	for _, offer := range parsed.Offers {
 		finding := Finding{Path: directoryPath}
 		addArtifactOfferToFinding(&offer, &finding)

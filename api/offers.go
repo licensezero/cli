@@ -1,8 +1,8 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
-	"github.com/mitchellh/mapstructure"
 	"github.com/xeipuuv/gojsonschema"
 	"licensezero.com/licensezero/schemas"
 )
@@ -20,17 +20,13 @@ type Pricing struct {
 	Relicense Price `json:"relicense"`
 }
 
-func parseOffer(unstructured interface{}) (o *Offer, err error) {
-	if !validateOffer(unstructured) {
-		return nil, errors.New("invalid offer")
-	}
-	err = mapstructure.Decode(unstructured, &o)
-	return
-}
+// ErrInvalidOffer indicates that an Offer does not conform
+// to the JSON schema for offer records.
+var ErrInvalidOffer = errors.New("invalid offer")
 
 var offerValidator *gojsonschema.Schema = nil
 
-func validateOffer(unstructured interface{}) bool {
+func (offer *Offer) Validate() error {
 	if offerValidator == nil {
 		schema, err := schemas.Loader().Compile(
 			gojsonschema.NewStringLoader(schemas.Offer),
@@ -40,10 +36,17 @@ func validateOffer(unstructured interface{}) bool {
 		}
 		offerValidator = schema
 	}
-	dataLoader := gojsonschema.NewGoLoader(unstructured)
+	marshaled, err := json.Marshal(offer)
+	if err != nil {
+		return err
+	}
+	dataLoader := gojsonschema.NewBytesLoader(marshaled)
 	result, err := offerValidator.Validate(dataLoader)
 	if err != nil {
-		return false
+		return err
 	}
-	return result.Valid()
+	if !result.Valid() {
+		return ErrInvalidOffer
+	}
+	return nil
 }
