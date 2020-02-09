@@ -4,6 +4,7 @@ import (
 	"flag"
 	"io"
 	"io/ioutil"
+	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
 )
 
@@ -24,7 +25,7 @@ var identifyUsage = identifyDescription + "\n\n" +
 var Identify = &Subcommand{
 	Tag:         "misc",
 	Description: identifyDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
 		flagSet := flag.NewFlagSet("identify", flag.ContinueOnError)
 		jurisdiction := flagSet.String("jurisdiction", "", "")
 		name := flagSet.String("name", "", "")

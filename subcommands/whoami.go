@@ -2,6 +2,7 @@ package subcommands
 
 import (
 	"io"
+	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
 )
 
@@ -11,7 +12,7 @@ const whoAmIDescription = "Show your identity information."
 var WhoAmI = &Subcommand{
 	Tag:         "misc",
 	Description: whoAmIDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
 		identity, err := user.ReadIdentity()
 		if err != nil {
 			stderr.WriteString("Could not read identity file.\n")

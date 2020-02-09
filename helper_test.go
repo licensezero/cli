@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"errors"
 	"flag"
+	"github.com/licensezero/helptest"
 	"io"
+	"licensezero.com/licensezero/api"
 	"net/http"
 	"testing"
 )
@@ -25,7 +27,15 @@ func runCommand(t *testing.T, args []string) (output string, errorOutput string,
 	input := &failingInputDevice{}
 	stdout := bytes.NewBuffer([]byte{})
 	stderr := bytes.NewBuffer([]byte{})
-	code = run(args, input, stdout, stderr)
+	transport := helptest.RoundTripFunc(func(req *http.Request) *http.Response {
+		return &http.Response{
+			StatusCode: 404,
+			Body:       helptest.NoopCloser{bytes.NewBufferString("")},
+			Header:     make(http.Header),
+		}
+	})
+	client := api.NewClient(transport)
+	code = run(args, input, stdout, stderr, client)
 	output = string(stdout.Bytes())
 	errorOutput = string(stderr.Bytes())
 	return

@@ -3,6 +3,7 @@ package subcommands
 import (
 	"io"
 	"io/ioutil"
+	"licensezero.com/licensezero/api"
 	"net/http"
 )
 
@@ -12,7 +13,7 @@ const latestDescription = "Check for a newer version."
 var Latest = &Subcommand{
 	Tag:         "misc",
 	Description: latestDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
 		var running string
 		if args[0] == "" {
 			running = "Development Build"

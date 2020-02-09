@@ -27,7 +27,7 @@ var importUsage = importDescription + "\n\n" +
 var Import = &Subcommand{
 	Tag:         "buyer",
 	Description: importDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
 		flagSet := flag.NewFlagSet("import", flag.ExitOnError)
 		filePath := flagSet.String("file", "", "")
 		bundle := flagSet.String("bundle", "", "")
@@ -44,14 +44,14 @@ var Import = &Subcommand{
 			stderr.WriteString(importUsage)
 			return 1
 		} else if *filePath != "" {
-			return importFile(filePath, silent, stdout, stderr)
+			return importFile(filePath, silent, stdout, stderr, client)
 		} else {
-			return importBundle(bundle, silent, stdout, stderr)
+			return importBundle(bundle, silent, stdout, stderr, client)
 		}
 	},
 }
 
-func importBundle(bundle *string, silent *bool, stdout, stderr io.StringWriter) int {
+func importBundle(bundle *string, silent *bool, stdout, stderr io.StringWriter, client api.Client) int {
 	response, err := http.Get(*bundle)
 	if err != nil {
 		stderr.WriteString("Error getting bundle.\n")
@@ -69,7 +69,6 @@ func importBundle(bundle *string, silent *bool, stdout, stderr io.StringWriter) 
 		stderr.WriteString("Error parsing license bundle.\n")
 		return 1
 	}
-	client := api.NewClient(http.DefaultTransport)
 	imported := 0
 	for _, receipt := range parsed.Receipts {
 		err = receipt.VerifySignature()
@@ -97,7 +96,7 @@ func importBundle(bundle *string, silent *bool, stdout, stderr io.StringWriter) 
 	return 0
 }
 
-func importFile(filePath *string, silent *bool, stdout, stderr io.StringWriter) int {
+func importFile(filePath *string, silent *bool, stdout, stderr io.StringWriter, client api.Client) int {
 	data, err := ioutil.ReadFile(*filePath)
 	if err != nil {
 		stderr.WriteString("Could not read file.\n")

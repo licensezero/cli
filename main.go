@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"io"
+	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/subcommands"
+	"net/http"
 	"os"
 	"sort"
 )
@@ -22,17 +24,24 @@ var commands = map[string]*subcommands.Subcommand{
 }
 
 func main() {
-	os.Exit(run(os.Args[1:], &subcommands.StandardInputDevice{File: os.Stdin}, os.Stdout, os.Stderr))
+	code := run(
+		os.Args[1:],
+		&subcommands.StandardInputDevice{File: os.Stdin},
+		os.Stdout,
+		os.Stderr,
+		api.NewClient(http.DefaultTransport),
+	)
+	os.Exit(code)
 }
 
-func run(arguments []string, input subcommands.InputDevice, stdout, stderr io.StringWriter) int {
+func run(arguments []string, input subcommands.InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
 	if len(arguments) > 0 {
 		subcommand := arguments[0]
 		if value, ok := commands[subcommand]; ok {
 			if subcommand == "version" || subcommand == "latest" {
-				value.Handler([]string{Rev}, input, stdout, stderr)
+				value.Handler([]string{Rev}, input, stdout, stderr, client)
 			} else {
-				return value.Handler(arguments[1:], input, stdout, stderr)
+				return value.Handler(arguments[1:], input, stdout, stderr, client)
 			}
 		} else {
 			showUsage(stdout)

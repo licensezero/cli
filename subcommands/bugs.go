@@ -4,6 +4,7 @@ import (
 	"flag"
 	"io"
 	"io/ioutil"
+	"licensezero.com/licensezero/api"
 )
 
 const bugsDescription = "Open the CLI bug tracker page."
@@ -12,7 +13,7 @@ const bugsDescription = "Open the CLI bug tracker page."
 var Bugs = &Subcommand{
 	Tag:         "misc",
 	Description: bugsDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter) int {
+	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client api.Client) int {
 		flagSet := flag.NewFlagSet("bugs", flag.ExitOnError)
 		doNotOpen := doNotOpenFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
