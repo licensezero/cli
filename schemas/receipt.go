@@ -96,29 +96,7 @@ const Receipt = `{
               }
             },
             "seller": {
-              "title": "seller",
-              "comment": "The seller is the one giving the license.",
-              "type": "object",
-              "required": [
-                "email",
-                "jurisdiction",
-                "name"
-              ],
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "format": "email"
-                },
-                "jurisdiction": {
-                  "$ref": "jurisdiction.json"
-                },
-                "name": {
-                  "$ref": "name.json",
-                  "examples": [
-                    "Joe Seller"
-                  ]
-                }
-              }
+              "$ref": "seller.json"
             },
             "sellerID": {
               "title": "seller identifier",

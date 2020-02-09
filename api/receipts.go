@@ -61,9 +61,8 @@ type Buyer struct {
 	Name         string `json:"name"`
 }
 
-// ErrInvalidReceipt indicates that parsing or validation
-// failed because the data do not conform to the receipt
-// JSON schema.
+// ErrInvalidReceipt indicates that a Receipt does not conform
+// to the JSON schema for receipt records.
 var ErrInvalidReceipt = errors.New("invalid receipt")
 
 var receiptValidator *gojsonschema.Schema

@@ -1,8 +1,8 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
-	"github.com/mitchellh/mapstructure"
 	"github.com/xeipuuv/gojsonschema"
 	"licensezero.com/licensezero/schemas"
 )
@@ -17,30 +17,35 @@ type Seller struct {
 	Name         string `json:"name"`
 }
 
-func parseSeller(unstructured interface{}) (l *Seller, err error) {
-	if !validateSeller(unstructured) {
-		return nil, errors.New("invalid seller")
-	}
-	err = mapstructure.Decode(unstructured, &l)
-	return
-}
+// ErrInvalidSeller indicates that a Seller does not conform
+// to the JSON schema for seller records.
+var ErrInvalidSeller = errors.New("invalid seller")
 
-var licensorValidator *gojsonschema.Schema = nil
+var sellerValidator *gojsonschema.Schema
 
-func validateSeller(unstructured interface{}) bool {
-	if licensorValidator == nil {
+// Validate verifies that the Seller conforms
+// to the JSON schema for Seller records.
+func (seller *Seller) Validate() error {
+	if sellerValidator == nil {
 		schema, err := schemas.Loader().Compile(
 			gojsonschema.NewStringLoader(schemas.Seller),
 		)
 		if err != nil {
 			panic(err)
 		}
-		licensorValidator = schema
+		sellerValidator = schema
 	}
-	dataLoader := gojsonschema.NewGoLoader(unstructured)
-	result, err := licensorValidator.Validate(dataLoader)
+	marshaled, err := json.Marshal(seller)
 	if err != nil {
-		return false
+		return err
 	}
-	return result.Valid()
+	dataLoader := gojsonschema.NewBytesLoader(marshaled)
+	result, err := sellerValidator.Validate(dataLoader)
+	if err != nil {
+		return err
+	}
+	if !result.Valid() {
+		return ErrInvalidSeller
+	}
+	return nil
 }
