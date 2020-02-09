@@ -26,7 +26,7 @@ const Artifact = `{
             "format": "uri",
             "pattern": "^https://",
             "examples": [
-              "https://broker.licensezero.com"
+              "https://api.licensezero.com"
             ]
           },
           "offerID": {
