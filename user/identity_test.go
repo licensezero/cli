@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/licensezero/helptest"
 	"io/ioutil"
+	"os"
 	"path"
 	"testing"
 )
@@ -22,7 +23,9 @@ func TestReadIdentity(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	result, err := ReadIdentity(directory)
+	os.Setenv("LICENSEZERO_CONFIG", directory)
+
+	result, err := ReadIdentity()
 	if err != nil {
 		t.Fatal("read error")
 	}
