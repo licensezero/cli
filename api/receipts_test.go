@@ -60,8 +60,6 @@ func TestReceiptJSON(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(string(compacted.Bytes()))
-	t.Log(receiptJSON)
 	if string(compacted.Bytes()) != receiptJSON {
 		t.Error("serialization does not match compacted")
 	}

@@ -66,7 +66,6 @@ func TestInvalidJSON(t *testing.T) {
 
 	_, err := client.Offer(brokerAPI, offerID)
 	if err.Error() != "invalid JSON" {
-		t.Log(err.Error())
 		t.Error("failed to return invalid offer error")
 	}
 
