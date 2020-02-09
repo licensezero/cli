@@ -69,7 +69,7 @@ func main () {
 	if finding.Name != "gopackage" {
 		t.Error("did not set package name")
 	}
-	if finding.API != "https://api.commonform.com" {
+	if finding.API != "https://broker.licensezero.com" {
 		t.Error("did not set API")
 	}
 }

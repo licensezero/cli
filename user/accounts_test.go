@@ -18,7 +18,7 @@ func TestReadAccounts(t *testing.T) {
 	}
 
 	account := path.Join(receipts, "first.json")
-	api := "https://api.commonform.com"
+	api := "https://broker.licensezero.com"
 	sellerID := "71ea37d7-6a1a-4072-a64b-84d0236edfe6"
 	token := "xxxxxx"
 	err = ioutil.WriteFile(

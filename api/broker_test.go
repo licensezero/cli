@@ -9,7 +9,7 @@ import (
 )
 
 func TestInvalidResponses(t *testing.T) {
-	brokerAPI := "https://api.licensezero.com"
+	brokerAPI := "https://broker.licensezero.com"
 	offerID := uuid.New().String()
 	sellerID := uuid.New().String()
 	transport := helptest.RoundTripFunc(func(req *http.Request) *http.Response {

@@ -7,7 +7,7 @@ import (
 )
 
 func TestParseArtifact(t *testing.T) {
-	api := "https://api.licensezero.com"
+	api := "https://broker.licensezero.com"
 	offerID := "a16ec460-0acb-4d5a-85e5-2787e61f084f"
 	public := "Prosperity-3.0.0"
 	data := fmt.Sprintf(`{"offers": [ { "api": "%v", "offerID": "%v", "public": "%v" } ] }`, api, offerID, public)

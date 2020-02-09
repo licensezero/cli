@@ -97,7 +97,7 @@ puts LicenseZeroRubyGem::MESSAGE
 	if finding.Type != "rubygem" {
 		t.Error("did not set RubyGem type")
 	}
-	if finding.API != "https://api.licensezero.com" {
+	if finding.API != "https://broker.licensezero.com" {
 		t.Error("did not set API")
 	}
 }

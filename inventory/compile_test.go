@@ -27,7 +27,7 @@ func TestCompileInventory(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	brokerAPI := "https://api.licensezero.com"
+	brokerAPI := "https://broker.licensezero.com"
 	offerID := "186d34a9-c8f7-414c-91bc-a34b4553b91d"
 	public := "Parity-7.0.0"
 	offerURL := "http://example.com"

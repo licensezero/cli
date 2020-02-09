@@ -65,7 +65,7 @@ func TestNPM(t *testing.T) {
 	if finding.Type != "npm" {
 		t.Error("did not set npm type")
 	}
-	if finding.API != "https://api.licensezero.com" {
+	if finding.API != "https://broker.licensezero.com" {
 		t.Error("did not set API")
 	}
 	if finding.Path != path.Join(projectDirectory, "node_modules", name) {

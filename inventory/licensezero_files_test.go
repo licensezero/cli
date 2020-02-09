@@ -18,7 +18,7 @@ func TestFindLicenseZeroFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	api := "https://api.licensezero.com"
+	api := "https://broker.licensezero.com"
 	offerID := "186d34a9-c8f7-414c-91bc-a34b4553b91d"
 	public := "Parity-7.0.0"
 	err = ioutil.WriteFile(
@@ -70,7 +70,7 @@ func TestFindLicenseZeroFilesInNPMPackage(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	api := "https://api.licensezero.com"
+	api := "https://broker.licensezero.com"
 	offerID := "186d34a9-c8f7-414c-91bc-a34b4553b91d"
 	public := "Parity-7.0.0"
 	err = ioutil.WriteFile(
