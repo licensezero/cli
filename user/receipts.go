@@ -117,7 +117,7 @@ func ReadReceipt(filePath string) (*Receipt, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = ValidateReceipt(&receipt)
+	err = receipt.Validate()
 	if err != nil {
 		return nil, err
 	}
@@ -131,9 +131,9 @@ var receiptValidator *gojsonschema.Schema = nil
 // JSON schema.
 var ErrInvalidReceipt = errors.New("invalid receipt")
 
-// ValidateReceipt verifies that parsed JSON data conform
+// Validate verifies that the receipt conforms
 // to the JSON schema for receipt records.
-func ValidateReceipt(receipt *Receipt) error {
+func (receipt *Receipt) Validate() error {
 	if receiptValidator == nil {
 		schema, err := schemas.Loader().Compile(
 			gojsonschema.NewStringLoader(schemas.Receipt),
