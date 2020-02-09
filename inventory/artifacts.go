@@ -21,7 +21,7 @@ type ArtifactOffer struct {
 }
 
 func mapToArtifact(unstructred interface{}) (artifact Artifact, err error) {
-	err = mapstructure.Decode(unstructred, artifact)
+	err = mapstructure.Decode(unstructred, &artifact)
 	return
 }
 
