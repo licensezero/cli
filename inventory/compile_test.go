@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/licensezero/helptest"
 	"io/ioutil"
-	"licensezero.com/licensezero/api"
 	"net/http"
 	"os"
 	"path"
@@ -86,14 +85,14 @@ func TestCompileInventory(t *testing.T) {
 		}
 	})
 
-	client := api.NewClient(transport)
+	client := http.Client{Transport: transport}
 
 	inventory, err := CompileInventory(
 		configDirectory,
 		projectDirectory,
 		false,
 		false,
-		client,
+		&client,
 	)
 	if err != nil {
 		t.Fatal("read error")

@@ -3,6 +3,7 @@ package inventory
 import (
 	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
+	"net/http"
 	"os"
 	"path"
 )
@@ -58,7 +59,7 @@ func CompileInventory(
 	cwd string,
 	ignoreNoncommercial bool,
 	ignoreReciprocal bool,
-	client api.Client,
+	client *http.Client,
 ) (inventory Inventory, err error) {
 	// TODO: Don't ignore receipt read errors.
 	receipts, _, err := user.ReadReceipts(configPath)
@@ -71,7 +72,11 @@ func CompileInventory(
 		return
 	}
 	for _, finding := range findings {
-		offer, err := client.Offer(finding.API, finding.OfferID)
+		brokerServer := api.BrokerServer{
+			Client: client,
+			Base:   finding.API,
+		}
+		offer, err := brokerServer.Offer(finding.OfferID)
 		var item Item
 		handleInvalid := func() {
 			inventory.Invalid = append(inventory.Invalid, Item{
@@ -87,7 +92,7 @@ func CompileInventory(
 			handleInvalid()
 			continue
 		} else {
-			seller, err := client.Seller(finding.API, offer.SellerID)
+			seller, err := brokerServer.Seller(offer.SellerID)
 			if err != nil {
 				handleInvalid()
 				continue
