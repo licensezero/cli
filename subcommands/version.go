@@ -10,12 +10,12 @@ const versionDescription = "Print version."
 var Version = &Subcommand{
 	Tag:         "misc",
 	Description: versionDescription,
-	Handler: func(args []string, paths Paths) {
+	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
 		if args[0] == "" {
-			os.Stdout.WriteString("Development Build\n")
+			stdout.WriteString("Development Build\n")
 		} else {
-			os.Stdout.WriteString(args[0] + "\n")
+			stdout.WriteString(args[0])
 		}
-		os.Exit(0)
+		return 0
 	},
 }

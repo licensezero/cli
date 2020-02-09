@@ -1,7 +1,6 @@
 package subcommands
 
 import (
-	"fmt"
 	"licensezero.com/licensezero/user"
 	"os"
 )
@@ -12,14 +11,15 @@ const whoAmIDescription = "Show your identity information."
 var WhoAmI = &Subcommand{
 	Tag:         "misc",
 	Description: whoAmIDescription,
-	Handler: func(args []string, paths Paths) {
+	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
 		identity, err := user.ReadIdentity()
 		if err != nil {
-			Fail("Could not read identity file.")
+			stderr.WriteString("Could not read identity file.\n")
+			return 1
 		}
-		fmt.Println("Name: " + identity.Name)
-		fmt.Println("Jurisdiction: " + identity.Jurisdiction)
-		fmt.Println("E-Mail: " + identity.EMail)
-		os.Exit(0)
+		stdout.WriteString("Name: " + identity.Name + "\n")
+		stdout.WriteString("Jurisdiction: " + identity.Jurisdiction + "\n")
+		stdout.WriteString("E-Mail: " + identity.EMail + "\n")
+		return 0
 	},
 }

@@ -52,8 +52,12 @@ func ReadReceipt(filePath string) (*api.Receipt, error) {
 }
 
 // SaveReceipt writes a receipt to the CLI configuration directory.
-func SaveReceipt(receipt *api.Receipt, configPath string) error {
+func SaveReceipt(receipt *api.Receipt) error {
 	json, err := json.Marshal(receipt)
+	if err != nil {
+		return err
+	}
+	configPath, err := ConfigPath()
 	if err != nil {
 		return err
 	}

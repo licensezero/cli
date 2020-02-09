@@ -9,21 +9,38 @@ import (
 
 const identifyDescription = "Save your identity information."
 
+var identifyUsage = identifyDescription + "\n\n" +
+	"Usage:\n" +
+	"  licensezero identify --name NAME --jurisdiction CODE --email ADDRESS\n\n" +
+	"Options:\n" +
+	flagsList(map[string]string{
+		"email ADDRESS":     "Your e-mail address",
+		"jurisdiction CODE": "Your tax jurisdiction (ISO 3166-2, like \"US-CA\")",
+		"name NAME":         "Your full name.",
+		"silent":            silentLine,
+	})
+
 // Identify saves user identification information.
 var Identify = &Subcommand{
 	Tag:         "misc",
 	Description: identifyDescription,
-	Handler: func(args []string, paths Paths) {
-		flagSet := flag.NewFlagSet("identify", flag.ExitOnError)
+	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
+		flagSet := flag.NewFlagSet("identify", flag.ContinueOnError)
 		jurisdiction := flagSet.String("jurisdiction", "", "")
 		name := flagSet.String("name", "", "")
 		email := flagSet.String("email", "", "")
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
-		flagSet.Usage = identifyUsage
-		flagSet.Parse(args)
+		flagSet.Usage = func() {
+			stderr.WriteString(identifyUsage)
+		}
+		err := flagSet.Parse(args)
+		if err != nil {
+			return 1
+		}
 		if *jurisdiction == "" || *name == "" || *email == "" {
-			identifyUsage()
+			stderr.WriteString(identifyUsage)
+			return 1
 		}
 		newIdentity := user.Identity{
 			Name:         *name,
@@ -32,40 +49,34 @@ var Identify = &Subcommand{
 		}
 		existingIdentity, _ := user.ReadIdentity()
 		if existingIdentity != nil && *existingIdentity != newIdentity {
-			if !confirm("Overwrite existing identity?") {
-				os.Exit(0)
+			confirmed, err := confirm("Overwrite existing identity?", stdin, stdout)
+			if err != nil {
+				return 1
+			}
+			if !confirmed {
+				return 0
 			}
 		}
 		if !validName(*name) {
-			Fail("Invalid Name.")
+			stderr.WriteString("Invalid Name.\n")
+			return 1
 		}
 		if !validJurisdiction(*jurisdiction) {
-			invalidJurisdiction()
+			stderr.WriteString("Invalid --jurisdiction. Must be ISO 3166-2 code like \"US-CA\" or \"DE-BE\".\n")
+			return 1
 		}
 		if !validEMail(*email) {
-			Fail("Invalid E-Mail.")
+			stderr.WriteString("Invalid E-Mail.\n")
+			return 1
 		}
-		err := user.WriteIdentity(&newIdentity)
+		err = user.WriteIdentity(&newIdentity)
 		if err != nil {
-			Fail("Could not write identity file.")
+			stderr.WriteString("Could not write identity file.\n")
+			return 1
 		}
 		if !*silent {
-			os.Stdout.WriteString("Saved your identification information.\n")
+			stdout.WriteString("Saved your identification information.\n")
 		}
-		os.Exit(0)
+		return 0
 	},
-}
-
-func identifyUsage() {
-	usage := identifyDescription + "\n\n" +
-		"Usage:\n" +
-		"  licensezero identify --name NAME --jurisdiction CODE --email ADDRESS\n\n" +
-		"Options:\n" +
-		flagsList(map[string]string{
-			"email ADDRESS":     "Your e-mail address",
-			"jurisdiction CODE": "Your tax jurisdiction (ISO 3166-2, like \"US-CA\")",
-			"name NAME":         "Your full name.",
-			"silent":            silentLine,
-		})
-	Fail(usage)
 }

@@ -7,19 +7,22 @@ import (
 )
 
 // ConfigPath computes the path of the CLI's configuration directory.
-func ConfigPath() string {
-	fromEnvironment := os.Getenv("LICENSEZERO_CONFIG")
-	if fromEnvironment != "" {
-		return fromEnvironment
+func ConfigPath() (configPath string, err error) {
+	configPath = os.Getenv("LICENSEZERO_CONFIG")
+	if configPath != "" {
+		return
 	}
 	home, err := homedir.Dir()
 	if err != nil {
-		panic(err)
+		return
 	}
-	return path.Join(home, ".config", "licensezero")
+	return path.Join(home, ".config", "licensezero"), nil
 }
 
 func makeConfigDirectory() error {
-	path := ConfigPath()
-	return os.MkdirAll(path, 0755)
+	configPath, err := ConfigPath()
+	if err != nil {
+		return err
+	}
+	return os.MkdirAll(configPath, 0755)
 }

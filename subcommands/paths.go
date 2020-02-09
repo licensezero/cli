@@ -12,14 +12,14 @@ type Paths struct {
 }
 
 // NewPaths fetches home and working directories.
-func NewPaths() Paths {
-	home, homeError := homedir.Dir()
-	if homeError != nil {
-		Fail("Could not find home directory.")
+func NewPaths() (paths Paths, err error) {
+	home, err := homedir.Dir()
+	if err != nil {
+		return
 	}
-	cwd, cwdError := os.Getwd()
-	if cwdError != nil {
-		Fail("Could not find working directory.")
+	cwd, err := os.Getwd()
+	if err != nil {
+		return
 	}
-	return Paths{Home: home, CWD: cwd}
+	return Paths{Home: home, CWD: cwd}, nil
 }

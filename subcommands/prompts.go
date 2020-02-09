@@ -8,42 +8,42 @@ import (
 	"strings"
 )
 
-func confirm(prompt string) bool {
+func confirm(prompt string, stdin, stdout *os.File) (bool, error) {
 	var response string
-	fmt.Printf("%s (y/n): ", prompt)
-	_, err := fmt.Scan(&response)
+	stdout.WriteString(prompt + " (y/n): ")
+	_, err := fmt.Scan(stdin, &response)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	response = strings.TrimSpace(strings.ToLower(response))
 	if response == "y" {
-		return true
+		return true, nil
 	} else if response == "n" {
-		return false
+		return false, nil
 	} else {
-		return confirm(prompt)
+		return confirm(prompt, stdin, stdout)
 	}
 }
 
-func secretPrompt(prompt string) string {
-	fmt.Printf(prompt)
-	data, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+func secretPrompt(prompt string, stdin, stdout *os.File) (response string, err error) {
+	stdout.WriteString(prompt)
+	data, err := terminal.ReadPassword(int(stdin.Fd()))
 	if err != nil {
-		panic(err)
+		return
 	}
-	response := string(data)
-	fmt.Println()
-	return response
+	response = string(data)
+	stdout.WriteString("\n")
+	return
 }
 
 const termsPrompt = "Do you agree to " + api.TermsReference + "?"
 
-func confirmTermsOfService() bool {
-	return confirm(termsPrompt)
+func confirmTermsOfService(stdin, stdout *os.File) (bool, error) {
+	return confirm(termsPrompt, stdin, stdout)
 }
 
 const agencyPrompt = "Do you agree to " + api.AgencyReference + "?"
 
-func confirmAgencyTerms() bool {
-	return confirm(agencyPrompt)
+func confirmAgencyTerms(stdin, stdout *os.File) (bool, error) {
+	return confirm(agencyPrompt, stdin, stdout)
 }

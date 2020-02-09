@@ -13,101 +13,119 @@ import (
 
 const importDescription = "Import receipts."
 
+var importUsage = importDescription + "\n\n" +
+	"Usage:\n" +
+	"  licensezero import (--file FILE | --bundle URL)\n\n" +
+	"Options:\n" +
+	flagsList(map[string]string{
+		"bundle URL": "URL of purchased license bundle.",
+		"file FILE":  "License or waiver file to import.",
+		"silent":     silentLine,
+	})
+
 // Import saves receipts to disk.
 var Import = &Subcommand{
 	Tag:         "buyer",
 	Description: importDescription,
-	Handler: func(args []string, paths Paths) {
+	Handler: func(args []string, stdin, stdout, stderr *os.File) int {
 		flagSet := flag.NewFlagSet("import", flag.ExitOnError)
 		filePath := flagSet.String("file", "", "")
 		bundle := flagSet.String("bundle", "", "")
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
-		flagSet.Usage = importUsage
-		flagSet.Parse(args)
+		flagSet.Usage = func() {
+			stderr.WriteString(importUsage)
+		}
+		err := flagSet.Parse(args)
+		if err != nil {
+			return 1
+		}
 		if *filePath == "" && *bundle == "" {
-			importUsage()
+			stderr.WriteString(importUsage)
+			return 1
 		} else if *filePath != "" {
-			importFile(paths, filePath, silent)
+			return importFile(filePath, silent, stdout, stderr)
 		} else {
-			importBundle(paths, bundle, silent)
+			return importBundle(bundle, silent, stdout, stderr)
 		}
 	},
 }
 
-func importBundle(paths Paths, bundle *string, silent *bool) {
+func importBundle(bundle *string, silent *bool, stdout, stderr *os.File) int {
 	response, err := http.Get(*bundle)
 	if err != nil {
-		Fail("Error getting bundle.")
+		stderr.WriteString("Error getting bundle.\n")
+		return 1
 	}
 	defer response.Body.Close()
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		Fail("Error reading " + *bundle + ".")
+		stderr.WriteString("Error reading " + *bundle + ".\n")
+		return 1
 	}
-	var parsed []api.Receipt
+	var parsed api.Bundle
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
-		Fail("Error parsing license bundle.")
+		stderr.WriteString("Error parsing license bundle.\n")
+		return 1
 	}
 	client := api.NewClient(http.DefaultTransport)
 	imported := 0
-	for _, receipt := range parsed {
+	for _, receipt := range parsed.Receipts {
 		err = receipt.VerifySignature()
 		server := receipt.License.Values.API
 		offerID := receipt.License.Values.OfferID
 		if err != nil {
-			os.Stderr.WriteString("Invalid signature for " + server + "/offers/" + offerID + "\n")
+			stderr.WriteString("Invalid signature for " + server + "/offers/" + offerID + "\n")
 			continue
 		}
 		_, err := client.Offer(server, offerID)
 		if err != nil {
-			os.Stderr.WriteString("Error fetching offer.\n")
+			stderr.WriteString("Error fetching offer.\n")
 			continue
 		}
-		err = user.SaveReceipt(&receipt, paths.Home)
+		err = user.SaveReceipt(&receipt)
 		if err != nil {
-			os.Stderr.WriteString("Error saving receipt for " + server + "/offers/" + offerID + "\n")
+			stderr.WriteString("Error saving receipt for " + server + "/offers/" + offerID + "\n")
 			continue
 		}
 		imported++
 	}
 	if !*silent {
-		os.Stdout.WriteString("Imported " + strconv.Itoa(imported) + " licenses.\n")
+		stdout.WriteString("Imported " + strconv.Itoa(imported) + " licenses.\n")
 	}
-	os.Exit(0)
+	return 0
 }
 
-func importFile(paths Paths, filePath *string, silent *bool) {
+func importFile(filePath *string, silent *bool, stdout, stderr *os.File) int {
 	data, err := ioutil.ReadFile(*filePath)
 	if err != nil {
-		Fail("Could not read file.")
+		stderr.WriteString("Could not read file.\n")
+		return 1
 	}
 	var receipt api.Receipt
 	err = json.Unmarshal(data, &receipt)
 	if err != nil {
-		Fail("Invalid receipt.")
+		stderr.WriteString("Invalid JSON.\n")
+		return 1
+	}
+	err = receipt.Validate()
+	if err != nil {
+		stderr.WriteString("Invalid receipt.\n")
+		return 1
 	}
 	err = receipt.VerifySignature()
 	if err != nil {
-		Fail("Invalid signature.")
+		stderr.WriteString("Invalid signature.\n")
+		return 1
 	}
-	err = user.SaveReceipt(&receipt, paths.Home)
+	err = user.SaveReceipt(&receipt)
 	if err != nil {
-		Fail("Error saving receipt.")
+		stderr.WriteString("Error saving receipt.\n")
+		return 1
 	}
-	os.Exit(0)
-}
-
-func importUsage() {
-	usage := importDescription + "\n\n" +
-		"Usage:\n" +
-		"  licensezero import (--file FILE | --bundle URL)\n\n" +
-		"Options:\n" +
-		flagsList(map[string]string{
-			"bundle URL": "URL of purchased license bundle.",
-			"file FILE":  "License or waiver file to import.",
-			"silent":     silentLine,
-		})
-	Fail(usage)
+	if !*silent {
+		stdout.WriteString("Imported " + *filePath + ".\n")
+	}
+	return 0
 }

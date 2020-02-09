@@ -5,10 +5,9 @@ import (
 	"os"
 )
 
-func openURLAndExit(url string, noBrowser *bool) {
-	os.Stdout.WriteString(url + "\n")
+func openURL(url string, noBrowser *bool, stdout *os.File) {
+	stdout.WriteString(url + "\n")
 	if !*noBrowser {
 		open.Run(url)
 	}
-	os.Exit(0)
 }
