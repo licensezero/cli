@@ -10,7 +10,7 @@ var jurisdictionValidator *gojsonschema.Schema = nil
 // ValidateJurisdiction determiens whether a string is valid jurisdiction code.
 func ValidateJurisdiction(j string) bool {
 	if jurisdictionValidator == nil {
-		schema, err := schemas.Loader().Compile(
+		schema, err := gojsonschema.NewSchemaLoader().Compile(
 			gojsonschema.NewStringLoader(schemas.Jurisdiction),
 		)
 		if err != nil {
