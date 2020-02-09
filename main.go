@@ -22,17 +22,17 @@ var commands = map[string]*subcommands.Subcommand{
 }
 
 func main() {
-	os.Exit(run(os.Args, &subcommands.StandardInputDevice{File: os.Stdin}, os.Stdout, os.Stderr))
+	os.Exit(run(os.Args[1:], &subcommands.StandardInputDevice{File: os.Stdin}, os.Stdout, os.Stderr))
 }
 
 func run(arguments []string, input subcommands.InputDevice, stdout, stderr io.StringWriter) int {
-	if len(arguments) > 1 {
-		subcommand := arguments[1]
+	if len(arguments) > 0 {
+		subcommand := arguments[0]
 		if value, ok := commands[subcommand]; ok {
 			if subcommand == "version" || subcommand == "latest" {
 				value.Handler([]string{Rev}, input, stdout, stderr)
 			} else {
-				return value.Handler(arguments[2:], input, stdout, stderr)
+				return value.Handler(arguments[1:], input, stdout, stderr)
 			}
 		} else {
 			showUsage(stdout)

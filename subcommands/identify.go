@@ -36,6 +36,7 @@ var Identify = &Subcommand{
 		}
 		err := flagSet.Parse(args)
 		if err != nil {
+			stderr.WriteString("\nError: " + err.Error() + "\n")
 			return 1
 		}
 		if *jurisdiction == "" || *name == "" || *email == "" {
