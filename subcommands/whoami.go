@@ -13,7 +13,7 @@ var WhoAmI = &Subcommand{
 	Tag:         "misc",
 	Description: whoAmIDescription,
 	Handler: func(args []string, paths Paths) {
-		identity, err := user.ReadIdentity(paths.Home)
+		identity, err := user.ReadIdentity()
 		if err != nil {
 			Fail("Could not read identity file.")
 		}

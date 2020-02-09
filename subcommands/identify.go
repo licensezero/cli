@@ -30,7 +30,7 @@ var Identify = &Subcommand{
 			Jurisdiction: *jurisdiction,
 			EMail:        *email,
 		}
-		existingIdentity, _ := user.ReadIdentity(paths.Home)
+		existingIdentity, _ := user.ReadIdentity()
 		if existingIdentity != nil && *existingIdentity != newIdentity {
 			if !confirm("Overwrite existing identity?") {
 				os.Exit(0)
@@ -45,7 +45,7 @@ var Identify = &Subcommand{
 		if !validEMail(*email) {
 			Fail("Invalid E-Mail.")
 		}
-		err := user.WriteIdentity(paths.Home, &newIdentity)
+		err := user.WriteIdentity(&newIdentity)
 		if err != nil {
 			Fail("Could not write identity file.")
 		}

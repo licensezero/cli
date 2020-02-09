@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/mitchellh/go-homedir"
 	"licensezero.com/licensezero/subcommands"
 	"os"
 	"sort"
@@ -22,15 +21,7 @@ var commands = map[string]*subcommands.Subcommand{
 }
 
 func main() {
-	home, homeError := homedir.Dir()
-	if homeError != nil {
-		subcommands.Fail("Could not find home directory.")
-	}
-	cwd, cwdError := os.Getwd()
-	if cwdError != nil {
-		subcommands.Fail("Could not find working directory.")
-	}
-	paths := subcommands.Paths{Home: home, CWD: cwd}
+	paths := subcommands.NewPaths()
 	arguments := os.Args
 	if len(arguments) > 1 {
 		subcommand := os.Args[1]

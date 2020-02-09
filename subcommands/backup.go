@@ -17,7 +17,7 @@ var Backup = &Subcommand{
 		now := time.Now()
 		fileName := "licensezero-backup-" + now.Format(time.RFC3339) + ".tar"
 		tar := archiver.NewTar()
-		err := tar.Archive([]string{user.ConfigPath(paths.Home)}, fileName)
+		err := tar.Archive([]string{user.ConfigPath()}, fileName)
 		if err != nil {
 			Fail("Error creating tarball.")
 		}
