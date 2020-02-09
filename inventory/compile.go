@@ -164,7 +164,7 @@ func alreadyFound(findings []*Finding, finding *Finding) bool {
 	return false
 }
 
-func haveReceipt(item *Item, receipts []*user.Receipt) bool {
+func haveReceipt(item *Item, receipts []*api.Receipt) bool {
 	api := item.API
 	offerID := item.OfferID
 	for _, account := range receipts {

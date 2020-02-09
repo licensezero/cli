@@ -7,10 +7,14 @@ import (
 	"licensezero.com/licensezero/schemas"
 )
 
-// Seller contains data about a licensor from a vendor API.
+// Seller represents the party selling licenses.
+// Seller is usually the developer of the software being licensed.
 type Seller struct {
-	Jurisdiction string
-	Name         string
+	// Fields of this struct must be sorted by JSON key, in
+	// order to serialize correctly for signature.
+	EMail        string `json:"email"`
+	Jurisdiction string `json:"jurisdiction"`
+	Name         string `json:"name"`
 }
 
 func parseSeller(unstructured interface{}) (l *Seller, err error) {

@@ -45,7 +45,7 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 	if err != nil {
 		Fail("Error reading " + *bundle + ".")
 	}
-	var parsed []user.Receipt
+	var parsed []api.Receipt
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		Fail("Error parsing license bundle.")
@@ -65,7 +65,7 @@ func importBundle(paths Paths, bundle *string, silent *bool) {
 			os.Stderr.WriteString("Error fetching offer.\n")
 			continue
 		}
-		err = receipt.Save(paths.Home)
+		err = user.SaveReceipt(&receipt, paths.Home)
 		if err != nil {
 			os.Stderr.WriteString("Error saving receipt for " + server + "/offers/" + offerID + "\n")
 			continue
@@ -83,7 +83,7 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 	if err != nil {
 		Fail("Could not read file.")
 	}
-	var receipt user.Receipt
+	var receipt api.Receipt
 	err = json.Unmarshal(data, &receipt)
 	if err != nil {
 		Fail("Invalid receipt.")
@@ -92,7 +92,7 @@ func importFile(paths Paths, filePath *string, silent *bool) {
 	if err != nil {
 		Fail("Invalid signature.")
 	}
-	err = receipt.Save(paths.Home)
+	err = user.SaveReceipt(&receipt, paths.Home)
 	if err != nil {
 		Fail("Error saving receipt.")
 	}

@@ -20,12 +20,6 @@ type Pricing struct {
 	Relicense Price `json:"relicense"`
 }
 
-// Price represents a price asked or paid.
-type Price struct {
-	Amount   uint   `json:"amount"`
-	Currency string `json:"currency"`
-}
-
 func parseOffer(unstructured interface{}) (o *Offer, err error) {
 	if !validateOffer(unstructured) {
 		return nil, errors.New("invalid offer")

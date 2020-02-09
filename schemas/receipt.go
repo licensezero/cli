@@ -38,6 +38,7 @@ const Receipt = `{
             "effective",
             "buyer",
             "seller",
+            "sellerID",
             "offerID",
             "orderID"
           ],
@@ -101,7 +102,6 @@ const Receipt = `{
               "required": [
                 "email",
                 "jurisdiction",
-                "sellerID",
                 "name"
               ],
               "properties": {
@@ -112,11 +112,6 @@ const Receipt = `{
                 "jurisdiction": {
                   "$ref": "jurisdiction.json"
                 },
-                "sellerID": {
-                  "title": "seller identifier",
-                  "type": "string",
-                  "format": "uuid"
-                },
                 "name": {
                   "$ref": "name.json",
                   "examples": [
@@ -124,6 +119,11 @@ const Receipt = `{
                   ]
                 }
               }
+            },
+            "sellerID": {
+              "title": "seller identifier",
+              "type": "string",
+              "format": "uuid"
             },
             "broker": {
               "title": "license broker",
