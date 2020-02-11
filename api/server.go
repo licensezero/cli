@@ -56,7 +56,7 @@ func (b *BrokerServer) Seller(sellerID string) (seller *Seller, err error) {
 }
 
 func (b *BrokerServer) Register() (register *Register, err error) {
-	response, err := b.Client.Get(b.Base + "/keys")
+	response, err := b.Client.Get(b.Base + "/register")
 	if err != nil {
 		return
 	}
@@ -71,7 +71,7 @@ func (b *BrokerServer) Register() (register *Register, err error) {
 	}
 	err = register.Validate()
 	if err != nil {
-		return nil, errors.New("invalid keys")
+		return nil, errors.New("invalid register")
 	}
 	return
 }
@@ -89,6 +89,30 @@ func (b *BrokerServer) Latest(orderID string) (receipt *Receipt, err error) {
 	err = json.Unmarshal(body, &receipt)
 	if err != nil {
 		return nil, errors.New("invalid JSON")
+	}
+	return
+}
+
+func (b *BrokerServer) Broker() (broker *Broker, err error) {
+	response, err := b.Client.Get(b.Base + "/broker")
+	if err != nil {
+		return
+	}
+	if response.StatusCode == 404 {
+		return nil, nil
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(body, &broker)
+	if err != nil {
+		return nil, errors.New("invalid JSON")
+	}
+	err = broker.Validate()
+	if err != nil {
+		return nil, errors.New("invalid broker")
 	}
 	return
 }

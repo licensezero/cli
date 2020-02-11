@@ -98,6 +98,7 @@ var Quote = &Subcommand{
 			Item    inventory.Item
 			Offer   *api.Offer
 			Seller  *api.Seller
+			Broker  *api.Broker
 		}
 		var results []LineItem
 		var fetchErrors []error
@@ -108,13 +109,15 @@ var Quote = &Subcommand{
 		}
 		sellersCache := make(map[SellerPointer]*api.Seller)
 
+		brokersCache := make(map[string]*api.Broker)
+
 		for _, item := range unlicensed {
-			brokerServer := api.BrokerServer{
+			server := api.BrokerServer{
 				Client: client,
 				Base:   item.API,
 			}
 			// Fetch offer.
-			offer, err := brokerServer.Offer(item.OfferID)
+			offer, err := server.Offer(item.OfferID)
 			if err != nil {
 				fetchErrors = append(fetchErrors, err)
 				continue
@@ -125,7 +128,15 @@ var Quote = &Subcommand{
 				SellerID: offer.SellerID,
 			}]
 			if !cached {
-				seller, err = brokerServer.Seller(offer.SellerID)
+				seller, err = server.Seller(offer.SellerID)
+				if err != nil {
+					fetchErrors = append(fetchErrors, err)
+				}
+			}
+			// Fetch broker.
+			broker, cached := brokersCache[item.API]
+			if !cached {
+				broker, err = server.Broker()
 				if err != nil {
 					fetchErrors = append(fetchErrors, err)
 				}
@@ -137,6 +148,7 @@ var Quote = &Subcommand{
 				Item:    item,
 				Offer:   offer,
 				Seller:  seller,
+				Broker:  broker,
 			})
 		}
 

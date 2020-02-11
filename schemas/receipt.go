@@ -95,6 +95,9 @@ const Receipt = `{
                 }
               }
             },
+            "recurring": {
+              "const": true
+            },
             "seller": {
               "$ref": "seller.json"
             },
@@ -104,34 +107,7 @@ const Receipt = `{
               "format": "uuid"
             },
             "broker": {
-              "title": "license broker",
-              "comment": "information on the party that sold the license, such as an agent or reseller, if the seller did not sell the license themself",
-              "type": "object",
-              "required": [
-                "email",
-                "jurisdiction",
-                "name",
-                "website"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "format": "email"
-                },
-                "jurisdiction": {
-                  "$ref": "jurisdiction.json"
-                },
-                "name": {
-                  "$ref": "name.json",
-                  "example": [
-                    "Artless Devices LLC"
-                  ]
-                },
-                "website": {
-                  "$ref": "url.json"
-                }
-              }
+              "$ref": "broker.json"
             }
           }
         }

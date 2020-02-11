@@ -43,16 +43,6 @@ type Values struct {
 	SellerID  string  `json:"sellerID"`
 }
 
-// Broker represents a party selling a license on behalf of a Seller.
-type Broker struct {
-	// Fields of this struct must be sorted by JSON key, in
-	// order to serialize correctly for signature.
-	EMail        string `json:"email"`
-	Jurisdiction string `json:"jurisdiction"`
-	Name         string `json:"name"`
-	Website      string `json:"website"`
-}
-
 // Buyer represents the party buying (or receiving) the license.
 type Buyer struct {
 	// Fields of this struct must be sorted by JSON key, in
