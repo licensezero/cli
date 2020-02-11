@@ -11,30 +11,32 @@ import (
 )
 
 // ReadReceipts reads all receipts in the configuration directory.
-func ReadReceipts() ([]*api.Receipt, error) {
+func ReadReceipts() ([]*api.Receipt, []error, error) {
 	configPath, err := ConfigPath()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	directoryPath := path.Join(configPath, "receipts")
 	entries, err := ioutil.ReadDir(directoryPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return []*api.Receipt{}, nil
+			return []*api.Receipt{}, nil, nil
 		}
-		return nil, err
+		return nil, nil, err
 	}
 	var receipts []*api.Receipt
+	var receiptErrors []error
 	for _, entry := range entries {
 		name := entry.Name()
 		filePath := path.Join(configPath, "receipts", name)
 		receipt, err := ReadReceipt(filePath)
 		if err != nil {
-			return nil, err
+			receiptErrors = append(receiptErrors, err)
+			continue
 		}
 		receipts = append(receipts, receipt)
 	}
-	return receipts, nil
+	return receipts, receiptErrors, nil
 }
 
 // ReadReceipt reads a receipt record from a file.

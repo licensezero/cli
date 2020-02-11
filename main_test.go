@@ -75,8 +75,7 @@ func TestWhoAmIWithIdentity(t *testing.T) {
 func TestImportGoodFile(t *testing.T) {
 	writeGoodReceipt(t)
 	defer withTempConfig(t)
-	output, errorOutput, _ := runCommand(t, []string{"import", "--file", "testdata/good-receipt.json"})
-	t.Log(errorOutput)
+	output, _, _ := runCommand(t, []string{"import", "--file", "testdata/good-receipt.json"})
 	if !strings.Contains(output, "Imported") {
 		t.Error("does not say imported")
 	}

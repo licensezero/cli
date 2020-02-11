@@ -25,7 +25,7 @@ func TestFindGoDeps(t *testing.T) {
 	}
 
 	dep := "github.com/licensezero/gopackage"
-	version := "0.0.1"
+	version := "0.0.3"
 	err = ioutil.WriteFile(
 		path.Join(projectDirectory, "go.mod"),
 		[]byte(fmt.Sprintf(`

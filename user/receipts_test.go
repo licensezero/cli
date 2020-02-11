@@ -106,8 +106,8 @@ func TestReadReceipts(t *testing.T) {
 
 	os.Setenv("LICENSEZERO_CONFIG", directory)
 
-	results, receiptErrors, readError := ReadReceipts(directory)
-	if readError != nil {
+	results, receiptErrors, err := ReadReceipts()
+	if err != nil {
 		t.Fatal("read error")
 	}
 
@@ -133,6 +133,6 @@ func TestReadReceipts(t *testing.T) {
 	}
 
 	if len(receiptErrors) != 1 {
-		t.Error("missing invalid error")
+		t.Error("missing invalid receipt error")
 	}
 }

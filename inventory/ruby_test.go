@@ -42,7 +42,7 @@ gem "licensezero_rubygem", git: 'https://github.com/licensezero/licensezero_ruby
 		[]byte(`
 GIT
   remote: https://github.com/licensezero/licensezero_rubygem
-  revision: 68cc71897a4c094e967245456c5e12adc8e2b641
+  revision: 22576515ecc3d631340aeeb4b7de79a74a27daad
   specs:
     licensezero_rubygem (0.1.0)
 
@@ -57,7 +57,7 @@ DEPENDENCIES
   licensezero_rubygem!
 
 BUNDLED WITH
-   2.0.2
+   2.1.4
 			`),
 		0700,
 	)

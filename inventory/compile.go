@@ -61,7 +61,7 @@ func CompileInventory(
 	ignoreReciprocal bool,
 	client *http.Client,
 ) (inventory Inventory, err error) {
-	receipts, err := user.ReadReceipts(configPath)
+	receipts, _, err := user.ReadReceipts()
 	if err != nil {
 		return
 	}

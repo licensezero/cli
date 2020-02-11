@@ -38,6 +38,7 @@ type Values struct {
 	OfferID   string  `json:"offerID"`
 	OrderID   string  `json:"orderID"`
 	Price     *Price  `json:"price,omitempty"`
+	Recurring bool    `json:"recurring,omitempty"`
 	Seller    *Seller `json:"seller"`
 	SellerID  string  `json:"sellerID"`
 }

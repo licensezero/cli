@@ -18,12 +18,16 @@ var Verify = &Subcommand{
 	Tag:         "buyer",
 	Description: verifyDescription,
 	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
-		receipts, err := user.ReadReceipts()
+		receipts, receiptErrors, err := user.ReadReceipts()
 		if err != nil {
 			stderr.WriteString("Error reading receipts: " + err.Error())
 			return 1
 		}
 		foundError := false
+		for _, receiptError := range receiptErrors {
+			foundError = true
+			stderr.WriteString(receiptError.Error() + "\n")
+		}
 		servers := make(map[string]*api.BrokerServer)
 		registers := make(map[string]*api.Register)
 		for _, receipt := range receipts {
