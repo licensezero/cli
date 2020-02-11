@@ -67,7 +67,7 @@ var Verify = &Subcommand{
 				}
 				registers[brokerAPI] = register
 			}
-			if err = register.ValidReceipt(receipt); err != nil {
+			if err = register.ValidateEffectiveDate(receipt); err != nil {
 				foundError = true
 				stderr.WriteString(
 					"Signature for " +

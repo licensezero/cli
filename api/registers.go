@@ -81,9 +81,11 @@ var ErrUnknownKey = errors.New("unknown key")
 
 var ErrInvalidTime = errors.New("invalid date and time")
 
-var ErrKeyLifetime = errors.New("signature out of key time frame")
+var ErrSignatureBackdated = errors.New("backdated signature")
 
-func (register *Register) ValidReceipt(receipt *Receipt) error {
+var ErrSignaturePostdated = errors.New("postdated signature")
+
+func (register *Register) ValidateEffectiveDate(receipt *Receipt) error {
 	timeframe, ok := register.Keys[receipt.KeyHex]
 	if !ok {
 		return ErrUnknownKey
@@ -94,10 +96,10 @@ func (register *Register) ValidReceipt(receipt *Receipt) error {
 		return ErrInvalidTime
 	}
 	if timeframe.From.After(effectiveTime) {
-		return ErrKeyLifetime
+		return ErrSignatureBackdated
 	}
 	if timeframe.Through != nil && timeframe.Through.Before(effectiveTime) {
-		return ErrKeyLifetime
+		return ErrSignaturePostdated
 	}
 	return nil
 }
