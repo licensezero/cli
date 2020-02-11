@@ -71,22 +71,30 @@ func SaveReceipt(receipt *api.Receipt) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(receiptPath(receipt, configPath), json, 0644)
+	filePath, err := receiptPath(receipt, configPath)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(filePath, json, 0644)
 }
 
-func receiptBasename(api string, offerID string) string {
+func receiptBasename(receipt *api.Receipt) (string, error) {
 	digest := sha256.New()
-	digest.Write([]byte(api + "/offers/" + offerID))
-	return hex.EncodeToString(digest.Sum(nil))
+	data, err := json.Marshal(receipt)
+	if err != nil {
+		return "", err
+	}
+	digest.Write(data)
+	return hex.EncodeToString(digest.Sum(nil)), nil
 }
 
 // receiptPath calculates the file path for a receipt.
-func receiptPath(receipt *api.Receipt, configPath string) string {
-	basename := receiptBasename(
-		receipt.License.Values.API,
-		receipt.License.Values.OfferID,
-	)
-	return path.Join(receiptsPath(configPath), basename+".json")
+func receiptPath(receipt *api.Receipt, configPath string) (string, error) {
+	basename, err := receiptBasename(receipt)
+	if err != nil {
+		return "", err
+	}
+	return path.Join(receiptsPath(configPath), basename+".json"), nil
 }
 
 func receiptsPath(configPath string) string {

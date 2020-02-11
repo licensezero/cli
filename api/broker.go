@@ -75,3 +75,20 @@ func (b *BrokerServer) Register() (register *Register, err error) {
 	}
 	return
 }
+
+func (b *BrokerServer) Latest(orderID string) (receipt *Receipt, err error) {
+	response, err := b.Client.Get(b.Base + "/orders/" + orderID + "/latest")
+	if err != nil {
+		return
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(body, &receipt)
+	if err != nil {
+		return nil, errors.New("invalid JSON")
+	}
+	return
+}
