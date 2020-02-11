@@ -55,7 +55,7 @@ func (b *BrokerServer) Seller(sellerID string) (seller *Seller, err error) {
 	return
 }
 
-func (b *BrokerServer) Keys() (keys *Keys, err error) {
+func (b *BrokerServer) Register() (register *Register, err error) {
 	response, err := b.Client.Get(b.Base + "/keys")
 	if err != nil {
 		return
@@ -65,11 +65,11 @@ func (b *BrokerServer) Keys() (keys *Keys, err error) {
 	if err != nil {
 		return
 	}
-	err = json.Unmarshal(body, &keys)
+	err = json.Unmarshal(body, &register)
 	if err != nil {
 		return nil, errors.New("invalid JSON")
 	}
-	err = keys.Validate()
+	err = register.Validate()
 	if err != nil {
 		return nil, errors.New("invalid keys")
 	}

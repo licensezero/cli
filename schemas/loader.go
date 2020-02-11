@@ -10,7 +10,7 @@ import (
 //go:generate ./goifyschema Digest https://schemas.licensezero.com/1.0.0-pre/digest.json
 //go:generate ./goifyschema Jurisdiction https://schemas.licensezero.com/1.0.0-pre/jurisdiction.json
 //go:generate ./goifyschema Key https://schemas.licensezero.com/1.0.0-pre/key.json
-//go:generate ./goifyschema Keys https://schemas.licensezero.com/1.0.0-pre/keys.json
+//go:generate ./goifyschema Register https://schemas.licensezero.com/1.0.0-pre/register.json
 //go:generate ./goifyschema Ledger https://schemas.licensezero.com/1.0.0-pre/ledger.json
 //go:generate ./goifyschema Offer https://schemas.licensezero.com/1.0.0-pre/offer.json
 //go:generate ./goifyschema Order https://schemas.licensezero.com/1.0.0-pre/order.json
