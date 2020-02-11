@@ -11,7 +11,11 @@ import (
 )
 
 // ReadReceipts reads all receipts in the configuration directory.
-func ReadReceipts(configPath string) ([]*api.Receipt, error) {
+func ReadReceipts() ([]*api.Receipt, error) {
+	configPath, err := ConfigPath()
+	if err != nil {
+		return nil, err
+	}
 	directoryPath := path.Join(configPath, "receipts")
 	entries, err := ioutil.ReadDir(directoryPath)
 	if err != nil {
@@ -65,7 +69,7 @@ func SaveReceipt(receipt *api.Receipt) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(ReceiptPath(receipt, configPath), json, 0644)
+	return ioutil.WriteFile(receiptPath(receipt, configPath), json, 0644)
 }
 
 func receiptBasename(api string, offerID string) string {
@@ -74,8 +78,8 @@ func receiptBasename(api string, offerID string) string {
 	return hex.EncodeToString(digest.Sum(nil))
 }
 
-// ReceiptPath calculates the file path for a receipt.
-func ReceiptPath(receipt *api.Receipt, configPath string) string {
+// receiptPath calculates the file path for a receipt.
+func receiptPath(receipt *api.Receipt, configPath string) string {
 	basename := receiptBasename(
 		receipt.License.Values.API,
 		receipt.License.Values.OfferID,

@@ -76,3 +76,28 @@ func (register *Register) Validate() error {
 	}
 	return nil
 }
+
+var ErrUnknownKey = errors.New("unknown key")
+
+var ErrInvalidTime = errors.New("invalid date and time")
+
+var ErrKeyLifetime = errors.New("signature out of key time frame")
+
+func (register *Register) ValidReceipt(receipt *Receipt) error {
+	timeframe, ok := register.Keys[receipt.KeyHex]
+	if !ok {
+		return ErrUnknownKey
+	}
+	effective := receipt.License.Values.Effective
+	effectiveTime, err := time.Parse(time.RFC3339, effective)
+	if err != nil {
+		return ErrInvalidTime
+	}
+	if timeframe.From.After(effectiveTime) {
+		return ErrKeyLifetime
+	}
+	if timeframe.Through != nil && timeframe.Through.Before(effectiveTime) {
+		return ErrKeyLifetime
+	}
+	return nil
+}
