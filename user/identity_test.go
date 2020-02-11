@@ -1,8 +1,11 @@
 package user
 
 import (
+	"errors"
+	"fmt"
 	"github.com/licensezero/helptest"
 	"io/ioutil"
+	"licensezero.com/licensezero/api"
 	"os"
 	"path"
 	"testing"
@@ -39,4 +42,125 @@ func TestReadIdentity(t *testing.T) {
 	if result.EMail != email {
 		t.Error("did not read e-mail")
 	}
+}
+
+func ExampleIdentity_ValidateReceipt_valid() {
+	email := "test@example.com"
+	jurisdiction := "US-CA"
+	name := "Test Buyer"
+	receipt := api.Receipt{
+		License: api.License{
+			Values: api.Values{
+				Buyer: &api.Buyer{
+					EMail:        email,
+					Jurisdiction: jurisdiction,
+					Name:         name,
+				},
+			},
+		},
+	}
+	identity := Identity{
+		EMail:        email,
+		Jurisdiction: jurisdiction,
+		Name:         name,
+	}
+	errs := identity.ValidateReceipt(&receipt)
+	fmt.Println(errs == nil)
+	// Output: true
+}
+
+func ExampleIdentity_ValidateReceipt_name() {
+	email := "test@example.com"
+	jurisdiction := "US-CA"
+	name := "Test Buyer"
+	receipt := api.Receipt{
+		License: api.License{
+			Values: api.Values{
+				Buyer: &api.Buyer{
+					EMail:        email,
+					Jurisdiction: jurisdiction,
+					Name:         "wrong",
+				},
+			},
+		},
+	}
+	identity := Identity{
+		EMail:        email,
+		Jurisdiction: jurisdiction,
+		Name:         name,
+	}
+	errs := identity.ValidateReceipt(&receipt)
+	if errs != nil {
+		for _, err := range errs {
+			fmt.Println(err.Error())
+			fmt.Println(errors.Is(err, ErrNameMismatch))
+		}
+	}
+	// Output:
+	// name mismatch
+	// true
+}
+
+func ExampleIdentity_ValidateReceipt_email() {
+	email := "test@example.com"
+	jurisdiction := "US-CA"
+	name := "Test Buyer"
+	receipt := api.Receipt{
+		License: api.License{
+			Values: api.Values{
+				Buyer: &api.Buyer{
+					EMail:        "wrong@example.com",
+					Jurisdiction: jurisdiction,
+					Name:         name,
+				},
+			},
+		},
+	}
+	identity := Identity{
+		EMail:        email,
+		Jurisdiction: jurisdiction,
+		Name:         name,
+	}
+	errs := identity.ValidateReceipt(&receipt)
+	if errs != nil {
+		for _, err := range errs {
+			fmt.Println(err.Error())
+			fmt.Println(errors.Is(err, ErrEMailMismatch))
+		}
+	}
+	// Output:
+	// e-mail mismatch
+	// true
+}
+
+func ExampleIdentity_ValidateReceipt_jurisdiction() {
+	email := "test@example.com"
+	jurisdiction := "US-CA"
+	name := "Test Buyer"
+	receipt := api.Receipt{
+		License: api.License{
+			Values: api.Values{
+				Buyer: &api.Buyer{
+					EMail:        email,
+					Jurisdiction: "US-NV",
+					Name:         name,
+				},
+			},
+		},
+	}
+	identity := Identity{
+		EMail:        email,
+		Jurisdiction: jurisdiction,
+		Name:         name,
+	}
+	errs := identity.ValidateReceipt(&receipt)
+	if errs != nil {
+		for _, err := range errs {
+			fmt.Println(err.Error())
+			fmt.Println(errors.Is(err, ErrJurisdictionMismatch))
+		}
+	}
+	// Output:
+	// jurisdiction mismatch
+	// true
 }

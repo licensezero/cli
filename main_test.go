@@ -303,6 +303,3 @@ func TestImportGoodBundle(t *testing.T) {
 		t.Error("does not report imported")
 	}
 }
-
-func TestImportBundleBadSignature(t *testing.T) {
-}

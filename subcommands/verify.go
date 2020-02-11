@@ -1,6 +1,7 @@
 package subcommands
 
 import (
+	"errors"
 	"io"
 	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
@@ -18,6 +19,11 @@ var Verify = &Subcommand{
 	Tag:         "buyer",
 	Description: verifyDescription,
 	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+		identity, err := user.ReadIdentity()
+		if err != nil {
+			stderr.WriteString("Error reading identity.")
+			return 1
+		}
 		receipts, receiptErrors, err := user.ReadReceipts()
 		if err != nil {
 			stderr.WriteString("Error reading receipts: " + err.Error())
@@ -74,6 +80,20 @@ var Verify = &Subcommand{
 						receipt.License.Values.API + "/orders/" + receipt.License.Values.OfferID +
 						"does not match time frame for the broker's signing key.\n",
 				)
+			}
+			if errs := identity.ValidateReceipt(receipt); errs != nil {
+				foundError = true
+				uri := receipt.License.Values.API + "/orders/" + receipt.License.Values.OfferID
+				for _, err := range errs {
+					switch {
+					case errors.Is(err, user.ErrNameMismatch):
+						stderr.WriteString("Name on " + uri + "does not match your identity.\n")
+					case errors.Is(err, user.ErrJurisdictionMismatch):
+						stderr.WriteString("Name on " + uri + "does not match your identity.\n")
+					case errors.Is(err, user.ErrEMailMismatch):
+						stderr.WriteString("Name on " + uri + "does not match your identity.\n")
+					}
+				}
 			}
 		}
 		if foundError {

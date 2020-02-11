@@ -2,7 +2,9 @@ package user
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
+	"licensezero.com/licensezero/api"
 	"path"
 )
 
@@ -11,6 +13,26 @@ type Identity struct {
 	EMail        string `json:"email"`
 	Jurisdiction string `json:"jurisdiction"`
 	Name         string `json:"name"`
+}
+
+var ErrEMailMismatch = errors.New("e-mail mismatch")
+
+var ErrJurisdictionMismatch = errors.New("jurisdiction mismatch")
+
+var ErrNameMismatch = errors.New("name mismatch")
+
+func (identity *Identity) ValidateReceipt(receipt *api.Receipt) (errors []error) {
+	buyer := receipt.License.Values.Buyer
+	if buyer.Name != identity.Name {
+		errors = append(errors, ErrNameMismatch)
+	}
+	if buyer.EMail != identity.EMail {
+		errors = append(errors, ErrEMailMismatch)
+	}
+	if buyer.Jurisdiction != identity.Jurisdiction {
+		errors = append(errors, ErrJurisdictionMismatch)
+	}
+	return
 }
 
 // ReadIdentity reads the CLI user's identify.
