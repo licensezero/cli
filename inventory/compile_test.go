@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestCompileInventory(t *testing.T) {
+func TestCompile(t *testing.T) {
 	directory, cleanup := helptest.TempDir(t, "licensezero")
 	defer cleanup()
 	configDirectory := path.Join(directory, "config")
@@ -87,7 +87,7 @@ func TestCompileInventory(t *testing.T) {
 
 	client := http.Client{Transport: transport}
 
-	inventory, err := CompileInventory(
+	inventory, err := Compile(
 		configDirectory,
 		projectDirectory,
 		false,
