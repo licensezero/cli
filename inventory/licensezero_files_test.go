@@ -18,12 +18,12 @@ func TestFindLicenseZeroFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	api := "https://broker.licensezero.com"
+	server := "https://broker.licensezero.com"
 	offerID := "186d34a9-c8f7-414c-91bc-a34b4553b91d"
 	public := "Parity-7.0.0"
 	err = ioutil.WriteFile(
 		path.Join(depDirectory, "licensezero.json"),
-		[]byte(fmt.Sprintf(`{"offers": [ { "api": "%v", "offerID": "%v", "public": "%v" } ] }`, api, offerID, public)),
+		[]byte(fmt.Sprintf(`{"offers": [ { "server": "%v", "offerID": "%v", "public": "%v" } ] }`, server, offerID, public)),
 		0700,
 	)
 	if err != nil {
@@ -39,8 +39,8 @@ func TestFindLicenseZeroFiles(t *testing.T) {
 		t.Fatal("failed to find one offer")
 	}
 	finding := findings[0]
-	if finding.API != api {
-		t.Error("failed to parse API")
+	if finding.Server != server {
+		t.Error("failed to parse server")
 	}
 	if finding.OfferID != offerID {
 		t.Error("failed to parse offer ID")
@@ -70,12 +70,12 @@ func TestFindLicenseZeroFilesInNPMPackage(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	api := "https://broker.licensezero.com"
+	server := "https://broker.licensezero.com"
 	offerID := "186d34a9-c8f7-414c-91bc-a34b4553b91d"
 	public := "Parity-7.0.0"
 	err = ioutil.WriteFile(
 		path.Join(depDirectory, "licensezero.json"),
-		[]byte(fmt.Sprintf(`{"offers": [ { "api": "%v", "offerID": "%v", "public": "%v" } ] }`, api, offerID, public)),
+		[]byte(fmt.Sprintf(`{"offers": [ { "server": "%v", "offerID": "%v", "public": "%v" } ] }`, server, offerID, public)),
 		0700,
 	)
 	if err != nil {
@@ -103,8 +103,8 @@ func TestFindLicenseZeroFilesInNPMPackage(t *testing.T) {
 	if finding.Path != depDirectory {
 		t.Error("failed to set path")
 	}
-	if finding.API != api {
-		t.Error("failed to parse API")
+	if finding.Server != server {
+		t.Error("failed to parse server")
 	}
 	if finding.OfferID != offerID {
 		t.Error("failed to parse offer ID")

@@ -30,13 +30,13 @@ var Renew = &Subcommand{
 			}
 			brokerServer := api.BrokerServer{
 				Client: client,
-				Base:   receipt.License.Values.API,
+				Base:   receipt.License.Values.Server,
 			}
 			latest, err := brokerServer.Latest(receipt.License.Values.OrderID)
 			if err != nil {
 				foundError = true
 				stderr.WriteString(
-					receipt.License.Values.API +
+					receipt.License.Values.Server +
 						" did not return a new receipt for offer " +
 						receipt.License.Values.OfferID + "\n",
 				)
@@ -45,7 +45,7 @@ var Renew = &Subcommand{
 			if err = latest.Validate(); err != nil {
 				foundError = true
 				stderr.WriteString(
-					receipt.License.Values.API +
+					receipt.License.Values.Server +
 						" returned an invalid receipt for offer " +
 						receipt.License.Values.OfferID + "\n",
 				)
@@ -54,7 +54,7 @@ var Renew = &Subcommand{
 			if err = latest.VerifySignature(); err != nil {
 				foundError = true
 				stderr.WriteString(
-					receipt.License.Values.API +
+					receipt.License.Values.Server +
 						" returned a receipt with an invalid signature for offer " +
 						receipt.License.Values.OfferID + "\n",
 				)
@@ -64,14 +64,14 @@ var Renew = &Subcommand{
 				foundError = true
 				stderr.WriteString(
 					"Error saving new receipt for " +
-						receipt.License.Values.API + "/orders/" +
+						receipt.License.Values.Server + "/orders/" +
 						receipt.License.Values.OfferID + "\n",
 				)
 				continue
 			}
 			stdout.WriteString(
 				"Saved new receipt for " +
-					receipt.License.Values.API + "/orders/" +
+					receipt.License.Values.Server + "/orders/" +
 					receipt.License.Values.OfferID + "\n",
 			)
 		}

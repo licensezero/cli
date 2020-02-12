@@ -27,13 +27,13 @@ func TestCompile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	brokerAPI := "https://broker.licensezero.com"
+	brokerServer := "https://broker.licensezero.com"
 	offerID := "186d34a9-c8f7-414c-91bc-a34b4553b91d"
 	public := "Parity-7.0.0"
 	offerURL := "http://example.com"
 	err = ioutil.WriteFile(
 		path.Join(depDirectory, "licensezero.json"),
-		[]byte(fmt.Sprintf(`{"offers": [ { "api": "%v", "offerID": "%v", "public": "%v" } ] }`, brokerAPI, offerID, public)),
+		[]byte(fmt.Sprintf(`{"offers": [ { "server": "%v", "offerID": "%v", "public": "%v" } ] }`, brokerServer, offerID, public)),
 		0700,
 	)
 	if err != nil {
@@ -47,7 +47,7 @@ func TestCompile(t *testing.T) {
 	transport := helptest.RoundTripFunc(func(req *http.Request) *http.Response {
 		url := req.URL.String()
 		var json string
-		if url == brokerAPI+"/offers/"+offerID {
+		if url == brokerServer+"/offers/"+offerID {
 			json = fmt.Sprintf(`
 {
 	"sellerID": "%v",
@@ -65,7 +65,7 @@ func TestCompile(t *testing.T) {
 				Body:       helptest.NoopCloser{Reader: bytes.NewBufferString(json)},
 				Header:     make(http.Header),
 			}
-		} else if url == brokerAPI+"/sellers/"+sellerID {
+		} else if url == brokerServer+"/sellers/"+sellerID {
 			json = fmt.Sprintf(
 				`{ "name": "%v", "jurisdiction": "%v" }`,
 				sellerName,
@@ -103,8 +103,8 @@ func TestCompile(t *testing.T) {
 		t.Fatal("did not find one licensable offer")
 	}
 	finding := licensable[0]
-	if finding.API != brokerAPI {
-		t.Error("did not read API")
+	if finding.Server != brokerServer {
+		t.Error("did not read Server")
 	}
 	if finding.OfferID != offerID {
 		t.Error("did not read offer ID")

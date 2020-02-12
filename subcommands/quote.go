@@ -92,7 +92,7 @@ var Quote = &Subcommand{
 
 		// Calculate quote.
 		type LineItem struct {
-			API     string
+			Server  string
 			OfferID string
 			Public  string
 			Item    inventory.Item
@@ -104,7 +104,7 @@ var Quote = &Subcommand{
 		var fetchErrors []error
 
 		type SellerPointer struct {
-			API      string
+			Server   string
 			SellerID string
 		}
 		sellersCache := make(map[SellerPointer]*api.Seller)
@@ -114,7 +114,7 @@ var Quote = &Subcommand{
 		for _, item := range unlicensed {
 			server := api.BrokerServer{
 				Client: client,
-				Base:   item.API,
+				Base:   item.Server,
 			}
 			// Fetch offer.
 			offer, err := server.Offer(item.OfferID)
@@ -124,7 +124,7 @@ var Quote = &Subcommand{
 			}
 			// Fetch seller.
 			seller, cached := sellersCache[SellerPointer{
-				API:      item.API,
+				Server:   item.Server,
 				SellerID: offer.SellerID,
 			}]
 			if !cached {
@@ -134,7 +134,7 @@ var Quote = &Subcommand{
 				}
 			}
 			// Fetch broker.
-			broker, cached := brokersCache[item.API]
+			broker, cached := brokersCache[item.Server]
 			if !cached {
 				broker, err = server.Broker()
 				if err != nil {
@@ -142,7 +142,7 @@ var Quote = &Subcommand{
 				}
 			}
 			results = append(results, LineItem{
-				API:     item.API,
+				Server:  item.Server,
 				OfferID: item.OfferID,
 				Public:  item.Public,
 				Item:    item,
@@ -162,7 +162,7 @@ var Quote = &Subcommand{
 			}
 			total += single.Amount
 			stdout.WriteString("\n")
-			stdout.WriteString("- API: " + result.API + "\n")
+			stdout.WriteString("- Server: " + result.Server + "\n")
 			stdout.WriteString("  Offer: " + result.OfferID + "\n")
 			stdout.WriteString("  URL: " + result.Offer.URL + "\n")
 			seller := result.Seller

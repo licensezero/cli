@@ -26,7 +26,7 @@ func TestReadReceipts(t *testing.T) {
   "signature": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "license": {
     "values": {
-      "api": "https://broker.licensezero.com",
+      "server": "https://broker.licensezero.com",
       "offerID": "9aab7058-599a-43db-9449-5fc0971ecbfa",
       "effective": "2018-11-13T20:20:39Z",
       "expires": "2019-11-13T20:20:39Z",
@@ -72,7 +72,7 @@ func TestReadReceipts(t *testing.T) {
   "signature": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "license": {
     "values": {
-      "api": "https://broker.licensezero.com",
+      "server": "https://broker.licensezero.com",
       "offerID": "9aab7058-599a-43db-9449-5fc0971ecbfa",
       "effective": "2018-11-13T20:20:39Z",
       "orderID": "2c743a84-09ce-4549-9f0d-19d8f53462bb",
@@ -116,8 +116,8 @@ func TestReadReceipts(t *testing.T) {
 	}
 
 	first := results[0].License.Values
-	if first.API != "https://broker.licensezero.com" {
-		t.Error("failed to parse API")
+	if first.Server != "https://broker.licensezero.com" {
+		t.Error("failed to parse server")
 	}
 	if first.OrderID != "2c743a84-09ce-4549-9f0d-19d8f53462bb" {
 		t.Error("failed to parse orderID")

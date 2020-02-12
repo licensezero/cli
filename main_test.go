@@ -94,7 +94,7 @@ func writeGoodReceipt(t *testing.T) {
 	license := api.License{
 		Form: "test form",
 		Values: api.Values{
-			API: "https://broker.licensezero.com",
+			Server: "https://broker.licensezero.com",
 			Buyer: &api.Buyer{
 				EMail:        "buyer@example.com",
 				Jurisdiction: "US-TX",
@@ -168,7 +168,7 @@ func writeBadReceipt(t *testing.T) {
 	license := api.License{
 		Form: "test form",
 		Values: api.Values{
-			API: "https://broker.licensezero.com",
+			Server: "https://broker.licensezero.com",
 			Buyer: &api.Buyer{
 				EMail:        "buyer@example.com",
 				Jurisdiction: "US-TX",
@@ -234,17 +234,17 @@ func TestImportGoodBundle(t *testing.T) {
 
 	// Generate receipt and other records.
 	publicKey, privateKey, _ := ed25519.GenerateKey(nil)
-	brokerAPI := "https://broker.licensezero.com"
+	brokerServer := "https://broker.licensezero.com"
 	offerID := uuid.New().String()
 	orderID := uuid.New().String()
 	sellerID := uuid.New().String()
 	bundleID := uuid.New().String()
-	bundleURL := brokerAPI + "/receipts/" + bundleID
+	bundleURL := brokerServer + "/receipts/" + bundleID
 	effective := time.Now().UTC().Format(time.RFC3339)
 	license := api.License{
 		Form: "test form",
 		Values: api.Values{
-			API: brokerAPI,
+			Server: brokerServer,
 			Buyer: &api.Buyer{
 				EMail:        "buyer@example.com",
 				Jurisdiction: "US-TX",

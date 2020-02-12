@@ -1,6 +1,6 @@
 package schemas
 
-// Seller contins the JSON schema for API licensor responses.
+// Seller contins the JSON schema for server licensor responses.
 const Seller = `{
   "$schema": "http://json-schema.org/schema#",
   "$id": "https://schemas.licensezero.com/1.0.0-pre/licensor.json",

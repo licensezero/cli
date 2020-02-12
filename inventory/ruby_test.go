@@ -42,7 +42,7 @@ gem "licensezero_rubygem", git: 'https://github.com/licensezero/licensezero_ruby
 		[]byte(`
 GIT
   remote: https://github.com/licensezero/licensezero_rubygem
-  revision: 22576515ecc3d631340aeeb4b7de79a74a27daad
+  revision: 62ed768b8a9a50b88f22eb954ada53f4f92d269b
   specs:
     licensezero_rubygem (0.1.0)
 
@@ -97,7 +97,7 @@ puts LicenseZeroRubyGem::MESSAGE
 	if finding.Type != "rubygem" {
 		t.Error("did not set RubyGem type")
 	}
-	if finding.API != "https://broker.licensezero.com" {
-		t.Error("did not set API")
+	if finding.Server != "https://broker.licensezero.com" {
+		t.Error("did not set server")
 	}
 }

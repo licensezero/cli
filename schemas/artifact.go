@@ -15,13 +15,13 @@ const Artifact = `{
       "items": {
         "type": "object",
         "required": [
-          "api",
+          "server",
           "offerID"
         ],
         "additionalProperties": false,
         "properties": {
-          "api": {
-            "title": "licensing API",
+          "server": {
+            "title": "licensing server",
             "type": "string",
             "format": "uri",
             "pattern": "^https://",

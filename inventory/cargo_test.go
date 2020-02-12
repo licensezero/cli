@@ -76,8 +76,8 @@ fn main () {
 	if finding.Type != "cargo" {
 		t.Error("did not set Cargo type")
 	}
-	if finding.API != "https://broker.licensezero.com" {
+	if finding.Server != "https://broker.licensezero.com" {
 		t.Log(finding)
-		t.Error("did not set API")
+		t.Error("did not set server")
 	}
 }

@@ -7,10 +7,10 @@ import (
 )
 
 func TestParseArtifact(t *testing.T) {
-	api := "https://broker.licensezero.com"
+	server := "https://broker.licensezero.com"
 	offerID := "a16ec460-0acb-4d5a-85e5-2787e61f084f"
 	public := "Prosperity-3.0.0"
-	data := fmt.Sprintf(`{"offers": [ { "api": "%v", "offerID": "%v", "public": "%v" } ] }`, api, offerID, public)
+	data := fmt.Sprintf(`{"offers": [ { "server": "%v", "offerID": "%v", "public": "%v" } ] }`, server, offerID, public)
 
 	var unstructured interface{}
 	err := json.Unmarshal([]byte(data), &unstructured)
@@ -26,8 +26,8 @@ func TestParseArtifact(t *testing.T) {
 		t.Fatal("failed to parse one offer")
 	}
 	offer := artifact.Offers[0]
-	if offer.API != api {
-		t.Error("failed to parse API")
+	if offer.Server != server {
+		t.Error("failed to parse server")
 	}
 	if offer.OfferID != offerID {
 		t.Error("failed to parse offer ID")

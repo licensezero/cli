@@ -34,7 +34,7 @@ const Receipt = `{
         "values": {
           "type": "object",
           "required": [
-            "api",
+            "server",
             "effective",
             "buyer",
             "seller",
@@ -44,8 +44,8 @@ const Receipt = `{
           ],
           "additionalProperties": false,
           "properties": {
-            "api": {
-              "title": "license API",
+            "server": {
+              "title": "license server",
               "$ref": "url.json"
             },
             "effective": {

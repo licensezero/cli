@@ -28,7 +28,7 @@ type Item struct {
 	Name    string
 	Version string
 	Public  string
-	API     string
+	Server  string
 	OfferID string
 	Offer   api.Offer
 	Seller  api.Seller
@@ -42,12 +42,12 @@ type Finding struct {
 	Name    string
 	Version string
 	Public  string
-	API     string
+	Server  string
 	OfferID string
 }
 
 func addArtifactOfferToFinding(offer *ArtifactOffer, finding *Finding) {
-	finding.API = offer.API
+	finding.Server = offer.Server
 	finding.OfferID = offer.OfferID
 	finding.Public = offer.Public
 }
@@ -73,7 +73,7 @@ func Compile(
 	for _, finding := range findings {
 		brokerServer := api.BrokerServer{
 			Client: client,
-			Base:   finding.API,
+			Base:   finding.Server,
 		}
 		offer, err := brokerServer.Offer(finding.OfferID)
 		var item Item
@@ -103,7 +103,7 @@ func Compile(
 				Name:    finding.Name,
 				Version: finding.Version,
 				Public:  finding.Public,
-				API:     finding.API,
+				Server:  finding.Server,
 				OfferID: finding.OfferID,
 				Offer:   *offer,
 				Seller:  *seller,
@@ -158,10 +158,10 @@ func findArtifacts(cwd string) (findings []*Finding, err error) {
 }
 
 func alreadyFound(findings []*Finding, finding *Finding) bool {
-	api := finding.API
+	server := finding.Server
 	offerID := finding.OfferID
 	for _, other := range findings {
-		if other.API == api && other.OfferID == offerID {
+		if other.Server == server && other.OfferID == offerID {
 			return true
 		}
 	}
@@ -169,10 +169,10 @@ func alreadyFound(findings []*Finding, finding *Finding) bool {
 }
 
 func haveReceipt(item *Item, receipts []*api.Receipt) bool {
-	api := item.API
+	server := item.Server
 	offerID := item.OfferID
 	for _, account := range receipts {
-		if account.License.Values.API == api &&
+		if account.License.Values.Server == server &&
 			account.License.Values.OfferID == offerID {
 			return true
 		}
@@ -181,10 +181,10 @@ func haveReceipt(item *Item, receipts []*api.Receipt) bool {
 }
 
 func ownProject(item *Item, accounts []*user.Account) bool {
-	api := item.API
+	server := item.Server
 	sellerID := item.Offer.SellerID
 	for _, account := range accounts {
-		if account.API == api && account.SellerID == sellerID {
+		if account.Server == server && account.SellerID == sellerID {
 			return true
 		}
 	}

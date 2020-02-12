@@ -15,7 +15,7 @@ type Artifact struct {
 
 // ArtifactOffer represents an offer relevant to an artifact.
 type ArtifactOffer struct {
-	API     string `json:"api" toml:"api"`
+	Server  string `json:"server" toml:"server"`
 	OfferID string `json:"offerID" toml:"offerID"`
 	Public  string `json:"public" toml:"public"`
 }

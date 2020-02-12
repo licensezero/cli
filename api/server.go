@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-// BrokerServer responds to broker API requests.
+// BrokerServer responds to broker server requests.
 type BrokerServer struct {
 	Client *http.Client
 	Base   string

@@ -9,7 +9,7 @@ import (
 
 // Account contains information about a seller account.
 type Account struct {
-	API      string `json:"api"`
+	Server   string `json:"server"`
 	SellerID string `json:"sellerID"`
 	Token    string `json:"token"`
 }

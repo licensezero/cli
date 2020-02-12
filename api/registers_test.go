@@ -67,7 +67,7 @@ func makeReceipt(keyHex string, effective string) Receipt {
 		License: License{
 			Form: "test form",
 			Values: Values{
-				API:       "https://broker.licensezero.com",
+				Server:    "https://broker.licensezero.com",
 				Effective: effective,
 				OfferID:   uuid.New().String(),
 				OrderID:   uuid.New().String(),

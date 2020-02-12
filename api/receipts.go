@@ -30,7 +30,7 @@ type License struct {
 type Values struct {
 	// Fields of this struct must be sorted by JSON key, in
 	// order to serialize correctly for signature.
-	API       string  `json:"api"`
+	Server    string  `json:"server"`
 	Broker    *Broker `json:"broker,omitempty"`
 	Buyer     *Buyer  `json:"buyer"`
 	Effective string  `json:"effective"`

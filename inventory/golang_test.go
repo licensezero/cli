@@ -25,7 +25,7 @@ func TestFindGoDeps(t *testing.T) {
 	}
 
 	dep := "github.com/licensezero/gopackage"
-	version := "0.0.3"
+	version := "0.0.4"
 	err = ioutil.WriteFile(
 		path.Join(projectDirectory, "go.mod"),
 		[]byte(fmt.Sprintf(`
@@ -69,7 +69,7 @@ func main () {
 	if finding.Name != "gopackage" {
 		t.Error("did not set package name")
 	}
-	if finding.API != "https://broker.licensezero.com" {
-		t.Error("did not set API")
+	if finding.Server != "https://broker.licensezero.com" {
+		t.Error("did not set server")
 	}
 }

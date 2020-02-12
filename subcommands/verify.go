@@ -42,7 +42,7 @@ var Verify = &Subcommand{
 				foundError = true
 				stderr.WriteString(
 					"Receipt for " +
-						receipt.License.Values.API + "/orders/" + receipt.License.Values.OfferID +
+						receipt.License.Values.Server + "/orders/" + receipt.License.Values.OfferID +
 						"is not a valid receipt.\n",
 				)
 			}
@@ -51,39 +51,39 @@ var Verify = &Subcommand{
 				foundError = true
 				stderr.WriteString(
 					"Signature for " +
-						receipt.License.Values.API + "/orders/" + receipt.License.Values.OfferID +
+						receipt.License.Values.Server + "/orders/" + receipt.License.Values.OfferID +
 						"is not valid.\n",
 				)
 			}
-			brokerAPI := receipt.License.Values.API
-			server, ok := servers[brokerAPI]
+			brokerServer := receipt.License.Values.Server
+			server, ok := servers[brokerServer]
 			if !ok {
-				server = &api.BrokerServer{Client: client, Base: brokerAPI}
-				servers[brokerAPI] = server
+				server = &api.BrokerServer{Client: client, Base: brokerServer}
+				servers[brokerServer] = server
 			}
-			register, ok := registers[brokerAPI]
+			register, ok := registers[brokerServer]
 			if !ok {
 				register, err := server.Register()
 				if err != nil {
 					foundError = true
 					stderr.WriteString(
 						"Could not fetch key register for " +
-							brokerAPI + ".\n",
+							brokerServer + ".\n",
 					)
 				}
-				registers[brokerAPI] = register
+				registers[brokerServer] = register
 			}
 			if err = register.ValidateEffectiveDate(receipt); err != nil {
 				foundError = true
 				stderr.WriteString(
 					"Signature for " +
-						receipt.License.Values.API + "/orders/" + receipt.License.Values.OfferID +
+						receipt.License.Values.Server + "/orders/" + receipt.License.Values.OfferID +
 						"does not match time frame for the broker's signing key.\n",
 				)
 			}
 			if errs := identity.ValidateReceipt(receipt); errs != nil {
 				foundError = true
-				uri := receipt.License.Values.API + "/orders/" + receipt.License.Values.OfferID
+				uri := receipt.License.Values.Server + "/orders/" + receipt.License.Values.OfferID
 				for _, err := range errs {
 					switch {
 					case errors.Is(err, user.ErrNameMismatch):

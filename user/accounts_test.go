@@ -18,12 +18,12 @@ func TestReadAccounts(t *testing.T) {
 	}
 
 	account := path.Join(receipts, "first.json")
-	api := "https://broker.licensezero.com"
+	server := "https://broker.licensezero.com"
 	sellerID := "71ea37d7-6a1a-4072-a64b-84d0236edfe6"
 	token := "xxxxxx"
 	err = ioutil.WriteFile(
 		account,
-		[]byte("{\"api\": \""+api+"\", \"sellerID\": \""+sellerID+"\", \"token\": \""+token+"\"}"),
+		[]byte("{\"server\": \""+server+"\", \"sellerID\": \""+sellerID+"\", \"token\": \""+token+"\"}"),
 		0700,
 	)
 	if err != nil {
@@ -39,8 +39,8 @@ func TestReadAccounts(t *testing.T) {
 		t.Fatal("did not find one account")
 	}
 	result := results[0]
-	if result.API != api {
-		t.Error("did not read API")
+	if result.Server != server {
+		t.Error("did not read server")
 	}
 	if result.SellerID != sellerID {
 		t.Error("did not read seller ID")
