@@ -21,8 +21,8 @@ var quoteUsage = quoteDescription + "\n\n" +
 	"Options:\n" +
 	flagsList(map[string]string{
 		"json":          "Output JSON.",
-		"noncommercial": noncommercialLine,
-		"open":          openLine,
+		"noncommercial": noncommercialUsage,
+		"open":          openUsage,
 	})
 
 // Quote generates a quote for missing private licenses.

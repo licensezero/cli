@@ -18,9 +18,9 @@ var buyUsage = buyDescription + "\n\n" +
 	"  licensezero buy\n\n" +
 	"Options:\n" +
 	flagsList(map[string]string{
-		"noncommercial": noncommercialLine,
-		"open":          openLine,
-		"do-not-open":   doNotOpenLine,
+		"noncommercial": noncommercialUsage,
+		"open":          openUsage,
+		"do-not-open":   doNotOpenUsage,
 	})
 
 // Buy opens a buy page for each broker.

@@ -21,7 +21,7 @@ var importUsage = importDescription + "\n\n" +
 	flagsList(map[string]string{
 		"bundle URL": "URL of purchased license bundle.",
 		"file FILE":  "License or waiver file to import.",
-		"silent":     silentLine,
+		"silent":     silentUsage,
 	})
 
 // Import saves receipts to disk.

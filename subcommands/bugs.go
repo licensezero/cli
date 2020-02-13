@@ -23,7 +23,7 @@ var Bugs = &Subcommand{
 				"  licensezero bugs\n\n" +
 				"Options:\n" +
 				flagsList(map[string]string{
-					"do-not-open": doNotOpenLine,
+					"do-not-open": doNotOpenUsage,
 				})
 			stderr.WriteString(usage)
 		}

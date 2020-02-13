@@ -18,7 +18,7 @@ var identifyUsage = identifyDescription + "\n\n" +
 		"email ADDRESS":     "Your e-mail address",
 		"jurisdiction CODE": "Your tax jurisdiction (ISO 3166-2, like \"US-CA\")",
 		"name NAME":         "Your full name.",
-		"silent":            silentLine,
+		"silent":            silentUsage,
 	})
 
 // Identify saves user identification information.

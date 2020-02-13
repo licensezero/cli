@@ -17,8 +17,8 @@ var tokenUsage = tokenDescription + "\n\n" +
 	"Options:\n" +
 	flagsList(map[string]string{
 		"broker URL": brokerFlagUsage,
-		"seller ID":  sellerIDLine,
-		"silent":     silentLine,
+		"seller ID":  sellerIDUsage,
+		"silent":     silentUsage,
 	})
 
 // Token saves licensor IDs and API tokens.
