@@ -21,6 +21,7 @@ var commands = map[string]*subcommands.Subcommand{
 	"latest":   subcommands.Latest,
 	"quote":    subcommands.Quote,
 	"register": subcommands.Register,
+	"token":    subcommands.Token,
 	"version":  subcommands.Version,
 	"verify":   subcommands.Verify,
 	"whoami":   subcommands.WhoAmI,

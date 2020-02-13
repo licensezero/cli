@@ -18,6 +18,14 @@ func sellerIDFlag(flagSet *flag.FlagSet) *string {
 	return flagSet.String("seller", "", sellerIDLine)
 }
 
+const defaultBroker = "broker.licensezero.com"
+
+var brokerFlagUsage = "Broker server name [default: " + defaultBroker + "]."
+
+func brokerFlag(flagSet *flag.FlagSet) *string {
+	return flagSet.String("broker", defaultBroker, brokerFlagUsage)
+}
+
 func offerIDFlag(flagSet *flag.FlagSet) *string {
 	return flagSet.String("offer", "", offerIDLine)
 }

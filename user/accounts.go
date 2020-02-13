@@ -16,7 +16,11 @@ type Account struct {
 
 // ReadAccounts reads all the broker server accounts saved
 // for the CLI user.
-func ReadAccounts(configPath string) (accounts []*Account, err error) {
+func ReadAccounts() (accounts []*Account, err error) {
+	configPath, err := ConfigPath()
+	if err != nil {
+		return
+	}
 	directoryPath := path.Join(configPath, "accounts")
 	entries, directoryReadError := ioutil.ReadDir(directoryPath)
 	if directoryReadError != nil {
@@ -43,5 +47,33 @@ func readAccount(filePath string) (account *Account, err error) {
 		return nil, err
 	}
 	err = json.Unmarshal(data, &account)
+	return
+}
+
+func WriteAccount(account *Account) (err error) {
+	configPath, err := ConfigPath()
+	if err != nil {
+		return
+	}
+	directoryPath := path.Join(configPath, "accounts")
+	err = os.MkdirAll(directoryPath, 0700)
+	if err != nil {
+		return
+	}
+	filePath := path.Join(directoryPath, account.Token+".json")
+	data, err := json.Marshal(account)
+	if err != nil {
+		return
+	}
+	return ioutil.WriteFile(filePath, data, 0644)
+}
+
+func DeleteAccount(account *Account) (err error) {
+	configPath, err := ConfigPath()
+	if err != nil {
+		return
+	}
+	filePath := path.Join(configPath, "accounts", account.Token+".json")
+	err = os.Remove(filePath)
 	return
 }

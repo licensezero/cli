@@ -65,7 +65,10 @@ func Compile(
 	if err != nil {
 		return
 	}
-	accounts, err := user.ReadAccounts(configPath)
+	accounts, err := user.ReadAccounts()
+	if err != nil {
+		return
+	}
 	findings, err := findArtifacts(cwd)
 	if err != nil {
 		return

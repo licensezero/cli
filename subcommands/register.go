@@ -13,10 +13,6 @@ import (
 
 const registerDescription = "Register to sell private licenses."
 
-const defaultBroker = "broker.licensezero.com"
-
-var brokerFlagUsage = "Broker server name [default: " + defaultBroker + "]"
-
 var registerUsage = registerDescription + "\n\n" +
 	"Usage:\n" +
 	"  licensezero register --broker SERVER\n\n" +
@@ -31,7 +27,7 @@ var Register = &Subcommand{
 	Description: registerDescription,
 	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
 		flagSet := flag.NewFlagSet("register", flag.ContinueOnError)
-		broker := flagSet.String("broker", defaultBroker, brokerFlagUsage)
+		broker := brokerFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = func() {
 			stderr.WriteString(registerUsage)
