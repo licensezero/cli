@@ -180,3 +180,25 @@ func (b *BrokerServer) RegisterSeller(
 	}
 	return nil
 }
+
+// ResetToken requests a seller token reset.
+func (b *BrokerServer) ResetToken(sellerID string) error {
+	var buffer bytes.Buffer
+	postBody := multipart.NewWriter(&buffer)
+	postBody.WriteField("sellerID", sellerID)
+	postBody.Close()
+	request, err := http.NewRequest("POST", b.Base+"/reset", &buffer)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("Content-Type", postBody.FormDataContentType())
+	response, err := b.Client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	if response.StatusCode != 201 {
+		return fmt.Errorf("bad status: %s", response.Status)
+	}
+	return nil
+}
