@@ -18,13 +18,13 @@ func TestInvalidResponses(t *testing.T) {
 			url == base+"/sellers/"+sellerID {
 			return &http.Response{
 				StatusCode: 200,
-				Body:       helptest.NoopCloser{bytes.NewBufferString(`{"invalid":"response"}`)},
+				Body:       helptest.NoopCloser{Reader: bytes.NewBufferString(`{"invalid":"response"}`)},
 				Header:     make(http.Header),
 			}
 		}
 		return &http.Response{
 			StatusCode: 404,
-			Body:       helptest.NoopCloser{bytes.NewBufferString("")},
+			Body:       helptest.NoopCloser{Reader: bytes.NewBufferString("")},
 			Header:     make(http.Header),
 		}
 	})

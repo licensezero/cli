@@ -16,6 +16,7 @@ type BrokerServer struct {
 	Base   string
 }
 
+// Offer requests information about a license offer.
 func (b *BrokerServer) Offer(offerID string) (offer *Offer, err error) {
 	response, err := b.Client.Get(b.Base + "/offers/" + offerID)
 	if err != nil {
@@ -37,6 +38,7 @@ func (b *BrokerServer) Offer(offerID string) (offer *Offer, err error) {
 	return
 }
 
+// Seller requests information about a license seller.
 func (b *BrokerServer) Seller(sellerID string) (seller *Seller, err error) {
 	response, err := b.Client.Get(b.Base + "/sellers/" + sellerID)
 	if err != nil {
@@ -58,6 +60,7 @@ func (b *BrokerServer) Seller(sellerID string) (seller *Seller, err error) {
 	return
 }
 
+// Register gets the broker's signing key register.
 func (b *BrokerServer) Register() (register *Register, err error) {
 	response, err := b.Client.Get(b.Base + "/register")
 	if err != nil {
@@ -79,6 +82,7 @@ func (b *BrokerServer) Register() (register *Register, err error) {
 	return
 }
 
+// Latest gets the latest receipt for an order.
 func (b *BrokerServer) Latest(orderID string) (receipt *Receipt, err error) {
 	response, err := b.Client.Get(b.Base + "/orders/" + orderID + "/latest")
 	if err != nil {
@@ -96,6 +100,7 @@ func (b *BrokerServer) Latest(orderID string) (receipt *Receipt, err error) {
 	return
 }
 
+// Broker gets information about the broker operating the server.
 func (b *BrokerServer) Broker() (broker *Broker, err error) {
 	response, err := b.Client.Get(b.Base + "/broker")
 	if err != nil {
@@ -120,6 +125,7 @@ func (b *BrokerServer) Broker() (broker *Broker, err error) {
 	return
 }
 
+// Order creates an order for licenses.
 func (b *BrokerServer) Order(
 	email, jurisdiction, name string,
 	offerIDs []string,
