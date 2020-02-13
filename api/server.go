@@ -1,9 +1,12 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 )
 
@@ -115,4 +118,33 @@ func (b *BrokerServer) Broker() (broker *Broker, err error) {
 		return nil, errors.New("invalid broker")
 	}
 	return
+}
+
+func (b *BrokerServer) Order(
+	email, jurisdiction, name string,
+	offerIDs []string,
+) (string, error) {
+	var buffer bytes.Buffer
+	postBody := multipart.NewWriter(&buffer)
+	postBody.WriteField("email", email)
+	postBody.WriteField("name", name)
+	postBody.WriteField("jurisdiction", jurisdiction)
+	for _, offerID := range offerIDs {
+		postBody.WriteField("offerIDs[]", offerID)
+	}
+	postBody.Close()
+	request, err := http.NewRequest("POST", b.Base+"/buy", &buffer)
+	if err != nil {
+		return "", err
+	}
+	request.Header.Set("Content-Type", postBody.FormDataContentType())
+	response, err := b.Client.Do(request)
+	if response.StatusCode != http.StatusCreated {
+		return "", fmt.Errorf("bad status: %s", response.Status)
+	}
+	location, err := response.Location()
+	if err != nil {
+		return "", err
+	}
+	return location.String(), nil
 }

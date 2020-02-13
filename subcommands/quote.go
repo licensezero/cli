@@ -30,20 +30,14 @@ var Quote = &Subcommand{
 	Description: quoteDescription,
 	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
 		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
-		noNoncommercial := noNoncommercialFlag(flagSet)
-		noProsperity := noProsperityFlag(flagSet)
 		noncommercial := noncommercialFlag(flagSet)
-		noReciprocal := noReciprocalFlag(flagSet)
 		open := openFlag(flagSet)
-		noParity := noParityFlag(flagSet)
 		outputJSON := flagSet.Bool("json", false, "")
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = func() {
 			stderr.WriteString(quoteUsage)
 		}
 		flagSet.Parse(args)
-		ignoreNoncommercial := *noncommercial || *noNoncommercial || *noProsperity
-		ignoreReciprocal := *open || *noReciprocal || *noParity
 
 		// Compile inventory.
 		configPath, err := user.ConfigPath()
@@ -59,12 +53,13 @@ var Quote = &Subcommand{
 		compiled, err := inventory.Compile(
 			configPath,
 			wd,
-			ignoreNoncommercial,
-			ignoreReciprocal,
+			*noncommercial,
+			*open,
 			client,
 		)
 		if err != nil {
 			stderr.WriteString("Error reading dependencies: " + err.Error() + "\n")
+			return 1
 		}
 
 		if *outputJSON {

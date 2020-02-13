@@ -8,7 +8,7 @@ const openLine = "Open software project. Ignore reciprocal licenses."
 
 const noReciprocalLine = "Ignore packages under reciprocal licenses like Parity."
 
-const doNotOpenLine = "Do not open page in web browser."
+const doNotOpenLine = "Do not open pages in web browser."
 
 const priceLine = "Private license price, in US cents."
 

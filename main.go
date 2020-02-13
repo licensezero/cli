@@ -15,6 +15,7 @@ var Rev string
 var commands = map[string]*subcommands.Subcommand{
 	"backup":   subcommands.Backup,
 	"bugs":     subcommands.Bugs,
+	"buy":      subcommands.Buy,
 	"identify": subcommands.Identify,
 	"import":   subcommands.Import,
 	"latest":   subcommands.Latest,
