@@ -41,14 +41,12 @@ func run(arguments []string, input subcommands.InputDevice, stdout, stderr io.St
 		subcommand := arguments[0]
 		if value, ok := commands[subcommand]; ok {
 			if subcommand == "version" || subcommand == "latest" {
-				value.Handler([]string{Rev}, input, stdout, stderr, client)
-			} else {
-				return value.Handler(arguments[1:], input, stdout, stderr, client)
+				return value.Handler([]string{Rev}, input, stdout, stderr, client)
 			}
-		} else {
-			showUsage(stdout)
-			return 1
+			return value.Handler(arguments[1:], input, stdout, stderr, client)
 		}
+		showUsage(stdout)
+		return 1
 	}
 	showUsage(stdout)
 	return 0
