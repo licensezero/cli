@@ -90,24 +90,23 @@ func Compile(
 		if err != nil {
 			handleInvalid()
 			continue
-		} else {
-			seller, err := brokerServer.Seller(offer.SellerID)
-			if err != nil {
-				handleInvalid()
-				continue
-			}
-			item = Item{
-				Type:    finding.Type,
-				Path:    finding.Path,
-				Scope:   finding.Scope,
-				Name:    finding.Name,
-				Version: finding.Version,
-				Public:  finding.Public,
-				Server:  finding.Server,
-				OfferID: finding.OfferID,
-				Offer:   *offer,
-				Seller:  *seller,
-			}
+		}
+		seller, err := brokerServer.Seller(offer.SellerID)
+		if err != nil {
+			handleInvalid()
+			continue
+		}
+		item = Item{
+			Type:    finding.Type,
+			Path:    finding.Path,
+			Scope:   finding.Scope,
+			Name:    finding.Name,
+			Version: finding.Version,
+			Public:  finding.Public,
+			Server:  finding.Server,
+			OfferID: finding.OfferID,
+			Offer:   *offer,
+			Seller:  *seller,
 		}
 		inventory.Licensable = append(inventory.Licensable, item)
 		if haveReceipt(&item, receipts) {
