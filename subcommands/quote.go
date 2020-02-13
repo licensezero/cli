@@ -10,6 +10,7 @@ import (
 	"licensezero.com/licensezero/user"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 const quoteDescription = "Quote missing private licenses."
@@ -75,12 +76,12 @@ var Quote = &Subcommand{
 		// Print summary.
 		licensable := compiled.Licensable
 		unlicensed := compiled.Unlicensed
-		stdout.WriteString("Offers: " + string(len(licensable)) + "\n")
-		stdout.WriteString("Licensed: " + string(len(compiled.Licensed)) + "\n")
-		stdout.WriteString("Own: " + string(len(compiled.Own)) + "\n")
-		stdout.WriteString("Unlicensed: " + string(len(unlicensed)) + "\n")
-		stdout.WriteString("Ignored: " + string(len(compiled.Ignored)) + "\n")
-		stdout.WriteString("Invalid: " + string(len(compiled.Invalid)) + "\n")
+		stdout.WriteString("Offers: " + strconv.Itoa(len(licensable)) + "\n")
+		stdout.WriteString("Licensed: " + strconv.Itoa(len(compiled.Licensed)) + "\n")
+		stdout.WriteString("Own: " + strconv.Itoa(len(compiled.Own)) + "\n")
+		stdout.WriteString("Unlicensed: " + strconv.Itoa(len(unlicensed)) + "\n")
+		stdout.WriteString("Ignored: " + strconv.Itoa(len(compiled.Ignored)) + "\n")
+		stdout.WriteString("Invalid: " + strconv.Itoa(len(compiled.Invalid)) + "\n")
 		if len(unlicensed) == 0 {
 			return 0
 		}
