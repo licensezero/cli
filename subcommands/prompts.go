@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh/terminal"
 	"io"
-	"licensezero.com/licensezero/api"
 	"os"
 	"strings"
 )
@@ -24,7 +23,7 @@ type StandardInputDevice struct {
 func (d *StandardInputDevice) Confirm(prompt string, stdout io.StringWriter) (bool, error) {
 	var response string
 	stdout.WriteString(prompt + " (y/n): ")
-	_, err := fmt.Scan(d.File, &response)
+	_, err := fmt.Fscan(d.File, &response)
 	if err != nil {
 		return false, err
 	}
@@ -50,14 +49,12 @@ func (d *StandardInputDevice) SecretPrompt(prompt string, stdout io.StringWriter
 	return
 }
 
-const termsPrompt = "Do you agree to " + api.TermsReference + "?"
-
-func confirmTermsOfService(input InputDevice, stdout io.StringWriter) (bool, error) {
+func confirmTermsOfService(base string, input InputDevice, stdout io.StringWriter) (bool, error) {
+	termsPrompt := "Do you agree to the terms at " + base + "/terms/service" + "?"
 	return input.Confirm(termsPrompt, stdout)
 }
 
-const agencyPrompt = "Do you agree to " + api.AgencyReference + "?"
-
-func confirmAgencyTerms(input InputDevice, stdout io.StringWriter) (bool, error) {
+func confirmAgencyTerms(base string, input InputDevice, stdout io.StringWriter) (bool, error) {
+	agencyPrompt := "Do you agree to the terms at " + base + "/terms/brokerage" + "?"
 	return input.Confirm(agencyPrompt, stdout)
 }

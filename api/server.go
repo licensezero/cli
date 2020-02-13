@@ -154,3 +154,29 @@ func (b *BrokerServer) Order(
 	}
 	return location.String(), nil
 }
+
+// RegisterSeller registers a seller to sell through a broker.
+func (b *BrokerServer) RegisterSeller(
+	email, jurisdiction, name string,
+) error {
+	var buffer bytes.Buffer
+	postBody := multipart.NewWriter(&buffer)
+	postBody.WriteField("email", email)
+	postBody.WriteField("name", name)
+	postBody.WriteField("jurisdiction", jurisdiction)
+	postBody.Close()
+	request, err := http.NewRequest("POST", b.Base+"/sellers", &buffer)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("Content-Type", postBody.FormDataContentType())
+	response, err := b.Client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	if response.StatusCode != 201 {
+		return fmt.Errorf("bad status: %s", response.Status)
+	}
+	return nil
+}
