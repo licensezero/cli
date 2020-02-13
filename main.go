@@ -18,6 +18,7 @@ var commands = map[string]*subcommands.Subcommand{
 	"identify": subcommands.Identify,
 	"import":   subcommands.Import,
 	"latest":   subcommands.Latest,
+	"quote":    subcommands.Quote,
 	"version":  subcommands.Version,
 	"verify":   subcommands.Verify,
 	"whoami":   subcommands.WhoAmI,
