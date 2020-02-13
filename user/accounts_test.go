@@ -30,7 +30,9 @@ func TestReadAccounts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	results, err := ReadAccounts(directory)
+	os.Setenv("LICENSEZERO_CONFIG", directory)
+
+	results, err := ReadAccounts()
 	if err != nil {
 		t.Fatal("read error")
 	}
