@@ -1,21 +1,16 @@
 package subcommands
 
-import (
-	"io"
-	"net/http"
-)
-
 const versionDescription = "Print version."
 
 // Version prints the CLI version.
 var Version = &Subcommand{
 	Tag:         "misc",
 	Description: versionDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
-		if args[0] == "" {
-			stdout.WriteString("Development Build\n")
+	Handler: func(env Environment) int {
+		if env.Rev == "" {
+			env.Stdout.WriteString("Development Build\n")
 		} else {
-			stdout.WriteString(args[0])
+			env.Stdout.WriteString(env.Rev)
 		}
 		return 0
 	},

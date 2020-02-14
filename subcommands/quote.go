@@ -2,13 +2,12 @@ package subcommands
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/inventory"
 	"licensezero.com/licensezero/user"
-	"net/http"
 	"os"
 	"strconv"
 )
@@ -29,26 +28,33 @@ var quoteUsage = quoteDescription + "\n\n" +
 var Quote = &Subcommand{
 	Tag:         "buyer",
 	Description: quoteDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		flagSet := flag.NewFlagSet("quote", flag.ExitOnError)
 		noncommercial := noncommercialFlag(flagSet)
 		open := openFlag(flagSet)
 		outputJSON := flagSet.Bool("json", false, "")
 		flagSet.SetOutput(ioutil.Discard)
-		flagSet.Usage = func() {
-			stderr.WriteString(quoteUsage)
+		printUsage := func() {
+			env.Stderr.WriteString(quoteUsage)
 		}
-		flagSet.Parse(args)
+		flagSet.Usage = printUsage
+		err := flagSet.Parse(env.Arguments)
+		if err != nil {
+			if errors.Is(err, flag.ErrHelp) {
+				printUsage()
+			}
+			return 1
+		}
 
 		// Compile inventory.
 		configPath, err := user.ConfigPath()
 		if err != nil {
-			stderr.WriteString("Could not get configuration directory.\n")
+			env.Stderr.WriteString("Could not get configuration directory.\n")
 			return 1
 		}
 		wd, err := os.Getwd()
 		if err != nil {
-			stderr.WriteString("Could not get working directory.\n")
+			env.Stderr.WriteString("Could not get working directory.\n")
 			return 1
 		}
 		compiled, err := inventory.Compile(
@@ -56,17 +62,17 @@ var Quote = &Subcommand{
 			wd,
 			*noncommercial,
 			*open,
-			client,
+			env.Client,
 		)
 		if err != nil {
-			stderr.WriteString("Error reading dependencies: " + err.Error() + "\n")
+			env.Stderr.WriteString("Error reading dependencies: " + err.Error() + "\n")
 			return 1
 		}
 
 		if *outputJSON {
 			marshalled, err := json.Marshal(compiled)
 			if err != nil {
-				stderr.WriteString("Error serializing output: " + err.Error() + "\n")
+				env.Stderr.WriteString("Error serializing output: " + err.Error() + "\n")
 				return 1
 			}
 			os.Stdout.WriteString(string(marshalled) + "\n")
@@ -76,12 +82,12 @@ var Quote = &Subcommand{
 		// Print summary.
 		licensable := compiled.Licensable
 		unlicensed := compiled.Unlicensed
-		stdout.WriteString("Offers: " + strconv.Itoa(len(licensable)) + "\n")
-		stdout.WriteString("Licensed: " + strconv.Itoa(len(compiled.Licensed)) + "\n")
-		stdout.WriteString("Own: " + strconv.Itoa(len(compiled.Own)) + "\n")
-		stdout.WriteString("Unlicensed: " + strconv.Itoa(len(unlicensed)) + "\n")
-		stdout.WriteString("Ignored: " + strconv.Itoa(len(compiled.Ignored)) + "\n")
-		stdout.WriteString("Invalid: " + strconv.Itoa(len(compiled.Invalid)) + "\n")
+		env.Stdout.WriteString("Offers: " + strconv.Itoa(len(licensable)) + "\n")
+		env.Stdout.WriteString("Licensed: " + strconv.Itoa(len(compiled.Licensed)) + "\n")
+		env.Stdout.WriteString("Own: " + strconv.Itoa(len(compiled.Own)) + "\n")
+		env.Stdout.WriteString("Unlicensed: " + strconv.Itoa(len(unlicensed)) + "\n")
+		env.Stdout.WriteString("Ignored: " + strconv.Itoa(len(compiled.Ignored)) + "\n")
+		env.Stdout.WriteString("Invalid: " + strconv.Itoa(len(compiled.Invalid)) + "\n")
 		if len(unlicensed) == 0 {
 			return 0
 		}
@@ -109,7 +115,7 @@ var Quote = &Subcommand{
 
 		for _, item := range unlicensed {
 			server := api.BrokerServer{
-				Client: client,
+				Client: env.Client,
 				Base:   item.Server,
 			}
 			// Fetch offer.
@@ -157,41 +163,41 @@ var Quote = &Subcommand{
 				total = 0
 			}
 			total += single.Amount
-			stdout.WriteString("\n")
-			stdout.WriteString("- Server: " + result.Server + "\n")
-			stdout.WriteString("  Offer: " + result.OfferID + "\n")
-			stdout.WriteString("  URL: " + result.Offer.URL + "\n")
+			env.Stdout.WriteString("\n")
+			env.Stdout.WriteString("- Server: " + result.Server + "\n")
+			env.Stdout.WriteString("  Offer: " + result.OfferID + "\n")
+			env.Stdout.WriteString("  URL: " + result.Offer.URL + "\n")
 			seller := result.Seller
 			if ok {
-				stdout.WriteString("  Seller: " + seller.Name + " [" + seller.Jurisdiction + "] <" + seller.EMail + ">\n")
+				env.Stdout.WriteString("  Seller: " + seller.Name + " [" + seller.Jurisdiction + "] <" + seller.EMail + ">\n")
 			}
 			item := result.Item
 			if item.Type != "" {
-				stdout.WriteString("  Type: " + item.Type + "\n")
+				env.Stdout.WriteString("  Type: " + item.Type + "\n")
 			}
 			if item.Path != "" {
-				stdout.WriteString("  Path: " + item.Path + "\n")
+				env.Stdout.WriteString("  Path: " + item.Path + "\n")
 			}
 			if item.Scope != "" {
-				stdout.WriteString("  Scope: " + item.Scope + "\n")
+				env.Stdout.WriteString("  Scope: " + item.Scope + "\n")
 			}
 			if item.Name != "" {
-				stdout.WriteString("  Name: " + item.Name + "\n")
+				env.Stdout.WriteString("  Name: " + item.Name + "\n")
 			}
 			if item.Version != "" {
-				stdout.WriteString("  Version: " + item.Version + "\n")
+				env.Stdout.WriteString("  Version: " + item.Version + "\n")
 			}
-			stdout.WriteString("  Price: " + string(single.Amount) + " " + single.Currency)
+			env.Stdout.WriteString("  Price: " + string(single.Amount) + " " + single.Currency)
 		}
 
-		stdout.WriteString("Totals:\n")
+		env.Stdout.WriteString("Totals:\n")
 		for currency, total := range totals {
-			stdout.WriteString("  " + string(total) + " " + currency + "\n")
+			env.Stdout.WriteString("  " + string(total) + " " + currency + "\n")
 		}
 
 		if len(fetchErrors) != 0 {
 			for _, err := range fetchErrors {
-				stderr.WriteString("Error: " + err.Error() + "\n")
+				env.Stderr.WriteString("Error: " + err.Error() + "\n")
 			}
 			return 1
 		}

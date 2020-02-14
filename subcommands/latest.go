@@ -1,7 +1,6 @@
 package subcommands
 
 import (
-	"io"
 	"io/ioutil"
 	"net/http"
 )
@@ -12,27 +11,27 @@ const latestDescription = "Check for a newer version."
 var Latest = &Subcommand{
 	Tag:         "misc",
 	Description: latestDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		var running string
-		if args[0] == "" {
+		if env.Rev == "" {
 			running = "Development Build"
 		} else {
-			running = "v" + args[0]
+			running = "v" + env.Rev
 		}
 		response, err := http.Get("https://licensezero.com/cli-version")
 		if err != nil {
-			stderr.WriteString("Could not fetch latest version from licensezero.com.\n")
+			env.Stderr.WriteString("Could not fetch latest version from licensezero.com.\n")
 			return 1
 		}
 		defer response.Body.Close()
 		responseBody, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			stderr.WriteString("Error reading response body.\n")
+			env.Stderr.WriteString("Error reading response body.\n")
 			return 1
 		}
 		current := string(responseBody)
-		stdout.WriteString("Running: " + running + "\n")
-		stdout.WriteString("Latest:  " + current + "\n")
+		env.Stdout.WriteString("Running: " + running + "\n")
+		env.Stdout.WriteString("Latest:  " + current + "\n")
 		if running == current {
 			return 0
 		}
@@ -45,7 +44,7 @@ var Latest = &Subcommand{
 		if err != nil {
 			return 1
 		}
-		stdout.WriteString("Install: " + string(responseBody) + "\n")
+		env.Stdout.WriteString("Install: " + string(responseBody) + "\n")
 		return 1
 	},
 }

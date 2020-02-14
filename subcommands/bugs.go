@@ -1,37 +1,41 @@
 package subcommands
 
 import (
+	"errors"
 	"flag"
-	"io"
 	"io/ioutil"
-	"net/http"
 )
 
 const bugsDescription = "Open the CLI bug tracker page."
+
+var bugsUsage = bugsDescription + "\n\n" +
+	"Usage:\n" +
+	"  licensezero bugs\n\n" +
+	"Options:\n" +
+	flagsList(map[string]string{
+		"do-not-open": doNotOpenUsage,
+	})
 
 // Bugs opens the CLI tracker bug tracker page.
 var Bugs = &Subcommand{
 	Tag:         "misc",
 	Description: bugsDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		flagSet := flag.NewFlagSet("bugs", flag.ExitOnError)
 		doNotOpen := doNotOpenFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
-		flagSet.Usage = func() {
-			usage := bugsDescription + "\n\n" +
-				"Usage:\n" +
-				"  licensezero bugs\n\n" +
-				"Options:\n" +
-				flagsList(map[string]string{
-					"do-not-open": doNotOpenUsage,
-				})
-			stderr.WriteString(usage)
+		printUsage := func() {
+			env.Stderr.WriteString(bugsUsage)
 		}
-		err := flagSet.Parse(args)
+		flagSet.Usage = printUsage
+		err := flagSet.Parse(env.Arguments)
 		if err != nil {
+			if errors.Is(err, flag.ErrHelp) {
+				printUsage()
+			}
 			return 1
 		}
-		openURL("https://github.com/licensezero/cli/issues", doNotOpen, stdout)
+		openURL("https://github.com/licensezero/cli/issues", doNotOpen, env.Stdout)
 		return 0
 	},
 }

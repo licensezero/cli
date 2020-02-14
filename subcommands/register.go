@@ -3,12 +3,9 @@ package subcommands
 import (
 	"errors"
 	"flag"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
-	"net/http"
-	"os"
 )
 
 const registerDescription = "Register to sell private licenses."
@@ -25,49 +22,49 @@ var registerUsage = registerDescription + "\n\n" +
 var Register = &Subcommand{
 	Tag:         "seller",
 	Description: registerDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		flagSet := flag.NewFlagSet("register", flag.ContinueOnError)
 		broker := brokerFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = func() {
-			stderr.WriteString(registerUsage)
+			env.Stderr.WriteString(registerUsage)
 		}
-		err := flagSet.Parse(args)
+		err := flagSet.Parse(env.Arguments)
 		if err != nil {
 			if !errors.Is(err, flag.ErrHelp) {
-				stderr.WriteString("\nError: " + err.Error() + "\n")
+				env.Stderr.WriteString("\nError: " + err.Error() + "\n")
 			}
 			return 1
 		}
 		base := "https://" + *broker
 		identity, err := user.ReadIdentity()
 		if err != nil {
-			stderr.WriteString(identityHint)
+			env.Stderr.WriteString(identityHint)
 			return 1
 		}
-		os.Stdout.WriteString("Name: " + identity.Name + "\n")
-		os.Stdout.WriteString("Jurisdiction: " + identity.Jurisdiction + "\n")
-		os.Stdout.WriteString("E-Mail: " + identity.EMail + "\n")
-		confirmed, err := stdin.Confirm("Is this information correct?", stdout)
+		env.Stdout.WriteString("Name: " + identity.Name + "\n")
+		env.Stdout.WriteString("Jurisdiction: " + identity.Jurisdiction + "\n")
+		env.Stdout.WriteString("E-Mail: " + identity.EMail + "\n")
+		confirmed, err := env.Stdin.Confirm("Is this information correct?", env.Stdout)
 		if err != nil {
-			stderr.WriteString(err.Error())
+			env.Stderr.WriteString(err.Error())
 			return 1
 		}
 		if !confirmed {
-			os.Stdout.WriteString("Exiting.\n")
+			env.Stdout.WriteString("Exiting.\n")
 			return 1
 		}
-		confirmed, err = confirmTermsOfService(base, stdin, stdout)
+		confirmed, err = confirmTermsOfService(base, env.Stdin, env.Stdout)
 		if err != nil {
-			stderr.WriteString(err.Error())
+			env.Stderr.WriteString(err.Error())
 			return 1
 		}
 		if !confirmed {
-			os.Stdout.WriteString(termsHint)
+			env.Stdout.WriteString(termsHint)
 			return 1
 		}
 		server := api.BrokerServer{
-			Client: client,
+			Client: env.Client,
 			Base:   base,
 		}
 		err = server.RegisterSeller(
@@ -76,11 +73,11 @@ var Register = &Subcommand{
 			identity.Name,
 		)
 		if err != nil {
-			stderr.WriteString("Error sending register request: " + err.Error())
+			env.Stderr.WriteString("Error sending register request: " + err.Error())
 			return 1
 		}
-		stdout.WriteString("Follow the authorization link sent by e-mail.\n")
-		stdout.WriteString("If you cannot find the e-mail, check your junk mail folder.\n")
+		env.Stdout.WriteString("Follow the authorization link sent by e-mail.\n")
+		env.Stdout.WriteString("If you cannot find the e-mail, check your junk mail folder.\n")
 		return 0
 	},
 }

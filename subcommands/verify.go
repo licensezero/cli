@@ -2,10 +2,8 @@ package subcommands
 
 import (
 	"errors"
-	"io"
 	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
-	"net/http"
 )
 
 const verifyDescription = "Verify receipts."
@@ -18,21 +16,21 @@ var verifyUsage = verifyDescription + "\n\n" +
 var Verify = &Subcommand{
 	Tag:         "buyer",
 	Description: verifyDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		identity, err := user.ReadIdentity()
 		if err != nil {
-			stderr.WriteString("Error reading identity.")
+			env.Stderr.WriteString("Error reading identity.")
 			return 1
 		}
 		receipts, receiptErrors, err := user.ReadReceipts()
 		if err != nil {
-			stderr.WriteString("Error reading receipts: " + err.Error())
+			env.Stderr.WriteString("Error reading receipts: " + err.Error())
 			return 1
 		}
 		foundError := false
 		for _, receiptError := range receiptErrors {
 			foundError = true
-			stderr.WriteString(receiptError.Error() + "\n")
+			env.Stderr.WriteString(receiptError.Error() + "\n")
 		}
 		servers := make(map[string]*api.BrokerServer)
 		registers := make(map[string]*api.Register)
@@ -40,7 +38,7 @@ var Verify = &Subcommand{
 			err = receipt.Validate()
 			if err != nil {
 				foundError = true
-				stderr.WriteString(
+				env.Stderr.WriteString(
 					"Receipt for " +
 						receipt.License.Values.Server + "/orders/" + receipt.License.Values.OfferID +
 						"is not a valid receipt.\n",
@@ -49,7 +47,7 @@ var Verify = &Subcommand{
 			err = receipt.VerifySignature()
 			if err != nil {
 				foundError = true
-				stderr.WriteString(
+				env.Stderr.WriteString(
 					"Signature for " +
 						receipt.License.Values.Server + "/orders/" + receipt.License.Values.OfferID +
 						"is not valid.\n",
@@ -58,7 +56,7 @@ var Verify = &Subcommand{
 			brokerServer := receipt.License.Values.Server
 			server, ok := servers[brokerServer]
 			if !ok {
-				server = &api.BrokerServer{Client: client, Base: brokerServer}
+				server = &api.BrokerServer{Client: env.Client, Base: brokerServer}
 				servers[brokerServer] = server
 			}
 			register, ok := registers[brokerServer]
@@ -66,7 +64,7 @@ var Verify = &Subcommand{
 				register, err := server.Register()
 				if err != nil {
 					foundError = true
-					stderr.WriteString(
+					env.Stderr.WriteString(
 						"Could not fetch key register for " +
 							brokerServer + ".\n",
 					)
@@ -75,7 +73,7 @@ var Verify = &Subcommand{
 			}
 			if err = register.ValidateEffectiveDate(receipt); err != nil {
 				foundError = true
-				stderr.WriteString(
+				env.Stderr.WriteString(
 					"Signature for " +
 						receipt.License.Values.Server + "/orders/" + receipt.License.Values.OfferID +
 						"does not match time frame for the broker's signing key.\n",
@@ -87,11 +85,11 @@ var Verify = &Subcommand{
 				for _, err := range errs {
 					switch {
 					case errors.Is(err, user.ErrNameMismatch):
-						stderr.WriteString("Name on " + uri + "does not match your identity.\n")
+						env.Stderr.WriteString("Name on " + uri + "does not match your identity.\n")
 					case errors.Is(err, user.ErrJurisdictionMismatch):
-						stderr.WriteString("Name on " + uri + "does not match your identity.\n")
+						env.Stderr.WriteString("Name on " + uri + "does not match your identity.\n")
 					case errors.Is(err, user.ErrEMailMismatch):
-						stderr.WriteString("Name on " + uri + "does not match your identity.\n")
+						env.Stderr.WriteString("Name on " + uri + "does not match your identity.\n")
 					}
 				}
 			}

@@ -2,10 +2,8 @@ package subcommands
 
 import (
 	"flag"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/user"
-	"net/http"
 )
 
 const identifyDescription = "Save your identity information."
@@ -25,7 +23,7 @@ var identifyUsage = identifyDescription + "\n\n" +
 var Identify = &Subcommand{
 	Tag:         "misc",
 	Description: identifyDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		flagSet := flag.NewFlagSet("identify", flag.ContinueOnError)
 		jurisdiction := flagSet.String("jurisdiction", "", "")
 		name := flagSet.String("name", "", "")
@@ -33,15 +31,15 @@ var Identify = &Subcommand{
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = func() {
-			stderr.WriteString(identifyUsage)
+			env.Stderr.WriteString(identifyUsage)
 		}
-		err := flagSet.Parse(args)
+		err := flagSet.Parse(env.Arguments)
 		if err != nil {
-			stderr.WriteString("\nError: " + err.Error() + "\n")
+			env.Stderr.WriteString("\nError: " + err.Error() + "\n")
 			return 1
 		}
 		if *jurisdiction == "" || *name == "" || *email == "" {
-			stderr.WriteString(identifyUsage)
+			env.Stderr.WriteString(identifyUsage)
 			return 1
 		}
 		newIdentity := user.Identity{
@@ -51,7 +49,7 @@ var Identify = &Subcommand{
 		}
 		existingIdentity, _ := user.ReadIdentity()
 		if existingIdentity != nil && *existingIdentity != newIdentity {
-			confirmed, err := stdin.Confirm("Overwrite existing identity?", stdout)
+			confirmed, err := env.Stdin.Confirm("Overwrite existing identity?", env.Stdout)
 			if err != nil {
 				return 1
 			}
@@ -60,24 +58,24 @@ var Identify = &Subcommand{
 			}
 		}
 		if !validName(*name) {
-			stderr.WriteString("Invalid Name.\n")
+			env.Stderr.WriteString("Invalid Name.\n")
 			return 1
 		}
 		if !validJurisdiction(*jurisdiction) {
-			stderr.WriteString("Invalid --jurisdiction. Must be ISO 3166-2 code like \"US-CA\" or \"DE-BE\".\n")
+			env.Stderr.WriteString("Invalid --jurisdiction. Must be ISO 3166-2 code like \"US-CA\" or \"DE-BE\".\n")
 			return 1
 		}
 		if !validEMail(*email) {
-			stderr.WriteString("Invalid E-Mail.\n")
+			env.Stderr.WriteString("Invalid E-Mail.\n")
 			return 1
 		}
 		err = user.WriteIdentity(&newIdentity)
 		if err != nil {
-			stderr.WriteString("Could not write identity file.\n")
+			env.Stderr.WriteString("Could not write identity file.\n")
 			return 1
 		}
 		if !*silent {
-			stdout.WriteString("Saved your identification information.\n")
+			env.Stdout.WriteString("Saved your identification information.\n")
 		}
 		return 0
 	},

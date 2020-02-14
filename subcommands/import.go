@@ -28,26 +28,30 @@ var importUsage = importDescription + "\n\n" +
 var Import = &Subcommand{
 	Tag:         "buyer",
 	Description: importDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		flagSet := flag.NewFlagSet("import", flag.ExitOnError)
 		filePath := flagSet.String("file", "", "")
 		bundle := flagSet.String("bundle", "", "")
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
-		flagSet.Usage = func() {
-			stderr.WriteString(importUsage)
+		printUsage := func() {
+			env.Stderr.WriteString(importUsage)
 		}
-		err := flagSet.Parse(args)
+		flagSet.Usage = printUsage
+		err := flagSet.Parse(env.Arguments)
 		if err != nil {
+			if errors.Is(err, flag.ErrHelp) {
+				printUsage()
+			}
 			return 1
 		}
 		if *filePath == "" && *bundle == "" {
-			stderr.WriteString(importUsage)
+			env.Stderr.WriteString(importUsage)
 			return 1
 		} else if *filePath != "" {
-			return importFile(filePath, silent, stdout, stderr, client)
+			return importFile(filePath, silent, env.Stdout, env.Stderr, env.Client)
 		} else {
-			return importBundle(bundle, silent, stdout, stderr, client)
+			return importBundle(bundle, silent, env.Stdout, env.Stderr, env.Client)
 		}
 	},
 }

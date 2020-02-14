@@ -3,10 +3,8 @@ package subcommands
 import (
 	"errors"
 	"flag"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
-	"net/http"
 )
 
 const lockDescription = "Lock pricing and availability."
@@ -28,20 +26,20 @@ var lockUsage = lockDescription + "\n\n" +
 var Lock = &Subcommand{
 	Tag:         "seller",
 	Description: lockDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		flagSet := flag.NewFlagSet("lock", flag.ExitOnError)
 		broker := brokerFlag(flagSet)
 		offerID := offerIDFlag(flagSet)
 		unlock := flagSet.String("unlock", "", unlockUsage)
 		flagSet.SetOutput(ioutil.Discard)
 		printUsage := func() {
-			stderr.WriteString(lockUsage)
+			env.Stderr.WriteString(lockUsage)
 		}
 		flagSet.Usage = printUsage
-		err := flagSet.Parse(args)
+		err := flagSet.Parse(env.Arguments)
 		if err != nil {
 			if !errors.Is(err, flag.ErrHelp) {
-				stderr.WriteString(err.Error() + "\n")
+				env.Stderr.WriteString(err.Error() + "\n")
 			}
 			return 1
 		}
@@ -52,12 +50,12 @@ var Lock = &Subcommand{
 
 		account, message := selectAccount(broker)
 		if message != "" {
-			stderr.WriteString(message)
+			env.Stderr.WriteString(message)
 			return 1
 		}
 
 		server := api.BrokerServer{
-			Client: client,
+			Client: env.Client,
 			Base:   account.Server,
 		}
 		err = server.Lock(
@@ -67,10 +65,10 @@ var Lock = &Subcommand{
 			*unlock,
 		)
 		if err != nil {
-			stderr.WriteString("Error sending lock request: " + err.Error() + "\n")
+			env.Stderr.WriteString("Error sending lock request: " + err.Error() + "\n")
 			return 1
 		}
-		stdout.WriteString("Locked pricing.\n")
+		env.Stdout.WriteString("Locked pricing.\n")
 		return 0
 	},
 }

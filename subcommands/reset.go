@@ -3,11 +3,9 @@ package subcommands
 import (
 	"errors"
 	"flag"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
-	"net/http"
 )
 
 const resetDescription = "Reset a seller access token."
@@ -24,18 +22,19 @@ var resetUsage = resetDescription + "\n\n" +
 var Reset = &Subcommand{
 	Tag:         "seller",
 	Description: resetDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		// Parse flags.
 		flagSet := flag.NewFlagSet("reset", flag.ContinueOnError)
 		broker := brokerFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
-		flagSet.Usage = func() {
-			stderr.WriteString(resetUsage)
+		printUsage := func() {
+			env.Stderr.WriteString(resetUsage)
 		}
-		err := flagSet.Parse(args)
+		flagSet.Usage = printUsage
+		err := flagSet.Parse(env.Arguments)
 		if err != nil {
 			if !errors.Is(err, flag.ErrHelp) {
-				stderr.WriteString(err.Error() + "\n")
+				printUsage()
 			}
 			return 1
 		}
@@ -43,7 +42,7 @@ var Reset = &Subcommand{
 		// Read saved accounts.
 		accounts, err := user.ReadAccounts()
 		if err != nil {
-			stderr.WriteString("Error reading accounts: " + err.Error() + "\n")
+			env.Stderr.WriteString("Error reading accounts: " + err.Error() + "\n")
 			return 1
 		}
 
@@ -57,24 +56,24 @@ var Reset = &Subcommand{
 			}
 		}
 		if brokerAccount == nil {
-			stderr.WriteString("No seller ID saved for " + *broker + "\n")
+			env.Stderr.WriteString("No seller ID saved for " + *broker + "\n")
 			return 1
 		}
 		sellerID := brokerAccount.SellerID
-		stdout.WriteString("Broker Server: " + base + "\n")
-		stdout.WriteString("Seller ID: " + sellerID + "\n")
+		env.Stdout.WriteString("Broker Server: " + base + "\n")
+		env.Stdout.WriteString("Seller ID: " + sellerID + "\n")
 
 		// Send request.
 		brokerServer := api.BrokerServer{
-			Client: client,
+			Client: env.Client,
 			Base:   base,
 		}
 		err = brokerServer.ResetToken(sellerID)
 		if err != nil {
-			stderr.WriteString("Error: " + err.Error() + "\n")
+			env.Stderr.WriteString("Error: " + err.Error() + "\n")
 			return 1
 		}
-		stdout.WriteString("Check your e-mail for the reset link.\n")
+		env.Stdout.WriteString("Check your e-mail for the reset link.\n")
 		return 0
 	},
 }

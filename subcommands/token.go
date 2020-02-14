@@ -3,10 +3,8 @@ package subcommands
 import (
 	"errors"
 	"flag"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/user"
-	"net/http"
 )
 
 const tokenDescription = "Save your API access token."
@@ -25,31 +23,32 @@ var tokenUsage = tokenDescription + "\n\n" +
 var Token = &Subcommand{
 	Tag:         "seller",
 	Description: tokenDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		// Parse flags.
 		flagSet := flag.NewFlagSet("token", flag.ContinueOnError)
 		sellerID := sellerIDFlag(flagSet)
 		broker := brokerFlag(flagSet)
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
-		flagSet.Usage = func() {
-			stderr.WriteString(tokenUsage)
+		printUsage := func() {
+			env.Stderr.WriteString(tokenUsage)
 		}
-		err := flagSet.Parse(args)
+		flagSet.Usage = printUsage
+		err := flagSet.Parse(env.Arguments)
 		if err != nil {
 			if !errors.Is(err, flag.ErrHelp) {
-				stderr.WriteString(err.Error() + "\n")
+				printUsage()
 			}
 			return 1
 		}
 		if *sellerID == "" {
-			stderr.WriteString(tokenUsage)
+			env.Stderr.WriteString(tokenUsage)
 			return 1
 		}
 		// Prompt for token.
-		token, err := stdin.SecretPrompt("Token: ", stdout)
+		token, err := env.Stdin.SecretPrompt("Token: ", env.Stdout)
 		if err != nil {
-			stderr.WriteString(err.Error() + "\n")
+			env.Stderr.WriteString(err.Error() + "\n")
 			return 1
 		}
 		base := "https://" + *broker
@@ -62,7 +61,7 @@ var Token = &Subcommand{
 		// Check existing accounts.
 		accounts, err := user.ReadAccounts()
 		if err != nil {
-			stderr.WriteString("Could not read existing accounts.\n")
+			env.Stderr.WriteString("Could not read existing accounts.\n")
 			return 1
 		}
 		for _, existing := range accounts {
@@ -72,22 +71,22 @@ var Token = &Subcommand{
 				continue
 			}
 			if existing.Token == account.Token {
-				stderr.WriteString("Already saved.\n")
+				env.Stderr.WriteString("Already saved.\n")
 				return 1
 			}
 			err = user.DeleteAccount(existing)
 			if err != nil {
-				stderr.WriteString("Error deleting existing token for " + existing.Server + " ID " + existing.SellerID + ":" + err.Error() + "\n")
+				env.Stderr.WriteString("Error deleting existing token for " + existing.Server + " ID " + existing.SellerID + ":" + err.Error() + "\n")
 				return 1
 			}
 		}
 		err = user.WriteAccount(&account)
 		if err != nil {
-			stderr.WriteString("Error saving account: " + err.Error() + "\n")
+			env.Stderr.WriteString("Error saving account: " + err.Error() + "\n")
 			return 1
 		}
 		if !*silent {
-			stdout.WriteString("Saved.\n")
+			env.Stdout.WriteString("Saved.\n")
 		}
 		return 0
 	},

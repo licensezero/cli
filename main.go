@@ -39,14 +39,23 @@ func main() {
 	os.Exit(code)
 }
 
-func run(arguments []string, input subcommands.InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+func run(
+	arguments []string,
+	input subcommands.InputDevice,
+	stdout, stderr io.StringWriter,
+	client *http.Client,
+) int {
 	if len(arguments) > 0 {
 		subcommand := arguments[0]
 		if value, ok := commands[subcommand]; ok {
-			if subcommand == "version" || subcommand == "latest" {
-				return value.Handler([]string{Rev}, input, stdout, stderr, client)
-			}
-			return value.Handler(arguments[1:], input, stdout, stderr, client)
+			return value.Handler(subcommands.Environment{
+				Rev:       Rev,
+				Arguments: arguments[1:],
+				Stdin:     input,
+				Stdout:    stdout,
+				Stderr:    stderr,
+				Client:    client,
+			})
 		}
 		showUsage(stdout)
 		return 1

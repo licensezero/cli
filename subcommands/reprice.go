@@ -3,10 +3,8 @@ package subcommands
 import (
 	"errors"
 	"flag"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
-	"net/http"
 )
 
 const repriceDescription = "Change pricing."
@@ -29,7 +27,7 @@ var repriceUsage = repriceDescription + "\n\n" +
 var Reprice = &Subcommand{
 	Tag:         "seller",
 	Description: repriceDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		flagSet := flag.NewFlagSet("reprice", flag.ExitOnError)
 		broker := brokerFlag(flagSet)
 		price := priceFlag(flagSet)
@@ -38,37 +36,37 @@ var Reprice = &Subcommand{
 		offerID := offerIDFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = func() {
-			stderr.WriteString(repriceUsage)
+			env.Stderr.WriteString(repriceUsage)
 		}
-		err := flagSet.Parse(args)
+		err := flagSet.Parse(env.Arguments)
 		if err != nil {
 			if !errors.Is(err, flag.ErrHelp) {
-				stderr.WriteString(err.Error() + "\n")
+				env.Stderr.WriteString(err.Error() + "\n")
 			}
 			return 1
 		}
 		if *price == 0 || *offerID == "" {
-			stderr.WriteString(repriceUsage)
+			env.Stderr.WriteString(repriceUsage)
 			return 1
 		}
 		if *noRelicense && *relicense != 0 {
-			stderr.WriteString(repriceUsage)
+			env.Stderr.WriteString(repriceUsage)
 			return 1
 		}
 		if *offerID == "" {
-			stderr.WriteString(repriceUsage)
+			env.Stderr.WriteString(repriceUsage)
 			return 1
 		}
 
 		// Find the relevant account.
 		account, message := selectAccount(broker)
 		if message != "" {
-			stderr.WriteString(message)
+			env.Stderr.WriteString(message)
 			return 1
 		}
 
 		server := api.BrokerServer{
-			Client: client,
+			Client: env.Client,
 			Base:   account.Server,
 		}
 		err = server.Reprice(
@@ -79,10 +77,10 @@ var Reprice = &Subcommand{
 			relicense,
 		)
 		if err != nil {
-			stderr.WriteString("Error sending reprice request:" + err.Error() + "\n")
+			env.Stderr.WriteString("Error sending reprice request:" + err.Error() + "\n")
 			return 1
 		}
-		stdout.WriteString("Repriced.\n")
+		env.Stdout.WriteString("Repriced.\n")
 		return 0
 	},
 }

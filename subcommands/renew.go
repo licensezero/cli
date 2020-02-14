@@ -1,10 +1,8 @@
 package subcommands
 
 import (
-	"io"
 	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/user"
-	"net/http"
 )
 
 const renewDescription = "Renew receipts."
@@ -17,10 +15,10 @@ var renewUsage = renewDescription + "\n\n" +
 var Renew = &Subcommand{
 	Tag:         "buyer",
 	Description: renewDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		receipts, _, err := user.ReadReceipts()
 		if err != nil {
-			stderr.WriteString("Error reading receipts: " + err.Error())
+			env.Stderr.WriteString("Error reading receipts: " + err.Error())
 			return 1
 		}
 		foundError := false
@@ -29,13 +27,13 @@ var Renew = &Subcommand{
 				continue
 			}
 			brokerServer := api.BrokerServer{
-				Client: client,
+				Client: env.Client,
 				Base:   receipt.License.Values.Server,
 			}
 			latest, err := brokerServer.Latest(receipt.License.Values.OrderID)
 			if err != nil {
 				foundError = true
-				stderr.WriteString(
+				env.Stderr.WriteString(
 					receipt.License.Values.Server +
 						" did not return a new receipt for offer " +
 						receipt.License.Values.OfferID + "\n",
@@ -44,7 +42,7 @@ var Renew = &Subcommand{
 			}
 			if err = latest.Validate(); err != nil {
 				foundError = true
-				stderr.WriteString(
+				env.Stderr.WriteString(
 					receipt.License.Values.Server +
 						" returned an invalid receipt for offer " +
 						receipt.License.Values.OfferID + "\n",
@@ -53,7 +51,7 @@ var Renew = &Subcommand{
 			}
 			if err = latest.VerifySignature(); err != nil {
 				foundError = true
-				stderr.WriteString(
+				env.Stderr.WriteString(
 					receipt.License.Values.Server +
 						" returned a receipt with an invalid signature for offer " +
 						receipt.License.Values.OfferID + "\n",
@@ -62,14 +60,14 @@ var Renew = &Subcommand{
 			}
 			if err = user.SaveReceipt(latest); err != nil {
 				foundError = true
-				stderr.WriteString(
+				env.Stderr.WriteString(
 					"Error saving new receipt for " +
 						receipt.License.Values.Server + "/orders/" +
 						receipt.License.Values.OfferID + "\n",
 				)
 				continue
 			}
-			stdout.WriteString(
+			env.Stdout.WriteString(
 				"Saved new receipt for " +
 					receipt.License.Values.Server + "/orders/" +
 					receipt.License.Values.OfferID + "\n",

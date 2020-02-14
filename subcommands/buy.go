@@ -1,13 +1,12 @@
 package subcommands
 
 import (
+	"errors"
 	"flag"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
 	"licensezero.com/licensezero/inventory"
 	"licensezero.com/licensezero/user"
-	"net/http"
 	"os"
 )
 
@@ -27,26 +26,33 @@ var buyUsage = buyDescription + "\n\n" +
 var Buy = &Subcommand{
 	Tag:         "buyer",
 	Description: buyDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		flagSet := flag.NewFlagSet("buy", flag.ExitOnError)
 		doNotOpen := doNotOpenFlag(flagSet)
 		noncommercial := noncommercialFlag(flagSet)
 		open := openFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
-		flagSet.Usage = func() {
-			stderr.WriteString(buyUsage)
+		printUsage := func() {
+			env.Stderr.WriteString(buyUsage)
 		}
-		flagSet.Parse(args)
+		flagSet.Usage = printUsage
+		err := flagSet.Parse(env.Arguments)
+		if err != nil {
+			if errors.Is(err, flag.ErrHelp) {
+				printUsage()
+			}
+			return 1
+		}
 
 		// Compile inventory.
 		configPath, err := user.ConfigPath()
 		if err != nil {
-			stderr.WriteString("Could not get configuration directory.\n")
+			env.Stderr.WriteString("Could not get configuration directory.\n")
 			return 1
 		}
 		wd, err := os.Getwd()
 		if err != nil {
-			stderr.WriteString("Could not get working directory.\n")
+			env.Stderr.WriteString("Could not get working directory.\n")
 			return 1
 		}
 		compiled, err := inventory.Compile(
@@ -54,21 +60,21 @@ var Buy = &Subcommand{
 			wd,
 			*noncommercial,
 			*open,
-			client,
+			env.Client,
 		)
 		if err != nil {
-			stderr.WriteString("Error reading dependencies: " + err.Error() + "\n")
+			env.Stderr.WriteString("Error reading dependencies: " + err.Error() + "\n")
 			return 1
 		}
 
 		licensable := compiled.Licensable
 		unlicensed := compiled.Unlicensed
 		if len(licensable) == 0 {
-			stdout.WriteString("No License Zero artifacts found.\n")
+			env.Stdout.WriteString("No License Zero artifacts found.\n")
 			return 0
 		}
 		if len(unlicensed) == 0 {
-			stdout.WriteString("No private licenses to buy.\n")
+			env.Stdout.WriteString("No private licenses to buy.\n")
 			return 0
 		}
 
@@ -88,13 +94,13 @@ var Buy = &Subcommand{
 		// Send order requests to broker servers.
 		identity, err := user.ReadIdentity()
 		if err != nil {
-			stderr.WriteString(identityHint)
+			env.Stderr.WriteString(identityHint)
 			return 1
 		}
 		hadOrderError := false
 		for base, offerIDs := range servers {
 			server := api.BrokerServer{
-				Client: client,
+				Client: env.Client,
 				Base:   base,
 			}
 			location, err := server.Order(
@@ -105,10 +111,10 @@ var Buy = &Subcommand{
 			)
 			if err != nil {
 				hadOrderError = true
-				stderr.WriteString("Error ordering from " + base + ": " + err.Error() + "\n")
+				env.Stderr.WriteString("Error ordering from " + base + ": " + err.Error() + "\n")
 				continue
 			}
-			openURL(location, doNotOpen, stdout)
+			openURL(location, doNotOpen, env.Stdout)
 		}
 		if hadOrderError {
 			return 1

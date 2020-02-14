@@ -3,10 +3,8 @@ package subcommands
 import (
 	"errors"
 	"flag"
-	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
-	"net/http"
 )
 
 const offerDescription = "Offer private licenses for sale."
@@ -33,7 +31,7 @@ var offerUsage = offerDescription + "\n\n" +
 var Offer = &Subcommand{
 	Tag:         "seller",
 	Description: offerDescription,
-	Handler: func(args []string, stdin InputDevice, stdout, stderr io.StringWriter, client *http.Client) int {
+	Handler: func(env Environment) int {
 		// Parse flags.
 		flagSet := flag.NewFlagSet("offer", flag.ExitOnError)
 		broker := brokerFlag(flagSet)
@@ -43,40 +41,40 @@ var Offer = &Subcommand{
 		price := priceFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = func() {
-			stderr.WriteString(offerUsage)
+			env.Stderr.WriteString(offerUsage)
 		}
-		err := flagSet.Parse(args)
+		err := flagSet.Parse(env.Arguments)
 		if err != nil {
 			if !errors.Is(err, flag.ErrHelp) {
-				stderr.WriteString(err.Error() + "\n")
+				env.Stderr.WriteString(err.Error() + "\n")
 			}
 			return 1
 		}
 		if *price == 0 || *repository == "" {
-			stderr.WriteString(offerUsage)
+			env.Stderr.WriteString(offerUsage)
 			return 1
 		}
 
 		// Find the relevant account.
 		account, message := selectAccount(broker)
 		if message != "" {
-			stderr.WriteString(message)
+			env.Stderr.WriteString(message)
 			return 1
 		}
 
 		// Agree to brokerage terms.
-		confirmed, err := confirmBrokerageTerms(account.Server, stdin, stdout)
+		confirmed, err := confirmBrokerageTerms(account.Server, env.Stdin, env.Stdout)
 		if err != nil {
 			return 1
 		}
 		if !confirmed {
-			stderr.WriteString(brokerageTermsHint + "\n")
+			env.Stderr.WriteString(brokerageTermsHint + "\n")
 			return 1
 		}
 
 		// Send request.
 		server := api.BrokerServer{
-			Client: client,
+			Client: env.Client,
 			Base:   account.Server,
 		}
 		location, err := server.RegisterOffer(
@@ -88,10 +86,10 @@ var Offer = &Subcommand{
 			relicense,
 		)
 		if err != nil {
-			stderr.WriteString("Error creating offer: " + err.Error() + "\n")
+			env.Stderr.WriteString("Error creating offer: " + err.Error() + "\n")
 			return 1
 		}
-		stdout.WriteString("Created: " + location + "\n")
+		env.Stdout.WriteString("Created: " + location + "\n")
 		return 0
 	},
 }
