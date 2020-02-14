@@ -247,3 +247,37 @@ func (b *BrokerServer) RegisterOffer(
 func formatPrice(price uint) string {
 	return strconv.FormatUint(uint64(price), 10)
 }
+
+// Reprice offers licenses for sale.
+func (b *BrokerServer) Reprice(
+	sellerID string,
+	token string,
+	offerID string,
+	price uint,
+	relicense *uint,
+) error {
+	var buffer bytes.Buffer
+	postBody := multipart.NewWriter(&buffer)
+	postBody.WriteField("sellerID", sellerID)
+	postBody.WriteField("token", token)
+	postBody.WriteField("offerID", offerID)
+	postBody.WriteField("price", formatPrice(price))
+	if relicense != nil {
+		postBody.WriteField("relicense", formatPrice(*relicense))
+	}
+	postBody.Close()
+	request, err := http.NewRequest("PATCH", b.Base+"/offers/"+offerID, &buffer)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("Content-Type", postBody.FormDataContentType())
+	response, err := b.Client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("bad status: %s", response.Status)
+	}
+	return nil
+}

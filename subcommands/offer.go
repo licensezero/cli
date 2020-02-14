@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/ioutil"
 	"licensezero.com/licensezero/api"
-	"licensezero.com/licensezero/user"
 	"net/http"
 )
 
@@ -59,38 +58,10 @@ var Offer = &Subcommand{
 		}
 
 		// Find the relevant account.
-		accounts, err := user.ReadAccounts()
-		if err != nil {
-			stderr.WriteString("Error reading accounts: " + err.Error() + "\n")
+		account, message := selectAccount(broker)
+		if message != "" {
+			stderr.WriteString(message)
 			return 1
-		}
-		if len(accounts) == 0 {
-			stderr.WriteString("No accounts. Register for an account and run `licensezero token` first.\n")
-			return 1
-		}
-		var account *user.Account
-		if len(accounts) == 1 {
-			account = accounts[0]
-		}
-		if len(accounts) > 1 {
-			if *broker == "" {
-				stderr.WriteString("You have multiple seller accounts.\nChoose one by passing --broker URL.\n")
-				for _, account := range accounts {
-					stderr.WriteString(account.Server + "\n")
-				}
-				return 1
-			}
-			base := "https://" + *broker
-			for _, possible := range accounts {
-				if possible.Server == base {
-					account = possible
-					break
-				}
-			}
-			if account == nil {
-				stderr.WriteString("No account for " + *broker + " found.\n")
-				return 1
-			}
 		}
 
 		// Agree to brokerage terms.
