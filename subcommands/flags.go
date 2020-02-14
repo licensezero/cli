@@ -51,3 +51,9 @@ const silentUsage = "Suppress output about success."
 func silentFlag(flagSet *flag.FlagSet) *bool {
 	return flagSet.Bool("silent", false, silentUsage)
 }
+
+const relicenseUsage = "Cost to relicense on Charity terms, in US cents."
+
+func relicenseFlag(flagSet *flag.FlagSet) *uint {
+	return flagSet.Uint("relicense", 0, relicenseUsage)
+}

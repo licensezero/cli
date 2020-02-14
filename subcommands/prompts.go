@@ -54,7 +54,7 @@ func confirmTermsOfService(base string, input InputDevice, stdout io.StringWrite
 	return input.Confirm(termsPrompt, stdout)
 }
 
-func confirmAgencyTerms(base string, input InputDevice, stdout io.StringWriter) (bool, error) {
-	agencyPrompt := "Do you agree to the terms at " + base + "/terms/brokerage" + "?"
-	return input.Confirm(agencyPrompt, stdout)
+func confirmBrokerageTerms(base string, input InputDevice, stdout io.StringWriter) (bool, error) {
+	brokeragePrompt := "Do you agree to the terms at " + base + "/terms/brokerage" + "?"
+	return input.Confirm(brokeragePrompt, stdout)
 }

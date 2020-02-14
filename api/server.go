@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 )
 
 // BrokerServer responds to broker server requests.
@@ -201,4 +202,48 @@ func (b *BrokerServer) ResetToken(sellerID string) error {
 		return fmt.Errorf("bad status: %s", response.Status)
 	}
 	return nil
+}
+
+// RegisterOffer offers licenses for sale.
+func (b *BrokerServer) RegisterOffer(
+	sellerID string,
+	token string,
+	repository string,
+	description string,
+	price uint,
+	relicense *uint,
+) (string, error) {
+	var buffer bytes.Buffer
+	postBody := multipart.NewWriter(&buffer)
+	postBody.WriteField("sellerID", sellerID)
+	postBody.WriteField("token", token)
+	postBody.WriteField("repository", repository)
+	postBody.WriteField("description", description)
+	postBody.WriteField("price", formatPrice(price))
+	if relicense != nil {
+		postBody.WriteField("relicense", formatPrice(*relicense))
+	}
+	postBody.Close()
+	request, err := http.NewRequest("POST", b.Base+"/offers", &buffer)
+	if err != nil {
+		return "", err
+	}
+	request.Header.Set("Content-Type", postBody.FormDataContentType())
+	response, err := b.Client.Do(request)
+	if err != nil {
+		return "", err
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusCreated {
+		return "", fmt.Errorf("bad status: %s", response.Status)
+	}
+	location, err := response.Location()
+	if err != nil {
+		return "", err
+	}
+	return location.String(), nil
+}
+
+func formatPrice(price uint) string {
+	return strconv.FormatUint(uint64(price), 10)
 }
