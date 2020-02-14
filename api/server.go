@@ -281,3 +281,33 @@ func (b *BrokerServer) Reprice(
 	}
 	return nil
 }
+
+// Lock locks license pricing and availability.
+func (b *BrokerServer) Lock(
+	sellerID string,
+	token string,
+	offerID string,
+	unlock string,
+) error {
+	var buffer bytes.Buffer
+	postBody := multipart.NewWriter(&buffer)
+	postBody.WriteField("sellerID", sellerID)
+	postBody.WriteField("token", token)
+	postBody.WriteField("offerID", offerID)
+	postBody.WriteField("unlock", unlock)
+	postBody.Close()
+	request, err := http.NewRequest("PATCH", b.Base+"/offers/"+offerID, &buffer)
+	if err != nil {
+		return err
+	}
+	request.Header.Set("Content-Type", postBody.FormDataContentType())
+	response, err := b.Client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("bad status: %s", response.Status)
+	}
+	return nil
+}
