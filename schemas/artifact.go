@@ -35,11 +35,11 @@ const Artifact = `{
             "format": "uuid"
           },
           "public": {
-            "title": "public license identifier",
+            "title": "public license class",
             "type": "string",
-            "pattern": "^[A-Za-z0-9-.]+",
-            "examples": [
-              "Parity-7.0.0"
+            "enum": [
+              "noncommercial",
+              "share alike"
             ]
           }
         }

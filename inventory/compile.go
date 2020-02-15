@@ -120,12 +120,11 @@ func Compile(
 			inventory.Own = append(inventory.Own, item)
 			continue
 		}
-		licenseType := licenseTypeOf(item.Public)
-		if (licenseType == noncommercial) && ignoreNoncommercial {
+		if (item.Public == "noncommercial") && ignoreNoncommercial {
 			inventory.Ignored = append(inventory.Ignored, item)
 			continue
 		}
-		if (licenseType == reciprocal) && ignoreReciprocal {
+		if (item.Public == "share alike") && ignoreReciprocal {
 			inventory.Ignored = append(inventory.Ignored, item)
 			continue
 		}
