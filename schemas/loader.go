@@ -13,7 +13,6 @@ import (
 //go:generate ./goifyschema Key https://schemas.licensezero.com/1.0.0-pre/key.json
 //go:generate ./goifyschema Ledger https://schemas.licensezero.com/1.0.0-pre/ledger.json
 //go:generate ./goifyschema Offer https://schemas.licensezero.com/1.0.0-pre/offer.json
-//go:generate ./goifyschema Order https://schemas.licensezero.com/1.0.0-pre/order.json
 //go:generate ./goifyschema Price https://schemas.licensezero.com/1.0.0-pre/price.json
 //go:generate ./goifyschema Receipt https://schemas.licensezero.com/1.0.0-pre/receipt.json
 //go:generate ./goifyschema Register https://schemas.licensezero.com/1.0.0-pre/register.json
