@@ -3,7 +3,7 @@ package schemas
 // Jurisdiction is a JSON schema.
 const Jurisdiction = `{
   "$schema": "http://json-schema.org/schema#",
-  "$id": "https://schemas.licensezero.com/1.0.0-pre/jurisdiction.json",
+  "$id": "https://protocol.licensezero.com/1.0.0-pre/jurisdiction.json",
   "title": "ISO 3166-2 codes",
   "enum": [
     "AD-02",

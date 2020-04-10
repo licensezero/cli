@@ -3,7 +3,7 @@ package schemas
 // Artifact is a JSON schema.
 const Artifact = `{
   "$schema": "http://json-schema.org/schema#",
-  "$id": "https://schemas.licensezero.com/1.0.0-pre/artifact.json",
+  "$id": "https://protocol.licensezero.com/1.0.0-pre/artifact.json",
   "type": "object",
   "required": [
     "offers"
@@ -22,9 +22,7 @@ const Artifact = `{
         "properties": {
           "server": {
             "title": "licensing server",
-            "type": "string",
-            "format": "uri",
-            "pattern": "^https://",
+            "$ref": "url.json",
             "examples": [
               "https://broker.licensezero.com"
             ]

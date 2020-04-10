@@ -3,7 +3,7 @@ package schemas
 // Price is a JSON schema.
 const Price = `{
   "$schema": "http://json-schema.org/schema#",
-  "$id": "https://schemas.licensezero.com/1.0.0-pre/price.json",
+  "$id": "https://protocol.licensezero.com/1.0.0-pre/price.json",
   "title": "price",
   "type": "object",
   "required": [

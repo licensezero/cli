@@ -3,7 +3,7 @@ package schemas
 // Broker is a JSON schema.
 const Broker = `{
   "$schema": "http://json-schema.org/schema#",
-  "$id": "https://schemas.licensezero.com/1.0.0-pre/broker.json",
+  "$id": "https://protocol.licensezero.com/1.0.0-pre/broker.json",
   "title": "license broker",
   "comment": "information on the party that sold the license, such as an agent or reseller, if the seller did not sell the license themself",
   "type": "object",

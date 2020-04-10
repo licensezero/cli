@@ -3,7 +3,7 @@ package schemas
 // Ledger is a JSON schema.
 const Ledger = `{
   "$schema": "http://json-schema.org/schema#",
-  "$id": "https://schemas.licensezero.com/1.0.0-pre/ledger.json",
+  "$id": "https://protocol.licensezero.com/1.0.0-pre/ledger.json",
   "type": "array",
   "items": {
     "type": "object",

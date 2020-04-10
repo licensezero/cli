@@ -3,7 +3,7 @@ package schemas
 // Currency is a JSON schema.
 const Currency = `{
   "$schema": "http://json-schema.org/schema#",
-  "$id": "https://schemas.licensezero.com/1.0.0-pre/currency.json",
+  "$id": "https://protocol.licensezero.com/1.0.0-pre/currency.json",
   "title": "ISO 4217 codes",
   "enum": [
     "AED",

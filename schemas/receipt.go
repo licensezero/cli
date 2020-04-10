@@ -3,7 +3,7 @@ package schemas
 // Receipt is a JSON schema.
 const Receipt = `{
   "$schema": "http://json-schema.org/schema#",
-  "$id": "https://schemas.licensezero.com/1.0.0-pre/receipt.json",
+  "$id": "https://protocol.licensezero.com/1.0.0-pre/receipt.json",
   "title": "license receipt",
   "comment": "A receipt represents confirmation of the sale of a software license.",
   "type": "object",
