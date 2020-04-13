@@ -3,12 +3,13 @@ package inventory
 import (
 	"bytes"
 	"fmt"
-	"github.com/licensezero/helptest"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 	"testing"
+
+	"github.com/licensezero/helptest"
 )
 
 func TestCompile(t *testing.T) {
@@ -30,7 +31,7 @@ func TestCompile(t *testing.T) {
 	brokerServer := "https://broker.licensezero.com"
 	offerID := "186d34a9-c8f7-414c-91bc-a34b4553b91d"
 	public := "Parity-7.0.0"
-	offerURL := "http://example.com"
+	offerURL := "https://example.com"
 	err = ioutil.WriteFile(
 		path.Join(depDirectory, "licensezero.json"),
 		[]byte(fmt.Sprintf(`{"offers": [ { "server": "%v", "offerID": "%v", "public": "%v" } ] }`, brokerServer, offerID, public)),
@@ -41,8 +42,10 @@ func TestCompile(t *testing.T) {
 	}
 
 	sellerID := "902d42b2-77ee-4e67-aeb6-6dac3de8bb5a"
+	sellerEMail := "seller@example.com"
 	sellerName := "Test Seller"
 	sellerJurisdiction := "US-CA"
+	sellerURL := "https://example.com/~seller"
 
 	transport := helptest.RoundTripFunc(func(req *http.Request) *http.Response {
 		url := req.URL.String()
@@ -67,9 +70,11 @@ func TestCompile(t *testing.T) {
 			}
 		} else if url == brokerServer+"/sellers/"+sellerID {
 			json = fmt.Sprintf(
-				`{ "name": "%v", "jurisdiction": "%v" }`,
+				`{ "email": "%v", "name": "%v", "jurisdiction": "%v", "url": "%v" }`,
+				sellerEMail,
 				sellerName,
 				sellerJurisdiction,
+				sellerURL,
 			)
 			return &http.Response{
 				StatusCode: 200,
@@ -126,5 +131,8 @@ func TestCompile(t *testing.T) {
 	}
 	if finding.Seller.Name != sellerName {
 		t.Error("did not read seller name")
+	}
+	if finding.Seller.URL != sellerURL {
+		t.Error("did not read seller URL")
 	}
 }

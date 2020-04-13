@@ -13,21 +13,17 @@ const Offer = `{
   "additionalProperties": true,
   "properties": {
     "sellerID": {
-      "type": "string",
-      "format": "uuid"
+      "$ref": "id.json"
     },
     "pricing": {
       "type": "object",
       "properties": {
         "single": {
           "$ref": "price.json"
-        },
-        "site": {
-          "$ref": "price.json"
         }
       },
       "patternProperties": {
-        "^d+$": {
+        "^\\d+$": {
           "$ref": "price.json"
         }
       }

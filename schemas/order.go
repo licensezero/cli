@@ -1,15 +1,15 @@
 package schemas
 
-// Seller is a JSON schema.
-const Seller = `{
+// Order is a JSON schema.
+const Order = `{
   "$schema": "http://json-schema.org/schema#",
-  "$id": "https://protocol.licensezero.com/1.0.0-pre/seller.json",
+  "$id": "https://protocol.licensezero.com/1.0.0-pre/order.json",
   "type": "object",
   "required": [
     "email",
     "jurisdiction",
     "name",
-    "url"
+    "offerIDs[]"
   ],
   "properties": {
     "email": {
@@ -23,8 +23,11 @@ const Seller = `{
       "type": "string",
       "minLength": 3
     },
-    "url": {
-      "$ref": "url.json"
+    "offerIDs[]": {
+      "type": "array",
+      "items": {
+        "$ref": "id.json"
+      }
     }
   }
 }`

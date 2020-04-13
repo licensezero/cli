@@ -15,6 +15,7 @@ type Seller struct {
 	EMail        string `json:"email"`
 	Jurisdiction string `json:"jurisdiction"`
 	Name         string `json:"name"`
+	URL          string `json:"url"`
 }
 
 // ErrInvalidSeller indicates that a Seller does not conform

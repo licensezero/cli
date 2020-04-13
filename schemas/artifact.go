@@ -28,9 +28,7 @@ const Artifact = `{
             ]
           },
           "offerID": {
-            "title": "UUIDv4 offer identifier",
-            "type": "string",
-            "format": "uuid"
+            "$ref": "id.json"
           },
           "public": {
             "title": "public license class",

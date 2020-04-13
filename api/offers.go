@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+
 	"github.com/xeipuuv/gojsonschema"
 	"licensezero.com/licensezero/schemas"
 )
@@ -46,6 +48,9 @@ func (offer *Offer) Validate() error {
 		return err
 	}
 	if !result.Valid() {
+		for _, err := range result.Errors() {
+			fmt.Printf("- %s\n", err)
+		}
 		return ErrInvalidOffer
 	}
 	return nil

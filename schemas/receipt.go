@@ -16,7 +16,7 @@ const Receipt = `{
   "properties": {
     "key": {
       "title": "public signing key of the broker server",
-      "$ref": "key.json"
+      "$ref": "public-key.json"
     },
     "license": {
       "title": "license manifest",
@@ -57,43 +57,17 @@ const Receipt = `{
               "$ref": "time.json"
             },
             "offerID": {
-              "title": "offer identifier",
-              "type": "string",
-              "format": "uuid"
+              "$ref": "id.json"
             },
             "orderID": {
-              "title": "order identifier",
-              "type": "string",
-              "format": "uuid"
+              "$ref": "id.json"
             },
             "price": {
               "title": "purchase price",
               "$ref": "price.json"
             },
             "buyer": {
-              "title": "buyer",
-              "comment": "The buyer is the one receiving the license.",
-              "type": "object",
-              "required": [
-                "email",
-                "jurisdiction",
-                "name"
-              ],
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "format": "email"
-                },
-                "jurisdiction": {
-                  "$ref": "jurisdiction.json"
-                },
-                "name": {
-                  "$ref": "name.json",
-                  "examples": [
-                    "Joe Buyer"
-                  ]
-                }
-              }
+              "$ref": "buyer.json"
             },
             "recurring": {
               "const": true
@@ -102,9 +76,7 @@ const Receipt = `{
               "$ref": "seller.json"
             },
             "sellerID": {
-              "title": "seller identifier",
-              "type": "string",
-              "format": "uuid"
+              "$ref": "id.json"
             },
             "broker": {
               "$ref": "broker.json"

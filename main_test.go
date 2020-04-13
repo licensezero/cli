@@ -5,15 +5,16 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
-	"golang.org/x/crypto/ed25519"
 	"io/ioutil"
-	"licensezero.com/licensezero/api"
 	"os"
 	"path"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"golang.org/x/crypto/ed25519"
+	"licensezero.com/licensezero/api"
 )
 
 func TestSanity(t *testing.T) {
@@ -108,6 +109,7 @@ func writeGoodReceipt(t *testing.T) {
 				EMail:        "seller@example.com",
 				Jurisdiction: "US-CA",
 				Name:         "Seller",
+				URL:          "https://example.com/~seller",
 			},
 		},
 	}
@@ -182,6 +184,7 @@ func writeBadReceipt(t *testing.T) {
 				EMail:        "seller@example.com",
 				Jurisdiction: "US-CA",
 				Name:         "Seller",
+				URL:          "https://example.com/~seller",
 			},
 		},
 	}
@@ -258,6 +261,7 @@ func TestImportGoodBundle(t *testing.T) {
 				EMail:        "seller@example.com",
 				Jurisdiction: "US-CA",
 				Name:         "Seller",
+				URL:          "https://example.com/~seller",
 			},
 		},
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func TestParseOffer(t *testing.T) {
-	url := "http://example.com/project"
+	url := "https://example.com/project"
 	sellerID := "6005a0cd-2481-468c-a53b-6e844930e413"
 	var amount uint = 500
 	currency := "USD"

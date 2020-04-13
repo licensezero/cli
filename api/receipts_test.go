@@ -27,7 +27,8 @@ func TestReceiptJSON(t *testing.T) {
     "seller": {
       "email": "seller@example.com",
       "jurisdiction": "US-CA",
-      "name": "Jane"
+      "name": "Jane",
+      "url": "https://examples.com/~seller"
     },
     "sellerID": "59e70a4d-ffee-4e9d-a526-7a9ff9161664"
   }
@@ -73,7 +74,7 @@ func TestReceiptJSON(t *testing.T) {
 
 func TestValidateSignature(t *testing.T) {
 	publicKey, privateKey, _ := ed25519.GenerateKey(nil)
-	message := `{"form":"Test license form.","values":{"server":"https://broker.licensezero.com","buyer":{"email":"buyer@example.com","jurisdiction":"US-TX","name":"Joe"},"effective":"2018-11-13T20:20:39Z","offerID":"9aab7058-599a-43db-9449-5fc0971ecbfa","orderID":"2c743a84-09ce-4549-9f0d-19d8f53462bb","seller":{"email":"seller@example.com","jurisdiction":"US-CA","name":"Jane"},"sellerID":"59e70a4d-ffee-4e9d-a526-7a9ff9161664"}}`
+	message := `{"form":"Test license form.","values":{"server":"https://broker.licensezero.com","buyer":{"email":"buyer@example.com","jurisdiction":"US-TX","name":"Joe"},"effective":"2018-11-13T20:20:39Z","offerID":"9aab7058-599a-43db-9449-5fc0971ecbfa","orderID":"2c743a84-09ce-4549-9f0d-19d8f53462bb","seller":{"email":"seller@example.com","jurisdiction":"US-CA","name":"Jane","url":"https://example.com/~seller"},"sellerID":"59e70a4d-ffee-4e9d-a526-7a9ff9161664"}}`
 	signature := ed25519.Sign(privateKey, []byte(message))
 	signatureHex := hex.EncodeToString(signature)
 	publicKeyHex := hex.EncodeToString(publicKey)

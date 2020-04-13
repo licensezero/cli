@@ -1,11 +1,12 @@
 package inventory
 
 import (
-	"licensezero.com/licensezero/api"
-	"licensezero.com/licensezero/user"
 	"net/http"
 	"os"
 	"path"
+
+	"licensezero.com/licensezero/api"
+	"licensezero.com/licensezero/user"
 )
 
 // Inventory describes offers to license artifacts in a working

@@ -11,7 +11,7 @@ const Broker = `{
     "email",
     "jurisdiction",
     "name",
-    "website"
+    "url"
   ],
   "additionalProperties": false,
   "properties": {
@@ -28,7 +28,7 @@ const Broker = `{
         "Artless Devices LLC"
       ]
     },
-    "website": {
+    "url": {
       "$ref": "url.json"
     }
   }

@@ -14,7 +14,7 @@ type Broker struct {
 	EMail        string `json:"email"`
 	Jurisdiction string `json:"jurisdiction"`
 	Name         string `json:"name"`
-	Website      string `json:"website"`
+	URL          string `json:"url"`
 }
 
 // ErrInvalidBroker indicates that a Broker struct does not conform

@@ -39,7 +39,8 @@ func TestReadReceipts(t *testing.T) {
       "seller": {
         "email": "seller@example.com",
         "jurisdiction": "US-CA",
-        "name": "Jane Seller"
+        "name": "Jane Seller",
+				"url": "https://example.com/~seller"
       },
       "sellerID": "59e70a4d-ffee-4e9d-a526-7a9ff9161664",
       "price": {
@@ -50,7 +51,7 @@ func TestReadReceipts(t *testing.T) {
         "email": "support@artlessdevices.com",
         "name": "Artless Devices LLC",
         "jurisdiction": "US-CA",
-        "website": "https://artlessdevices.com"
+        "url": "https://artlessdevices.com"
       }
     },
     "form": "Test license form."
@@ -84,7 +85,8 @@ func TestReadReceipts(t *testing.T) {
       "seller": {
         "email": "seller@example.com",
         "jurisdiction": "US-CA",
-        "name": "Jane Seller"
+        "name": "Jane Seller",
+				"url": "https://artlessdevices.com"
       },
       "sellerID": "59e70a4d-ffee-4e9d-a526-7a9ff9161664"
     },
