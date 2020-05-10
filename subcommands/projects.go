@@ -11,7 +11,7 @@ const projectsDescription = "List your projects."
 
 // Projects prints the licensor's projects.
 var Projects = &Subcommand{
-	Tag:         "misc",
+	Tag:         "seller",
 	Description: projectsDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("projects", flag.ExitOnError)
