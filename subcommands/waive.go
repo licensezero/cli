@@ -24,9 +24,9 @@ var Waive = &Subcommand{
 		flagSet.Usage = waiveUsage
 		flagSet.Parse(args)
 		if *projectID == "" && *id == "" {
-			licenseUsage()
+			waiveUsage()
 		} else if *projectID != "" && *id != "" {
-			licenseUsage()
+			waiveUsage()
 		} else if *forever && *days > 0 {
 			waiveUsage()
 		} else if *days == 0 && !*forever {

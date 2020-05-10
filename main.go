@@ -13,7 +13,6 @@ var commands = map[string]*subcommands.Subcommand{
 	"backup":   subcommands.Backup,
 	"bugs":     subcommands.Bugs,
 	"identify": subcommands.Identify,
-	"license":  subcommands.License,
 	"latest":   subcommands.Latest,
 	"lock":     subcommands.Lock,
 	"offer":    subcommands.Offer,
