@@ -10,7 +10,6 @@ before_install:
 script:
   - make
   - make test
-  - $HOME/bin/licensezero quote
 before_deploy: make build
 deploy:
   provider: releases
