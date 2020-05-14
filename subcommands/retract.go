@@ -8,7 +8,7 @@ import "os"
 
 const retractDescription = "Stop offering private licenses for sale."
 
-// Retract pulls a offer from sale.
+// Retract pulls an offer from sale.
 var Retract = &Subcommand{
 	Tag:         "seller",
 	Description: retractDescription,

@@ -11,7 +11,7 @@ type licensorRequest struct {
 	LicensorID string `json:"licensorID"`
 }
 
-// OfferInformation describes information on a offer from an API Licensor request.
+// OfferInformation describes information on an offer from an API Licensor request.
 type OfferInformation struct {
 	OfferID   string `json:"offerID"`
 	Offered   string `json:"offered"`
