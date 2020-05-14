@@ -14,24 +14,24 @@ var Lock = &Subcommand{
 	Description: lockDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("lock", flag.ExitOnError)
-		projectID := projectIDFlag(flagSet)
+		offerID := offerIDFlag(flagSet)
 		id := idFlag(flagSet)
 		unlock := flagSet.String("unlock", "", "")
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = lockUsage
 		flagSet.Parse(args)
-		if *unlock == "" || (*projectID == "" && *id == "") {
+		if *unlock == "" || (*offerID == "" && *id == "") {
 			lockUsage()
 		}
-		if *projectID == "" && *id == "" {
+		if *offerID == "" && *id == "" {
 			lockUsage()
 		}
-		if *projectID != "" && *id != "" {
+		if *offerID != "" && *id != "" {
 			lockUsage()
 		}
-		if *projectID != "" {
-			*id = *projectID
+		if *offerID != "" {
+			*id = *offerID
 		}
 		if !validID(*id) {
 			invalidID()

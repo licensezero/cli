@@ -11,23 +11,23 @@ type licensorRequest struct {
 	LicensorID string `json:"licensorID"`
 }
 
-// ProjectInformation describes information on a project from an API Licensor request.
-type ProjectInformation struct {
-	ProjectID string `json:"projectID"`
+// OfferInformation describes information on a offer from an API Licensor request.
+type OfferInformation struct {
+	OfferID   string `json:"offerID"`
 	Offered   string `json:"offered"`
 	Retracted string `json:"retracted,omitempty"`
 }
 
 type licensorResponse struct {
-	Error        interface{}          `json:"error"`
-	Name         string               `json:"name"`
-	Jurisdiction string               `json:"jurisdiction"`
-	PublicKey    string               `json:"publicKey"`
-	Projects     []ProjectInformation `json:"projects"`
+	Error        interface{}        `json:"error"`
+	Name         string             `json:"name"`
+	Jurisdiction string             `json:"jurisdiction"`
+	PublicKey    string             `json:"publicKey"`
+	Offers       []OfferInformation `json:"offers"`
 }
 
 // Licensor sends a licensor API request.
-func Licensor(licensorID string) (*LicensorInformation, []ProjectInformation, error) {
+func Licensor(licensorID string) (*LicensorInformation, []OfferInformation, error) {
 	bodyData := licensorRequest{
 		Action:     "licensor",
 		LicensorID: licensorID,
@@ -58,5 +58,5 @@ func Licensor(licensorID string) (*LicensorInformation, []ProjectInformation, er
 		Jurisdiction: parsed.Jurisdiction,
 		PublicKey:    parsed.PublicKey,
 	}
-	return &licensor, parsed.Projects, nil
+	return &licensor, parsed.Offers, nil
 }

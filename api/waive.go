@@ -12,7 +12,7 @@ type waiveRequest struct {
 	Action       string      `json:"action"`
 	LicensorID   string      `json:"licensorID"`
 	Token        string      `json:"token"`
-	ProjectID    string      `json:"projectID"`
+	OfferID      string      `json:"offerID"`
 	Beneficiary  string      `json:"beneficiary"`
 	Jurisdiction string      `json:"jurisdiction"`
 	Term         interface{} `json:"term"`
@@ -23,12 +23,12 @@ type waiveResponse struct {
 }
 
 // Waive sends waiver API requests.
-func Waive(licensor *data.Licensor, projectID, beneficiary, jurisdiction string, term interface{}) ([]byte, error) {
+func Waive(licensor *data.Licensor, offerID, beneficiary, jurisdiction string, term interface{}) ([]byte, error) {
 	bodyData := waiveRequest{
 		Action:       "waiver",
 		LicensorID:   licensor.LicensorID,
 		Token:        licensor.Token,
-		ProjectID:    projectID,
+		OfferID:      offerID,
 		Beneficiary:  beneficiary,
 		Jurisdiction: jurisdiction,
 		Term:         term,

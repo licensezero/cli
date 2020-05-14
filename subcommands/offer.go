@@ -8,7 +8,7 @@ import "os"
 
 const offerDescription = "Offer private licenses for sale."
 
-// Offer creates a project and offers private licenses for sale.
+// Offer creates a offer and offers private licenses for sale.
 var Offer = &Subcommand{
 	Tag:         "seller",
 	Description: offerDescription,
@@ -36,12 +36,12 @@ var Offer = &Subcommand{
 		if !confirmAgencyTerms() {
 			Fail(agencyTermsHint)
 		}
-		projectID, err := api.Offer(licensor, *repository, *description, *price, *relicense)
+		offerID, err := api.Offer(licensor, *repository, *description, *price, *relicense)
 		if err != nil {
 			Fail("Error sending offer request: " + err.Error())
 		}
-		location := "https://licensezero.com/projects/" + projectID
-		os.Stdout.WriteString("Project ID: " + projectID + "\n")
+		location := "https://licensezero.com/offers/" + offerID
+		os.Stdout.WriteString("Offer ID: " + offerID + "\n")
 		openURLAndExit(location, doNotOpen)
 	},
 }

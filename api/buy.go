@@ -9,7 +9,7 @@ import "net/http"
 
 type buyRequest struct {
 	Action       string   `json:"action"`
-	Projects     []string `json:"projects"`
+	Offers       []string `json:"offers"`
 	Name         string   `json:"licensee"`
 	Jurisdiction string   `json:"jurisdiction"`
 	EMail        string   `json:"email"`
@@ -22,10 +22,10 @@ type buyResponse struct {
 }
 
 // Buy sends a buy API request.
-func Buy(identity *data.Identity, projectIDs []string) (string, error) {
+func Buy(identity *data.Identity, offerIDs []string) (string, error) {
 	bodyData := buyRequest{
 		Action:       "order",
-		Projects:     projectIDs,
+		Offers:       offerIDs,
 		Name:         identity.Name,
 		Jurisdiction: identity.Jurisdiction,
 		EMail:        identity.EMail,

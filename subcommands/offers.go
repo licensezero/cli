@@ -9,8 +9,8 @@ import "os"
 
 const projectsDescription = "List your projects."
 
-// Projects prints the licensor's projects.
-var Projects = &Subcommand{
+// Offers prints the licensor's projects.
+var Offers = &Subcommand{
 	Tag:         "seller",
 	Description: projectsDescription,
 	Handler: func(args []string, paths Paths) {
@@ -28,7 +28,7 @@ var Projects = &Subcommand{
 		if err != nil {
 			Fail("Could not fetch licensor information: " + err.Error())
 		}
-		var filtered []api.ProjectInformation
+		var filtered []api.OfferInformation
 		if *retracted {
 			filtered = projects
 		} else {
@@ -50,7 +50,7 @@ var Projects = &Subcommand{
 			if i != 0 {
 				os.Stdout.WriteString("\n")
 			}
-			os.Stdout.WriteString("- Project ID: " + project.ProjectID + "\n")
+			os.Stdout.WriteString("- Offer ID: " + project.OfferID + "\n")
 			os.Stdout.WriteString("  Offered:    " + project.Offered + "\n")
 			if project.Retracted != "" {
 				os.Stdout.WriteString("  Retracted:  " + project.Offered + "\n")

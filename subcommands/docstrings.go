@@ -1,10 +1,10 @@
 package subcommands
 
-const noncommercialLine = "Noncommercial project. Ignore noncommercial licenses."
+const noncommercialLine = "Noncommercial offer. Ignore noncommercial licenses."
 
 const noNoncommercialLine = "Ignore packages under noncommercial licenses like Prosperity."
 
-const openLine = "Open software project. Ignore reciprocal licenses."
+const openLine = "Open software offer. Ignore reciprocal licenses."
 
 const noReciprocalLine = "Ignore packages under reciprocal licenses like Parity."
 
@@ -16,7 +16,7 @@ const relicenseLine = "Cost to relicense on Charity terms, in US cents."
 
 const noRelicenseLine = "Do not offer to relicense on Charity terms."
 
-const projectIDLine = "Project ID (UUID)."
+const offerIDLine = "Offer ID (UUID)."
 
 const idLine = "License Zero ID (UUID)."
 

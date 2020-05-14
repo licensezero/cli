@@ -6,21 +6,21 @@ import "errors"
 import "io/ioutil"
 import "net/http"
 
-type projectRequest struct {
-	Action    string `json:"action"`
-	ProjectID string `json:"projectID"`
+type offeringRequest struct {
+	Action  string `json:"action"`
+	OfferID string `json:"offerID"`
 }
 
-type projectResponse struct {
+type offeringResponse struct {
 	Error    interface{}         `json:"error"`
 	Licensor LicensorInformation `json:"licensor"`
 }
 
-// Project sends a project API request.
-func Project(projectID string) (*LicensorInformation, error) {
-	bodyData := projectRequest{
-		Action:    "project",
-		ProjectID: projectID,
+// Offering sends an offering API request.
+func Offering(offerID string) (*LicensorInformation, error) {
+	bodyData := offeringRequest{
+		Action:  "offering",
+		OfferID: offerID,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {
@@ -35,7 +35,7 @@ func Project(projectID string) (*LicensorInformation, error) {
 	if err != nil {
 		return nil, errors.New("error reading agent key response body")
 	}
-	var parsed projectResponse
+	var parsed offeringResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return nil, errors.New("error parsing agent key response body")

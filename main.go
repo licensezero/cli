@@ -16,7 +16,7 @@ var commands = map[string]*subcommands.Subcommand{
 	"latest":   subcommands.Latest,
 	"lock":     subcommands.Lock,
 	"offer":    subcommands.Offer,
-	"projects": subcommands.Projects,
+	"offers":   subcommands.Offers,
 	"register": subcommands.Register,
 	"reprice":  subcommands.Reprice,
 	"reset":    subcommands.Reset,
@@ -57,7 +57,7 @@ func main() {
 }
 
 func showUsage() {
-	os.Stdout.WriteString("Manage License Zero projects and dependencies.\n\nSubcommands:\n")
+	os.Stdout.WriteString("Manage License Zero offers and dependencies.\n\nSubcommands:\n")
 	longestSubcommand := 0
 	var names []string
 	for name := range commands {

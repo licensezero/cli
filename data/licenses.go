@@ -7,11 +7,11 @@ import "io/ioutil"
 import "os"
 import "path"
 
-// LicenseEnvelope describes fully parsed licensezero.json metadata about a project.
+// LicenseEnvelope describes fully parsed licensezero.json metadata about a offer.
 type LicenseEnvelope struct {
 	Manifest       LicenseManifest
 	ManifestString string
-	ProjectID      string
+	OfferID        string
 	Document       string
 	PublicKey      string
 	Signature      string
@@ -20,7 +20,7 @@ type LicenseEnvelope struct {
 // LicenseFile describes partially parsed licensezero.json metadata about a contribution set.
 type LicenseFile struct {
 	Manifest  string `json:"manifest"`
-	ProjectID string `json:"projectID"`
+	OfferID   string `json:"offerID"`
 	Document  string `json:"document"`
 	PublicKey string `json:"publicKey"`
 	Signature string `json:"signature"`
@@ -41,16 +41,16 @@ type LicenseManifest struct {
 	}
 	OrderID string `json:"orderID"`
 	Price   int    `json:"price"`
-	Project struct {
+	Offer   struct {
 		Description string `json:"description"`
 		Repository  string `json:"homepage"`
-		ProjectID   string `json:"projectID"`
+		OfferID     string `json:"offerID"`
 	}
 	Version string `json:"VERSION"`
 }
 
-func licensePath(home string, projectID string) string {
-	return path.Join(licensesPath(home), projectID+".json")
+func licensePath(home string, offerID string) string {
+	return path.Join(licensesPath(home), offerID+".json")
 }
 
 func licensesPath(home string) string {
@@ -90,7 +90,7 @@ func LicenseFileToEnvelope(file *LicenseFile) (*LicenseEnvelope, error) {
 	return &LicenseEnvelope{
 		Manifest:       manifest,
 		ManifestString: file.Manifest,
-		ProjectID:      file.ProjectID,
+		OfferID:        file.OfferID,
 		Document:       file.Document,
 		PublicKey:      file.PublicKey,
 		Signature:      file.Signature,
@@ -115,7 +115,7 @@ func ReadLicense(filePath string) (*LicenseEnvelope, error) {
 func WriteLicense(home string, license *LicenseEnvelope) error {
 	file := LicenseFile{
 		Manifest:  license.ManifestString,
-		ProjectID: license.ProjectID,
+		OfferID:   license.OfferID,
 		Document:  license.Document,
 		PublicKey: license.PublicKey,
 		Signature: license.Signature,
@@ -128,7 +128,7 @@ func WriteLicense(home string, license *LicenseEnvelope) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(licensePath(home, license.ProjectID), json, 0644)
+	return ioutil.WriteFile(licensePath(home, license.OfferID), json, 0644)
 }
 
 // CheckLicenseSignature verifies the signatures to a liecnse envelope.
@@ -142,8 +142,8 @@ func CheckLicenseSignature(license *LicenseEnvelope, publicKey string) error {
 	if err != nil {
 		return errors.New("could not compact license manifest")
 	}
-	if license.ProjectID != license.Manifest.Project.ProjectID {
-		return errors.New("project IDs do not match")
+	if license.OfferID != license.Manifest.Offer.OfferID {
+		return errors.New("offer IDs do not match")
 	}
 	err = checkSignature(
 		publicKey,
