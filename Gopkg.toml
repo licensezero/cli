@@ -8,10 +8,6 @@
 
 [[constraint]]
   branch = "master"
-  name = "golang.org/x/crypto"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/mitchellh/go-homedir"
 
 [[constraint]]
@@ -21,10 +17,6 @@
 [[constraint]]
   name = "github.com/mholt/archiver"
   version = "2.0.0"
-
-[[constraint]]
-  name = "github.com/BurntSushi/toml"
-  version = "0.3.1"
 
 [prune]
   go-tests = true

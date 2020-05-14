@@ -3,7 +3,6 @@ module licensezero.com/cli
 go 1.12
 
 require (
-	github.com/BurntSushi/toml v0.3.1
 	github.com/badoux/checkmail v0.0.0-20180430153108-0755fe2dc241
 	github.com/dsnet/compress v0.0.0-20171208185109-cc9eb1d7ad76
 	github.com/licensezero/cli v6.1.1+incompatible
@@ -13,6 +12,6 @@ require (
 	github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c
 	github.com/ulikunitz/xz v0.5.4
 	github.com/yookoala/realpath v1.0.0
-	golang.org/x/crypto v0.0.0-20180621125126-a49355c7e3f8
-	golang.org/x/sys v0.0.0-20180622082034-63fc586f45fe
+	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
+	golang.org/x/sys v0.0.0-20190412213103-97732733099d
 )
