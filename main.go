@@ -57,7 +57,7 @@ func main() {
 }
 
 func showUsage() {
-	os.Stdout.WriteString("Manage License Zero offers and dependencies.\n\nSubcommands:\n")
+	os.Stdout.WriteString("Manage License Zero offers.\n\nSubcommands:\n")
 	longestSubcommand := 0
 	var names []string
 	for name := range commands {
