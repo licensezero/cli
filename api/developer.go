@@ -26,6 +26,13 @@ type developerResponse struct {
 	Offers       []OfferInformation `json:"offers"`
 }
 
+// DeveloperInformation describes API data about a developer.
+type DeveloperInformation struct {
+	Name         string
+	Jurisdiction string
+	PublicKey    string
+}
+
 // Developer sends a developer API request.
 func Developer(developerID string) (*DeveloperInformation, []OfferInformation, error) {
 	bodyData := developerRequest{
