@@ -50,7 +50,7 @@ var Offers = &Subcommand{
 				os.Stdout.WriteString("\n")
 			}
 			os.Stdout.WriteString("- Offer ID: " + project.OfferID + "\n")
-			os.Stdout.WriteString("  Offered:    " + project.Offered + "\n")
+			os.Stdout.WriteString("  Offered:  " + project.Offered + "\n")
 			if project.Retracted != "" {
 				os.Stdout.WriteString("  Retracted:  " + project.Offered + "\n")
 			}
