@@ -1,12 +1,6 @@
 package subcommands
 
-const noncommercialLine = "Noncommercial offer. Ignore noncommercial licenses."
-
-const noNoncommercialLine = "Ignore packages under noncommercial licenses like Prosperity."
-
 const openLine = "Open software offer. Ignore reciprocal licenses."
-
-const noReciprocalLine = "Ignore packages under reciprocal licenses like Parity."
 
 const doNotOpenLine = "Do not open page in web browser."
 
@@ -20,9 +14,9 @@ const offerIDLine = "Offer ID (UUID)."
 
 const idLine = "License Zero ID (UUID)."
 
-const developerHint = "Create a developer identity with `licensezero register`."
+const developerHint = "Register to sell licenses with `licensezero register`."
 
-const identityHint = "Create a developer identity with `licensezero identify`."
+const identityHint = "Create an identity with `licensezero identify`."
 
 const termsHint = "You must agree to the terms of service to register."
 
