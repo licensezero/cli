@@ -8,11 +8,11 @@ import "io/ioutil"
 import "net/http"
 
 type publicRequest struct {
-	Action     string `json:"action"`
-	LicensorID string `json:"licensorID"`
-	Token      string `json:"token"`
-	OfferID    string `json:"offerID"`
-	Terms      string `json:"terms"`
+	Action      string `json:"action"`
+	DeveloperID string `json:"developerID"`
+	Token       string `json:"token"`
+	OfferID     string `json:"offerID"`
+	Terms       string `json:"terms"`
 }
 
 // PublicResponse contains API instructions for adding public licensing information.
@@ -23,20 +23,20 @@ type PublicResponse struct {
 		LicenseZero interface{} `json:"licensezero"`
 	} `json:"metadata"`
 	License struct {
-		Document          string `json:"document"`
-		LicensorSignature string `json:"licensorSignature"`
-		AgentSignature    string `json:"agentSignature"`
+		Document           string `json:"document"`
+		DeveloperSignature string `json:"developerSignature"`
+		AgentSignature     string `json:"agentSignature"`
 	} `json:"license"`
 }
 
 // Public sends a public API request.
-func Public(licensor *data.Licensor, offerID string, terms string) (*PublicResponse, error) {
+func Public(developer *data.Developer, offerID string, terms string) (*PublicResponse, error) {
 	bodyData := publicRequest{
-		Action:     "public",
-		OfferID:    offerID,
-		Terms:      terms,
-		LicensorID: licensor.LicensorID,
-		Token:      licensor.Token,
+		Action:      "public",
+		OfferID:     offerID,
+		Terms:       terms,
+		DeveloperID: developer.DeveloperID,
+		Token:       developer.Token,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {

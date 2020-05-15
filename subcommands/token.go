@@ -7,37 +7,37 @@ import "os"
 
 const tokenDescription = "Save your API access token."
 
-// Token saves licensor IDs and API tokens.
+// Token saves developer IDs and API tokens.
 var Token = &Subcommand{
 	Tag:         "seller",
 	Description: tokenDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("token", flag.ExitOnError)
-		licensorID := flagSet.String("licensor", "", "Licensor ID")
+		developerID := flagSet.String("developer", "", "Developer ID")
 		silent := silentFlag(flagSet)
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = tokenUsage
 		flagSet.Parse(args)
-		if *licensorID == "" {
+		if *developerID == "" {
 			tokenUsage()
 		}
 		token := secretPrompt("Token: ")
-		newLicensor := data.Licensor{
-			LicensorID: *licensorID,
-			Token:      token,
+		newDeveloper := data.Developer{
+			DeveloperID: *developerID,
+			Token:       token,
 		}
-		existingLicensor, _ := data.ReadLicensor(paths.Home)
-		if existingLicensor != nil && *existingLicensor != newLicensor {
-			if !confirm("Overwrite existing licensor info?") {
+		existingDeveloper, _ := data.ReadDeveloper(paths.Home)
+		if existingDeveloper != nil && *existingDeveloper != newDeveloper {
+			if !confirm("Overwrite existing developer info?") {
 				os.Exit(0)
 			}
 		}
-		err := data.WriteLicensor(paths.Home, &newLicensor)
+		err := data.WriteDeveloper(paths.Home, &newDeveloper)
 		if err != nil {
-			Fail("Could not write licensor file.")
+			Fail("Could not write developer file.")
 		}
 		if !*silent {
-			os.Stdout.WriteString("Saved your licensor ID and access token.\n")
+			os.Stdout.WriteString("Saved your developer ID and access token.\n")
 		}
 		os.Exit(0)
 	},
@@ -46,11 +46,11 @@ var Token = &Subcommand{
 func tokenUsage() {
 	usage := tokenDescription + "\n\n" +
 		"Usage:\n" +
-		"  licensezero token --licensor ID\n\n" +
+		"  licensezero token --developer ID\n\n" +
 		"Options:\n" +
 		flagsList(map[string]string{
-			"licensor ID": "Licensor ID (UUID).",
-			"silent":      silentLine,
+			"developer ID": "Developer ID (UUID).",
+			"silent":       silentLine,
 		})
 	Fail(usage)
 }

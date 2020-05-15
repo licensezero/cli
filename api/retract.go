@@ -9,10 +9,10 @@ import "net/http"
 import "strconv"
 
 type retractRequest struct {
-	Action     string `json:"action"`
-	LicensorID string `json:"licensorID"`
-	Token      string `json:"token"`
-	OfferID    string `json:"offerID"`
+	Action      string `json:"action"`
+	DeveloperID string `json:"developerID"`
+	Token       string `json:"token"`
+	OfferID     string `json:"offerID"`
 }
 
 type retractResponse struct {
@@ -20,12 +20,12 @@ type retractResponse struct {
 }
 
 // Retract sends retract API requests.
-func Retract(licensor *data.Licensor, offerID string) error {
+func Retract(developer *data.Developer, offerID string) error {
 	bodyData := retractRequest{
-		Action:     "retract",
-		LicensorID: licensor.LicensorID,
-		Token:      licensor.Token,
-		OfferID:    offerID,
+		Action:      "retract",
+		DeveloperID: developer.DeveloperID,
+		Token:       developer.Token,
+		OfferID:     offerID,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {

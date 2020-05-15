@@ -9,9 +9,9 @@ import "net/http"
 import "strconv"
 
 type resetRequest struct {
-	Action     string `json:"action"`
-	LicensorID string `json:"licensorID"`
-	EMail      string `json:"email"`
+	Action      string `json:"action"`
+	DeveloperID string `json:"developerID"`
+	EMail       string `json:"email"`
 }
 
 type resetResponse struct {
@@ -19,11 +19,11 @@ type resetResponse struct {
 }
 
 // Reset sends reset API requests.
-func Reset(identity *data.Identity, licensor *data.Licensor) error {
+func Reset(identity *data.Identity, developer *data.Developer) error {
 	bodyData := resetRequest{
-		Action:     "reset",
-		LicensorID: licensor.LicensorID,
-		EMail:      identity.EMail,
+		Action:      "reset",
+		DeveloperID: developer.DeveloperID,
+		EMail:       identity.EMail,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {

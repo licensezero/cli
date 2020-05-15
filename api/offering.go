@@ -12,12 +12,12 @@ type offeringRequest struct {
 }
 
 type offeringResponse struct {
-	Error    interface{}         `json:"error"`
-	Licensor LicensorInformation `json:"licensor"`
+	Error     interface{}          `json:"error"`
+	Developer DeveloperInformation `json:"developer"`
 }
 
 // Offering sends an offering API request.
-func Offering(offerID string) (*LicensorInformation, error) {
+func Offering(offerID string) (*DeveloperInformation, error) {
 	bodyData := offeringRequest{
 		Action:  "offering",
 		OfferID: offerID,
@@ -43,5 +43,5 @@ func Offering(offerID string) (*LicensorInformation, error) {
 	if message, ok := parsed.Error.(string); ok {
 		return nil, errors.New(message)
 	}
-	return &parsed.Licensor, nil
+	return &parsed.Developer, nil
 }

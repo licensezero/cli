@@ -32,11 +32,11 @@ var Retract = &Subcommand{
 		if !validID(*id) {
 			invalidID()
 		}
-		licensor, err := data.ReadLicensor(paths.Home)
+		developer, err := data.ReadDeveloper(paths.Home)
 		if err != nil {
-			Fail(licensorHint)
+			Fail(developerHint)
 		}
-		err = api.Retract(licensor, *id)
+		err = api.Retract(developer, *id)
 		if err != nil {
 			Fail("Error sending retract request: " + err.Error())
 		}

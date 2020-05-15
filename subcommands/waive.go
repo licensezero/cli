@@ -40,9 +40,9 @@ var Waive = &Subcommand{
 		if !validID(*id) {
 			invalidID()
 		}
-		licensor, err := data.ReadLicensor(paths.Home)
+		developer, err := data.ReadDeveloper(paths.Home)
 		if err != nil {
-			Fail(licensorHint)
+			Fail(developerHint)
 		}
 		var term interface{}
 		if *forever {
@@ -50,7 +50,7 @@ var Waive = &Subcommand{
 		} else {
 			term = *days
 		}
-		bytes, err := api.Waive(licensor, *id, *beneficiary, *jurisdiction, term)
+		bytes, err := api.Waive(developer, *id, *beneficiary, *jurisdiction, term)
 		if err != nil {
 			Fail("Error sending waiver request: " + err.Error())
 		}

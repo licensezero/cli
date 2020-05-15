@@ -13,16 +13,16 @@ type quoteRequest struct {
 
 // QuoteOffer describes the data the API provides on quoted contribution sets.
 type QuoteOffer struct {
-	Licensor    LicensorInformation `json:"licensor"`
-	OfferID     string              `json:"offerID"`
-	Description string              `json:"description"`
-	Repository  string              `json:"homepage"`
-	Pricing     Pricing             `json:"pricing"`
-	Retracted   bool                `json:"retracted"`
+	Developer   DeveloperInformation `json:"developer"`
+	OfferID     string               `json:"offerID"`
+	Description string               `json:"description"`
+	Repository  string               `json:"homepage"`
+	Pricing     Pricing              `json:"pricing"`
+	Retracted   bool                 `json:"retracted"`
 }
 
-// LicensorInformation describes API data about a licensor.
-type LicensorInformation struct {
+// DeveloperInformation describes API data about a developer.
+type DeveloperInformation struct {
 	Name         string
 	Jurisdiction string
 	PublicKey    string

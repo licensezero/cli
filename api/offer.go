@@ -14,7 +14,7 @@ const agencyStatement = "I agree to " + AgencyReference + "."
 
 type offerRequest struct {
 	Action      string  `json:"action"`
-	LicensorID  string  `json:"licensorID"`
+	DeveloperID string  `json:"developerID"`
 	Token       string  `json:"token"`
 	Repository  string  `json:"homepage"`
 	Pricing     Pricing `json:"pricing"`
@@ -28,14 +28,14 @@ type offerResponse struct {
 }
 
 // Offer sends an offer API request.
-func Offer(licensor *data.Licensor, url, description string, private, relicense uint) (string, error) {
+func Offer(developer *data.Developer, url, description string, private, relicense uint) (string, error) {
 	if !strings.HasPrefix(url, "https://") && !strings.HasPrefix(url, "http://") {
 		url = "http://" + url
 	}
 	bodyData := offerRequest{
 		Action:      "offer",
-		LicensorID:  licensor.LicensorID,
-		Token:       licensor.Token,
+		DeveloperID: developer.DeveloperID,
+		Token:       developer.Token,
 		Description: description,
 		Repository:  url,
 		Pricing: Pricing{

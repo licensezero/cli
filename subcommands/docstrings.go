@@ -20,9 +20,9 @@ const offerIDLine = "Offer ID (UUID)."
 
 const idLine = "License Zero ID (UUID)."
 
-const licensorHint = "Create a licensor identity with `licensezero register`."
+const developerHint = "Create a developer identity with `licensezero register`."
 
-const identityHint = "Create a licensor identity with `licensezero identify`."
+const identityHint = "Create a developer identity with `licensezero identify`."
 
 const termsHint = "You must agree to the terms of service to register."
 

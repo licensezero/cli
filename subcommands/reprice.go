@@ -38,14 +38,14 @@ var Reprice = &Subcommand{
 		if !validID(*id) {
 			invalidID()
 		}
-		licensor, err := data.ReadLicensor(paths.Home)
+		developer, err := data.ReadDeveloper(paths.Home)
 		if err != nil {
-			Fail(licensorHint)
+			Fail(developerHint)
 		}
 		if err != nil {
 			Fail(err.Error())
 		}
-		err = api.Reprice(licensor, *id, *price, *relicense)
+		err = api.Reprice(developer, *id, *price, *relicense)
 		if err != nil {
 			Fail("Error sending reprice request:" + err.Error())
 		}

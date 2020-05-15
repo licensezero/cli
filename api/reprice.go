@@ -9,11 +9,11 @@ import "net/http"
 import "strconv"
 
 type repriceRequest struct {
-	Action     string  `json:"action"`
-	LicensorID string  `json:"licensorID"`
-	Token      string  `json:"token"`
-	OfferID    string  `json:"offerID"`
-	Pricing    Pricing `json:"pricing"`
+	Action      string  `json:"action"`
+	DeveloperID string  `json:"developerID"`
+	Token       string  `json:"token"`
+	OfferID     string  `json:"offerID"`
+	Pricing     Pricing `json:"pricing"`
 }
 
 type repriceResponse struct {
@@ -21,12 +21,12 @@ type repriceResponse struct {
 }
 
 // Reprice sends reprice API requests.
-func Reprice(licensor *data.Licensor, offerID string, private, relicense uint) error {
+func Reprice(developer *data.Developer, offerID string, private, relicense uint) error {
 	bodyData := repriceRequest{
-		Action:     "reprice",
-		LicensorID: licensor.LicensorID,
-		OfferID:    offerID,
-		Token:      licensor.Token,
+		Action:      "reprice",
+		DeveloperID: developer.DeveloperID,
+		OfferID:     offerID,
+		Token:       developer.Token,
 		Pricing: Pricing{
 			Private:   private,
 			Relicense: relicense,

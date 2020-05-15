@@ -11,11 +11,11 @@ import "strconv"
 import "fmt"
 
 type lockRequest struct {
-	Action     string `json:"action"`
-	LicensorID string `json:"licensorID"`
-	Token      string `json:"token"`
-	OfferID    string `json:"offerID"`
-	Unlock     string `json:"unlock"`
+	Action      string `json:"action"`
+	DeveloperID string `json:"developerID"`
+	Token       string `json:"token"`
+	OfferID     string `json:"offerID"`
+	Unlock      string `json:"unlock"`
 }
 
 type lockResponse struct {
@@ -23,13 +23,13 @@ type lockResponse struct {
 }
 
 // Lock sends a lock API request.
-func Lock(licensor *data.Licensor, offerID string, unlock string) error {
+func Lock(developer *data.Developer, offerID string, unlock string) error {
 	bodyData := lockRequest{
-		Action:     "lock",
-		OfferID:    offerID,
-		Unlock:     unlock,
-		LicensorID: licensor.LicensorID,
-		Token:      licensor.Token,
+		Action:      "lock",
+		OfferID:     offerID,
+		Unlock:      unlock,
+		DeveloperID: developer.DeveloperID,
+		Token:       developer.Token,
 	}
 	body, err := json.Marshal(bodyData)
 	if err != nil {

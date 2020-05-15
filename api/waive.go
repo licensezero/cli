@@ -10,7 +10,7 @@ import "strconv"
 
 type waiveRequest struct {
 	Action       string      `json:"action"`
-	LicensorID   string      `json:"licensorID"`
+	DeveloperID  string      `json:"developerID"`
 	Token        string      `json:"token"`
 	OfferID      string      `json:"offerID"`
 	Beneficiary  string      `json:"beneficiary"`
@@ -23,11 +23,11 @@ type waiveResponse struct {
 }
 
 // Waive sends waiver API requests.
-func Waive(licensor *data.Licensor, offerID, beneficiary, jurisdiction string, term interface{}) ([]byte, error) {
+func Waive(developer *data.Developer, offerID, beneficiary, jurisdiction string, term interface{}) ([]byte, error) {
 	bodyData := waiveRequest{
 		Action:       "waiver",
-		LicensorID:   licensor.LicensorID,
-		Token:        licensor.Token,
+		DeveloperID:  developer.DeveloperID,
+		Token:        developer.Token,
 		OfferID:      offerID,
 		Beneficiary:  beneficiary,
 		Jurisdiction: jurisdiction,

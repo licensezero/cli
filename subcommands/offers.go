@@ -9,7 +9,7 @@ import "os"
 
 const projectsDescription = "List your projects."
 
-// Offers prints the licensor's projects.
+// Offers prints the developer's projects.
 var Offers = &Subcommand{
 	Tag:         "seller",
 	Description: projectsDescription,
@@ -20,13 +20,13 @@ var Offers = &Subcommand{
 		flagSet.SetOutput(ioutil.Discard)
 		flagSet.Usage = projectsUsage
 		flagSet.Parse(args)
-		licensor, err := data.ReadLicensor(paths.Home)
+		developer, err := data.ReadDeveloper(paths.Home)
 		if err != nil {
-			Fail(licensorHint)
+			Fail(developerHint)
 		}
-		_, projects, err := api.Licensor(licensor.LicensorID)
+		_, projects, err := api.Developer(developer.DeveloperID)
 		if err != nil {
-			Fail("Could not fetch licensor information: " + err.Error())
+			Fail("Could not fetch developer information: " + err.Error())
 		}
 		var filtered []api.OfferInformation
 		if *retracted {

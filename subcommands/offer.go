@@ -29,14 +29,14 @@ var Offer = &Subcommand{
 		if *noRelicense && *relicense != 0 {
 			offerUsage()
 		}
-		licensor, err := data.ReadLicensor(paths.Home)
+		developer, err := data.ReadDeveloper(paths.Home)
 		if err != nil {
-			Fail(licensorHint)
+			Fail(developerHint)
 		}
 		if !confirmAgencyTerms() {
 			Fail(agencyTermsHint)
 		}
-		offerID, err := api.Offer(licensor, *repository, *description, *price, *relicense)
+		offerID, err := api.Offer(developer, *repository, *description, *price, *relicense)
 		if err != nil {
 			Fail("Error sending offer request: " + err.Error())
 		}

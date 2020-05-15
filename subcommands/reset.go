@@ -15,11 +15,11 @@ var Reset = &Subcommand{
 		if err != nil {
 			Fail(identityHint)
 		}
-		licensor, err := data.ReadLicensor(paths.Home)
+		developer, err := data.ReadDeveloper(paths.Home)
 		if err != nil {
-			Fail(licensorHint)
+			Fail(developerHint)
 		}
-		err = api.Reset(identity, licensor)
+		err = api.Reset(identity, developer)
 		if err != nil {
 			Fail("Error sending reset request: " + err.Error())
 		}
