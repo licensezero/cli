@@ -9,7 +9,6 @@ const tokenDescription = "Save your API access token."
 
 // Token saves developer IDs and API tokens.
 var Token = &Subcommand{
-	Tag:         "seller",
 	Description: tokenDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("token", flag.ExitOnError)

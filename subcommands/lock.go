@@ -10,7 +10,6 @@ const lockDescription = "Lock pricing and availability."
 
 // Lock fixes pricing and availability.
 var Lock = &Subcommand{
-	Tag:         "seller",
 	Description: lockDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("lock", flag.ExitOnError)

@@ -10,7 +10,6 @@ const offerDescription = "Offer private licenses for sale."
 
 // Offer creates an offer and offers private licenses for sale.
 var Offer = &Subcommand{
-	Tag:         "seller",
 	Description: offerDescription,
 	Handler: func(args []string, paths Paths) {
 		flagSet := flag.NewFlagSet("offer", flag.ExitOnError)
