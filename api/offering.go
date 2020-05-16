@@ -11,13 +11,26 @@ type offeringRequest struct {
 	OfferID string `json:"offerID"`
 }
 
-type offeringResponse struct {
-	Error     interface{}          `json:"error"`
-	Developer DeveloperInformation `json:"developer"`
+// OfferingResponse represents information about an offer.
+type OfferingResponse struct {
+	Error       interface{}          `json:"error"`
+	Developer   DeveloperInformation `json:"developer"`
+	Pricing     Pricing              `json:"pricing"`
+	Homepage    string               `json:"homepage"`
+	Description string               `json:"description"`
+	Lock        LockInformation      `json:"lock"`
+	Commission  uint                 `json:"commission"`
+}
+
+// LockInformation represents information about pricing locks on offers.
+type LockInformation struct {
+	Locked string `json:"locked"`
+	Unlock string `json:"unlock"`
+	Price  uint   `json:"price"`
 }
 
 // Offering sends an offering API request.
-func Offering(offerID string) (*DeveloperInformation, error) {
+func Offering(offerID string) (*OfferingResponse, error) {
 	bodyData := offeringRequest{
 		Action:  "offering",
 		OfferID: offerID,
@@ -35,7 +48,7 @@ func Offering(offerID string) (*DeveloperInformation, error) {
 	if err != nil {
 		return nil, errors.New("error reading agent key response body")
 	}
-	var parsed offeringResponse
+	var parsed OfferingResponse
 	err = json.Unmarshal(responseBody, &parsed)
 	if err != nil {
 		return nil, errors.New("error parsing agent key response body")
@@ -43,5 +56,5 @@ func Offering(offerID string) (*DeveloperInformation, error) {
 	if message, ok := parsed.Error.(string); ok {
 		return nil, errors.New(message)
 	}
-	return &parsed.Developer, nil
+	return &parsed, nil
 }

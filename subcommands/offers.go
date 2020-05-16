@@ -37,23 +37,61 @@ var Offers = &Subcommand{
 				}
 			}
 		}
+		type outputItem struct {
+			OfferID     string              `json:"offerID"`
+			Offered     string              `json:"offered"`
+			Retracted   string              `json:"retracted,omitempty"`
+			Homepage    string              `json:"homepage"`
+			Description string              `json:"description"`
+			Pricing     api.Pricing         `json:"pricing"`
+			Lock        api.LockInformation `json:"lock"`
+			Commission  uint                `json:"commission"`
+		}
+		var output []outputItem
+		for _, project := range filtered {
+			info, err := api.Offering(project.OfferID)
+			if err != nil {
+				Fail("Error fetching info for offer:" + project.OfferID)
+			}
+			output = append(output, outputItem{
+				OfferID:     project.OfferID,
+				Offered:     project.Offered,
+				Retracted:   project.Retracted,
+				Pricing:     info.Pricing,
+				Homepage:    info.Homepage,
+				Description: info.Description,
+				Lock:        info.Lock,
+				Commission:  info.Commission,
+			})
+		}
 		if *outputJSON {
-			marshalled, err := json.Marshal(filtered)
+			marshalled, err := json.Marshal(output)
 			if err != nil {
 				Fail("Error serializing output.")
 			}
 			os.Stdout.WriteString(string(marshalled) + "\n")
 			os.Exit(0)
 		}
-		for i, project := range filtered {
+		for i, item := range output {
 			if i != 0 {
 				os.Stdout.WriteString("\n")
 			}
-			os.Stdout.WriteString("- Offer ID: " + project.OfferID + "\n")
-			os.Stdout.WriteString("  Offered:  " + project.Offered + "\n")
-			if project.Retracted != "" {
-				os.Stdout.WriteString("  Retracted:  " + project.Offered + "\n")
+			os.Stdout.WriteString("- Offer ID: " + item.OfferID + "\n")
+			os.Stdout.WriteString("  Offered:  " + item.Offered + "\n")
+			if item.Retracted != "" {
+				os.Stdout.WriteString("  Retracted:  " + item.Offered + "\n")
 			}
+			os.Stdout.WriteString("  Homepage: " + item.Homepage + "\n")
+			os.Stdout.WriteString("  Description: " + item.Description + "\n")
+			os.Stdout.WriteString("  Pricing:\n")
+			os.Stdout.WriteString("    Private: " + currency(item.Pricing.Private) + "\n")
+			if item.Lock.Locked != "" {
+				os.Stdout.WriteString("  Locked:\n")
+				os.Stdout.WriteString("    Date:    " + item.Lock.Locked + "\n")
+				os.Stdout.WriteString("    Expires: " + item.Lock.Unlock + "\n")
+				os.Stdout.WriteString("    Price:   " + currency(item.Lock.Price) + "\n")
+			}
+			os.Stdout.WriteString("  Commission: " + commission(item.Commission) + "\n")
 		}
 		os.Exit(0)
 	},
