@@ -8,29 +8,31 @@ import "io/ioutil"
 import "net/http"
 import "strconv"
 
-type waiveRequest struct {
+type freebieRequest struct {
 	Action       string      `json:"action"`
 	DeveloperID  string      `json:"developerID"`
 	Token        string      `json:"token"`
 	OfferID      string      `json:"offerID"`
-	Beneficiary  string      `json:"beneficiary"`
+	Name         string      `json:"name"`
+	EMail        string      `json:"email"`
 	Jurisdiction string      `json:"jurisdiction"`
 	Term         interface{} `json:"term"`
 }
 
-type waiveResponse struct {
+type freebieResponse struct {
 	Error interface{} `json:"error"`
 }
 
-// Waive sends waiver API requests.
-func Waive(developer *data.Developer, offerID, beneficiary, jurisdiction string, term interface{}) ([]byte, error) {
-	bodyData := waiveRequest{
-		Action:       "waiver",
+// Freebie sends freebie API requests.
+func Freebie(developer *data.Developer, offerID, name, jurisdiction, email string, term interface{}) ([]byte, error) {
+	bodyData := freebieRequest{
+		Action:       "freebie",
 		DeveloperID:  developer.DeveloperID,
 		Token:        developer.Token,
 		OfferID:      offerID,
-		Beneficiary:  beneficiary,
+		Name:         name,
 		Jurisdiction: jurisdiction,
+		EMail:        email,
 		Term:         term,
 	}
 	body, err := json.Marshal(bodyData)

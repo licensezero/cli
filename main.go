@@ -23,7 +23,7 @@ var commands = map[string]*subcommands.Subcommand{
 	"retract":  subcommands.Retract,
 	"token":    subcommands.Token,
 	"version":  subcommands.Version,
-	"waive":    subcommands.Waive,
+	"freebie":  subcommands.Freebie,
 	"whoami":   subcommands.WhoAmI,
 }
 
