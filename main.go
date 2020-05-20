@@ -17,6 +17,7 @@ var commands = map[string]*subcommands.Subcommand{
 	"lock":     subcommands.Lock,
 	"offer":    subcommands.Offer,
 	"offers":   subcommands.Offers,
+	"raise":    subcommands.Raise,
 	"register": subcommands.Register,
 	"reprice":  subcommands.Reprice,
 	"reset":    subcommands.Reset,
